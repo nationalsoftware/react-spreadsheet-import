@@ -3,6 +3,8 @@ import type { CSSObject } from "@chakra-ui/react"
 import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
+import { min, over } from "lodash"
+import { display, overflow } from "styled-system"
 
 const StepsComponent: typeof StepsTheme = {
   ...StepsTheme,
@@ -110,10 +112,21 @@ export const themeOverrides = {
           color: "subtitleColor",
           mb: "1rem",
         },
+        contentWrapper: {
+          overflow: "hidden",
+          alignItems: "normal",
+          gap: "1rem",
+          width: "100%",
+          flex: 1,
+        },
         tableWrapper: {
-          mb: "0.5rem",
-          position: "relative",
-          h: "72px",
+          overflow: "hidden",
+          width: "50%",
+        },
+        dropzoneWrapper: {
+          display: "flex",
+          minWidth: "300px",
+          flex: 1,
         },
         dropzoneText: {
           size: "lg",
@@ -476,11 +489,12 @@ export const themeOverrides = {
       ".rdg-static .rdg-cell": {
         "--rdg-selection-color": "none",
       },
+      ".rdg-example": {
+        overflowY: "auto",
+      },
       ".rdg-example .rdg-cell": {
         "--rdg-selection-color": "none",
-        borderBottom: "none",
       },
-
       ".rdg-radio": {
         display: "flex",
         alignItems: "center",

@@ -27,10 +27,14 @@ export const UploadStep = ({ onContinue }: UploadProps) => {
       <Heading sx={styles.heading}>{translations.uploadStep.title}</Heading>
       <Text sx={styles.title}>{translations.uploadStep.manifestTitle}</Text>
       <Text sx={styles.subtitle}>{translations.uploadStep.manifestDescription}</Text>
-      <Box sx={styles.tableWrapper}>
-        <ExampleTable fields={fields} />
-      </Box>
-      <DropZone onContinue={handleOnContinue} isLoading={isLoading} />
+      <HStack sx={styles.contentWrapper}>
+        <Box sx={styles.tableWrapper}>
+          <ExampleTable fields={fields} />
+        </Box>
+        <Box sx={styles.dropzoneWrapper}>
+          <DropZone onContinue={handleOnContinue} isLoading={isLoading} />
+        </Box>
+      </HStack>
     </ModalBody>
   )
 }
