@@ -1,10 +1,9 @@
 import type XLSX from "xlsx-ugnis"
-import { Box, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
+import { Box, Heading, ModalBody, Text, HStack, useStyleConfig } from "@chakra-ui/react"
 import { DropZone } from "./components/DropZone"
 import { useRsi } from "../../hooks/useRsi"
 import { ExampleTable } from "./components/ExampleTable"
 import { useCallback, useState } from "react"
-import { FadingOverlay } from "./components/FadingOverlay"
 import type { themeOverrides } from "../../theme"
 
 type UploadProps = {
@@ -30,7 +29,6 @@ export const UploadStep = ({ onContinue }: UploadProps) => {
       <Text sx={styles.subtitle}>{translations.uploadStep.manifestDescription}</Text>
       <Box sx={styles.tableWrapper}>
         <ExampleTable fields={fields} />
-        <FadingOverlay />
       </Box>
       <DropZone onContinue={handleOnContinue} isLoading={isLoading} />
     </ModalBody>
