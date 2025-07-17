@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Column, Columns } from "../MatchColumnsStep"
 import { Box, Flex, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
-import { FadingWrapper } from "../../../components/FadingWrapper"
 import { ContinueButton } from "../../../components/ContinueButton"
 import { useRsi } from "../../../hooks/useRsi"
 import type { themeOverrides } from "../../../theme"
@@ -46,11 +45,9 @@ export const ColumnGrid = <T extends string>({
               {userColumn(column)}
             </Box>
           ))}
-          <FadingWrapper gridColumn={`1/${columns.length + 3}`} gridRow="2/3" />
           <Box gridColumn={`1/${columns.length + 3}`} mt={7}>
             <Text sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
           </Box>
-          <FadingWrapper gridColumn={`1/${columns.length + 3}`} gridRow="4/5" />
           {columns.map((column, index) => (
             <Box
               gridRow="4/5"
