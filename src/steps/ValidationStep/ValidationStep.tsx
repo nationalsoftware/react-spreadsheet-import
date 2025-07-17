@@ -10,6 +10,7 @@ import { SubmitDataAlert } from "../../components/Alerts/SubmitDataAlert"
 import type { Data } from "../../types"
 import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
+import { downloadAsCsv } from "../../utils/downloadAsCsv"
 
 type Props<T extends string> = {
   initialData: (Data<T> & Meta)[]
@@ -144,6 +145,9 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
         <Box display="flex" justifyContent="space-between" alignItems="center" mb="2rem" flexWrap="wrap" gap="8px">
           <Heading sx={styles.heading}>{translations.validationStep.title}</Heading>
           <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
+            <Button variant="outline" size="sm" onClick={() => downloadAsCsv(data)}>
+              {translations.validationStep.exportButtonTitle}
+            </Button>
             <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
               {translations.validationStep.discardButtonTitle}
             </Button>
