@@ -98,18 +98,19 @@ export const themeOverrides = {
         heading: {
           fontSize: "3xl",
           color: "textColor",
-          mb: "2rem",
+          mb: "1.5rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
         title: {
           fontSize: "2xl",
           lineHeight: 8,
           fontWeight: "semibold",
           color: "textColor",
-        },
-        subtitle: {
-          fontSize: "md",
-          lineHeight: 6,
-          color: "subtitleColor",
           mb: "1rem",
         },
         contentWrapper: {
@@ -165,16 +166,21 @@ export const themeOverrides = {
     MatchColumnsStep: {
       baseStyle: {
         heading: {
-          color: "textColor",
-          mb: 8,
           fontSize: "3xl",
+          color: "textColor",
+          mb: "1.5rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
         title: {
-          color: "textColor",
           fontSize: "2xl",
           lineHeight: 8,
           fontWeight: "semibold",
-          mb: 4,
+          color: "textColor",
         },
         userTable: {
           header: {

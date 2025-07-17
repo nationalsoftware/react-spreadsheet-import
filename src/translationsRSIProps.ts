@@ -3,8 +3,8 @@ import type { DeepPartial } from "ts-essentials"
 export const translations = {
   uploadStep: {
     title: "Upload file",
+    instructions: "You will have a chance to rename or remove columns in next steps",
     manifestTitle: "Data that we expect:",
-    manifestDescription: "(You will have a chance to rename or remove columns in next steps)",
     maxRecordsExceeded: (maxRecords: string) => `Too many records. Up to ${maxRecords} allowed`,
     dropzone: {
       title: "Upload .xlsx, .xls or .csv file",
@@ -26,6 +26,7 @@ export const translations = {
   },
   matchColumnsStep: {
     title: "Match Columns",
+    instructions: "Match the columns from your spreadsheet to the fields we expect",
     nextButtonTitle: "Next",
     backButtonTitle: "Back",
     userTableTitle: "Your table",

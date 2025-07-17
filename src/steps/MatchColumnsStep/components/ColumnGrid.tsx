@@ -31,6 +31,7 @@ export const ColumnGrid = <T extends string>({
     <>
       <ModalBody flexDir="column" p={8} overflow="auto">
         <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
+        <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
         <Flex
           flex={1}
           display="grid"

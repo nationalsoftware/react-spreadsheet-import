@@ -25,8 +25,8 @@ export const UploadStep = ({ onContinue }: UploadProps) => {
   return (
     <ModalBody>
       <Heading sx={styles.heading}>{translations.uploadStep.title}</Heading>
+      <Text sx={styles.instructions}>{translations.uploadStep.instructions}</Text>
       <Text sx={styles.title}>{translations.uploadStep.manifestTitle}</Text>
-      <Text sx={styles.subtitle}>{translations.uploadStep.manifestDescription}</Text>
       <HStack sx={styles.contentWrapper}>
         <Box sx={styles.tableWrapper}>
           <ExampleTable fields={fields} />
