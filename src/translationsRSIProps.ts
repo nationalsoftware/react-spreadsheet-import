@@ -21,6 +21,7 @@ export const translations = {
   },
   selectHeaderStep: {
     title: "Select header row",
+    instructions: "Review your data and confirm it looks correct. If needed, select the correct header row.",
     nextButtonTitle: "Next",
     backButtonTitle: "Back",
   },

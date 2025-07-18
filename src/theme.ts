@@ -161,6 +161,12 @@ export const themeOverrides = {
           mb: 8,
           fontSize: "3xl",
         },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
+        },
       },
     },
     MatchColumnsStep: {
