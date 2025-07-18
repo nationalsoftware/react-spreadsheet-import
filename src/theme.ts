@@ -69,7 +69,7 @@ const MatchIconTheme: any = {
 export const themeOverrides = {
   colors: {
     textColor: "#2D3748",
-    subtitleColor: "#525c6cff",
+    subtitleColor: "#525C6C",
     inactiveColor: "#A0AEC0",
     border: "#E2E8F0",
     background: "white",
