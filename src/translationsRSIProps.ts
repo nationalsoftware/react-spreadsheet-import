@@ -15,6 +15,7 @@ export const translations = {
     },
     selectSheet: {
       title: "Select the sheet to use",
+      instructions: "The excel file you chose has more than one sheet - please select the one that contains your data.",
       nextButtonTitle: "Next",
       backButtonTitle: "Back",
     },

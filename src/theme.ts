@@ -145,8 +145,14 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: 8,
+          mb: "1.5rem",
           fontSize: "3xl",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "2rem",
         },
         radio: {},
         radioLabel: {
@@ -158,7 +164,7 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: 8,
+          mb: "1.5rem",
           fontSize: "3xl",
         },
         instructions: {
