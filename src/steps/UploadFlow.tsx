@@ -5,6 +5,7 @@ import { UploadStep } from "./UploadStep/UploadStep"
 import { SelectHeaderStep } from "./SelectHeaderStep/SelectHeaderStep"
 import { SelectSheetStep } from "./SelectSheetStep/SelectSheetStep"
 import { mapWorkbook } from "../utils/mapWorkbook"
+import { deleteSheet } from "../utils/deleteSheet"
 import { ValidationStep } from "./ValidationStep/ValidationStep"
 import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
@@ -57,6 +58,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     fields,
     rowHook,
     tableHook,
+    ignoredSheetNames,
   } = useRsi()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const toast = useToast()
@@ -80,6 +82,10 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
         <UploadStep
           onContinue={async (workbook, file) => {
             setUploadedFile(file)
+
+            // Remove ignored sheets from the workbook
+            ignoredSheetNames.forEach(sheetName => deleteSheet(workbook, sheetName));
+
             const isSingleSheet = workbook.SheetNames.length === 1
             if (isSingleSheet) {
               if (maxRecords && exceedsMaxRecords(workbook.Sheets[workbook.SheetNames[0]], maxRecords)) {

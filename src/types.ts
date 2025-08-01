@@ -49,6 +49,8 @@ export type RsiProps<T extends string> = {
   parseRaw?: boolean
   // Use for right-to-left (RTL) support
   rtl?: boolean
+  // Optional parameter to skip certain sheets in the SelectSheet step
+  ignoredSheetNames?: string[]
 }
 
 export type RawData = Array<string | undefined>
