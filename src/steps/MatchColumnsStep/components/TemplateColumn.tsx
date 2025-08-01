@@ -45,12 +45,13 @@ export const TemplateColumn = <T extends string>({ column, onChange, onSubChange
   const selectValue = selectOptions.find(({ value }) => "value" in column && column.value === value)
 
   return (
-    <Flex minH={10} w="100%" flexDir="column" justifyContent="center">
+    <Flex minH={14} w="100%" flexDir="column" justifyContent="center">
       {isIgnored ? (
         <Text sx={styles.selectColumn.text}>{translations.matchColumnsStep.ignoredColumnText}</Text>
       ) : (
         <>
           <Flex alignItems="center" minH={10} w="100%">
+            <MatchIcon isChecked={isChecked} />
             <Box flex={1}>
               <MatchColumnSelect
                 placeholder={translations.matchColumnsStep.selectPlaceholder}
@@ -60,7 +61,6 @@ export const TemplateColumn = <T extends string>({ column, onChange, onSubChange
                 name={column.header}
               />
             </Box>
-            <MatchIcon isChecked={isChecked} />
           </Flex>
           {isSelect && (
             <Flex width="100%">

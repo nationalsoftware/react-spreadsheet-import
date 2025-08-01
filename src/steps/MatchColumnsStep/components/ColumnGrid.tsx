@@ -32,40 +32,31 @@ export const ColumnGrid = <T extends string>({
       <ModalBody flexDir="column" p={8} overflow="auto">
         <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
         <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
-        <Flex
-          flex={1}
-          display="grid"
-          gridTemplateRows="auto auto auto 1fr"
-          gridTemplateColumns={`0.75rem repeat(${columns.length}, minmax(18rem, auto)) 0.75rem`}
-        >
-          <Box gridColumn={`1/${columns.length + 3}`}>
-            <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
+        <Flex mt={4} gap={10} justifyContent={"space-between"}>
+
+
+          <Box flexShrink={0}>
+            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
+            {columns.map((column, index) => (
+              <Box
+                key={column.header + index}
+              >
+                {templateColumn(column)}
+              </Box>
+            ))}
           </Box>
-          {columns.map((column, index) => (
-            <Box
-              key={column.header + index}
-              gridRow="2/3"
-              gridColumn={`${index + 2}/${index + 3}`}
-              pt={3}
-            >
-              {userColumn(column)}
-            </Box>
-          ))}
-          <Box gridColumn={`1/${columns.length + 3}`} mt={7}>
-            <Text sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
+
+          <Box flex={1}>
+            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
+            {columns.map((column, index) => (
+              <Box
+                key={column.header + index}
+              >
+                {userColumn(column)}
+              </Box>
+            ))}
           </Box>
-          {columns.map((column, index) => (
-            <Box
-              key={column.header + index}
-              gridRow="4/5"
-              gridColumn={`${index + 2}/${index + 3}`}
-              py="1.125rem"
-              pl={2}
-              pr={3}
-            >
-              {templateColumn(column)}
-            </Box>
-          ))}
+
         </Flex>
       </ModalBody>
       <ContinueButton

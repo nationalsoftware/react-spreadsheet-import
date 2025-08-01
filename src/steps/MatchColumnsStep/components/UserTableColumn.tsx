@@ -23,11 +23,8 @@ export const UserTableColumn = <T extends string>(props: UserTableColumnProps<T>
   } = props
   const isIgnored = type === ColumnType.ignored
   return (
-    <Box>
-      <Flex px={6} justifyContent="space-between" alignItems="center" mb={4}>
-        <Text sx={styles.userTable.header} data-ignored={dataAttr(isIgnored)}>
-          {header}
-        </Text>
+    <Flex minH={14} w="100%">
+      <Flex flex={1} gap={3} alignItems="center" overflow={"hidden"}>
         {type === ColumnType.ignored ? (
           <IconButton
             aria-label="Ignore column"
@@ -43,12 +40,15 @@ export const UserTableColumn = <T extends string>(props: UserTableColumnProps<T>
             {...styles.userTable.ignoreButton}
           />
         )}
+        <Text sx={styles.userTable.header} data-ignored={dataAttr(isIgnored)}>
+          {header}
+        </Text>
       </Flex>
       {entries.map((entry, index) => (
-        <Text key={(entry || "") + index} sx={styles.userTable.cell} data-ignored={dataAttr(isIgnored)}>
+        <Text flex={1} key={(entry || "") + index} sx={styles.userTable.cell} data-ignored={dataAttr(isIgnored)}>
           {entry}
         </Text>
       ))}
-    </Box>
+    </Flex>
   )
 }

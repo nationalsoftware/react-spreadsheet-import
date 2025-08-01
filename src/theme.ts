@@ -197,7 +197,7 @@ export const themeOverrides = {
         userTable: {
           header: {
             fontSize: "xs",
-            lineHeight: 4,
+            lineHeight: 5,
             fontWeight: "bold",
             letterSpacing: "wider",
             color: "textColor",
