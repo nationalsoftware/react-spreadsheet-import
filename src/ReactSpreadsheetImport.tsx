@@ -21,7 +21,7 @@ export const defaultRSIProps: Partial<RsiProps<any>> = {
   matchColumnsStepHook: async (table) => table,
   dateFormat: "yyyy-mm-dd", // ISO 8601,
   parseRaw: true,
-  ignoredSheetNames: [],
+  ignoredSheetNames: [] as string[],
 } as const
 
 export const ReactSpreadsheetImport = <T extends string>(propsWithoutDefaults: RsiProps<T>) => {
