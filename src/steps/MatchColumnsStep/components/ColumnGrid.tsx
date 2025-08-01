@@ -42,7 +42,12 @@ export const ColumnGrid = <T extends string>({
             <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
           </Box>
           {columns.map((column, index) => (
-            <Box gridRow="2/3" gridColumn={`${index + 2}/${index + 3}`} pt={3} key={column.header + index}>
+            <Box
+              key={column.header + index}
+              gridRow="2/3"
+              gridColumn={`${index + 2}/${index + 3}`}
+              pt={3}
+            >
               {userColumn(column)}
             </Box>
           ))}
@@ -51,9 +56,9 @@ export const ColumnGrid = <T extends string>({
           </Box>
           {columns.map((column, index) => (
             <Box
+              key={column.header + index}
               gridRow="4/5"
               gridColumn={`${index + 2}/${index + 3}`}
-              key={column.header + index}
               py="1.125rem"
               pl={2}
               pr={3}
