@@ -209,6 +209,8 @@ Common date-time formats can be viewed [here](https://docs.sheetjs.com/docs/csf/
   autoMapDistance?: number
   // Enable navigation in stepper component and show back button. Default: false
   isNavigationEnabled?: boolean
+  // Hide sheets with given name(s) in the SelectSheet step
+  ignoredSheetNames?: string[]
 ```
 
 ## Customisation
