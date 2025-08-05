@@ -12,6 +12,7 @@ export const defaultTheme = themeOverrides
 export const defaultRSIProps: Partial<RsiProps<any>> = {
   autoMapHeaders: true,
   autoMapSelectValues: false,
+  allowDiscard: true,
   allowInvalidSubmit: true,
   autoMapDistance: 2,
   isNavigationEnabled: false,

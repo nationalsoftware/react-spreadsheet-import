@@ -23,6 +23,8 @@ export type RsiProps<T extends string> = {
   tableHook?: TableHook<T>
   // Function called after user finishes the flow. You can return a promise that will be awaited.
   onSubmit: (data: Result<T>, file: File) => void | Promise<any>
+  // Allows discarding rows in the validation step. Default: true
+  allowDiscard?: boolean
   // Allows submitting with errors. Default: true
   allowInvalidSubmit?: boolean
   // Enable navigation in stepper component and show back button. Default: false

@@ -19,7 +19,7 @@ type Props<T extends string> = {
 }
 
 export const ValidationStep = <T extends string>({ initialData, file, onBack }: Props<T>) => {
-  const { translations, fields, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
+  const { translations, fields, allowDiscard, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
   const styles = useStyleConfig(
     "ValidationStep",
   ) as (typeof themeOverrides)["components"]["ValidationStep"]["baseStyle"]
@@ -66,7 +66,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     [data, updateData],
   )
 
-  const columns = useMemo(() => generateColumns(fields), [fields])
+  const columns = useMemo(() => generateColumns(fields, allowDiscard), [fields, allowDiscard])
 
   const tableData = useMemo(() => {
     if (filterByErrors) {
@@ -148,9 +148,11 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             <Button variant="outline" size="sm" onClick={() => downloadAsCsv(data)}>
               {translations.validationStep.exportButtonTitle}
             </Button>
-            <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
-              {translations.validationStep.discardButtonTitle}
-            </Button>
+            { allowDiscard && (
+              <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
+                {translations.validationStep.discardButtonTitle}
+              </Button>
+            )}
             <Switch
               display="flex"
               alignItems="center"
