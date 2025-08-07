@@ -33,19 +33,6 @@ export const ColumnGrid = <T extends string>({
         <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
         <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
         <Flex mt={4} gap={10} justifyContent={"space-between"}>
-
-
-          <Box flexShrink={0}>
-            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
-            {columns.map((column, index) => (
-              <Box
-                key={column.header + index}
-              >
-                {templateColumn(column)}
-              </Box>
-            ))}
-          </Box>
-
           <Box flex={1}>
             <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
             {columns.map((column, index) => (
@@ -56,7 +43,16 @@ export const ColumnGrid = <T extends string>({
               </Box>
             ))}
           </Box>
-
+          <Box flexShrink={0} minW={"300px"}>
+            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
+            {columns.map((column, index) => (
+              <Box
+                key={column.header + index}
+              >
+                {templateColumn(column)}
+              </Box>
+            ))}
+          </Box>
         </Flex>
       </ModalBody>
       <ContinueButton

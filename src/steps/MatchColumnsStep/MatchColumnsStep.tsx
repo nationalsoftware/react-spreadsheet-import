@@ -181,19 +181,19 @@ export const MatchColumnsStep = <T extends string>({
         onContinue={handleOnContinue}
         onBack={onBack}
         isLoading={isLoading}
+        templateColumn={(column) => (
+          <TemplateColumn
+            column={column}
+            onChange={onChange}
+            onSubChange={onSubChange}
+          />
+        )}
         userColumn={(column) => (
           <UserTableColumn
             column={column}
             onIgnore={onIgnore}
             onRevertIgnore={onRevertIgnore}
             entries={dataExample.map((row) => row[column.index])}
-          />
-        )}
-        templateColumn={(column) => (
-          <TemplateColumn
-            column={column}
-            onChange={onChange}
-            onSubChange={onSubChange}
           />
         )}
       />
