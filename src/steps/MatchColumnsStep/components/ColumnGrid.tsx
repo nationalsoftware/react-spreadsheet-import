@@ -7,6 +7,7 @@ import type { themeOverrides } from "../../../theme"
 
 type ColumnGridProps<T extends string> = {
   columns: Columns<T>
+  unmatchedRequiredFields: string[]
   userColumn: (column: Column<T>) => React.ReactNode
   templateColumn: (column: Column<T>) => React.ReactNode
   onContinue: (val: Record<string, string>[]) => void
@@ -18,6 +19,7 @@ export type Styles = (typeof themeOverrides)["components"]["MatchColumnsStep"]["
 
 export const ColumnGrid = <T extends string>({
   columns,
+  unmatchedRequiredFields,
   userColumn,
   templateColumn,
   onContinue,
@@ -32,6 +34,13 @@ export const ColumnGrid = <T extends string>({
       <ModalBody flexDir="column" p={8} overflow="auto">
         <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
         <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
+        <Box>
+          <Text display="inline">{translations.matchColumnsStep.unmatchedRequiredFields.listTitle}</Text>
+          <Text display="inline" fontWeight="bold">
+            {" "}
+            {unmatchedRequiredFields.join(", ")}
+          </Text>
+        </Box>
         <Flex mt={4} gap={10} justifyContent={"space-between"}>
           <Box flex={1}>
             <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>

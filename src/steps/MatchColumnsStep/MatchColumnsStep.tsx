@@ -167,7 +167,7 @@ export const MatchColumnsStep = <T extends string>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
-
+  console.log(unmatchedRequiredFields);
   return (
     <>
       <UnmatchedFieldsAlert
@@ -181,19 +181,22 @@ export const MatchColumnsStep = <T extends string>({
         onContinue={handleOnContinue}
         onBack={onBack}
         isLoading={isLoading}
-        templateColumn={(column) => (
-          <TemplateColumn
-            column={column}
-            onChange={onChange}
-            onSubChange={onSubChange}
-          />
-        )}
+
+        unmatchedRequiredFields={unmatchedRequiredFields}
+
         userColumn={(column) => (
           <UserTableColumn
             column={column}
             onIgnore={onIgnore}
             onRevertIgnore={onRevertIgnore}
             entries={dataExample.map((row) => row[column.index])}
+          />
+        )}
+        templateColumn={(column) => (
+          <TemplateColumn
+            column={column}
+            onChange={onChange}
+            onSubChange={onSubChange}
           />
         )}
       />

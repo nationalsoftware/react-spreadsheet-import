@@ -40,6 +40,9 @@ export const translations = {
     unmatched: "Unmatched",
     duplicateColumnWarningTitle: "Another column unselected",
     duplicateColumnWarningDescription: "Columns cannot duplicate",
+    unmatchedRequiredFields: {
+      listTitle: "Columns not matched:",
+    },
   },
   validationStep: {
     title: "Validate data",
