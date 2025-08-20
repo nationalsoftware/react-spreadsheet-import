@@ -25,6 +25,8 @@ export type RsiProps<T extends string> = {
   onSubmit: (data: Result<T>, file: File) => void | Promise<any>
   // Allows discarding rows in the validation step. Default: true
   allowDiscard?: boolean
+  // Numbers the rows in the validation step. Default: false
+  numberedRows?: boolean
   // Allows submitting with errors. Default: true
   allowInvalidSubmit?: boolean
   // Enable navigation in stepper component and show back button. Default: false

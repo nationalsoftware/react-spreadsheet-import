@@ -16,9 +16,11 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
   allowDiscard: boolean = true,
+  numeredRows: boolean = false,
 ): Column<Data<T> & Meta>[] => {
   const columns: Column<Data<T> & Meta>[] = [];
 
+  // discard row checkbox
   if (allowDiscard) {
     columns.push(
       {
@@ -49,6 +51,23 @@ export const generateColumns = <T extends string>(
             />
           )
         },
+      },
+    )
+  }
+
+  // row number
+  if (numeredRows) {
+    columns.push(
+      {
+        key: "__rownum",
+        name: "",
+        width: 40,
+        minWidth: 40,
+        maxWidth: 80,
+        resizable: false,
+        sortable: false,
+        frozen: true,
+        cellClass: "rdg-cell-rownum",
       },
     )
   }

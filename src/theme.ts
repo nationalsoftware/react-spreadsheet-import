@@ -4,7 +4,7 @@ import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
 import { min, over } from "lodash"
-import { display, overflow } from "styled-system"
+import { backgroundColor, display, overflow, padding, textAlign } from "styled-system"
 
 const StepsComponent: typeof StepsTheme = {
   ...StepsTheme,
@@ -447,6 +447,8 @@ export const themeOverrides = {
         fontWeight: "bold",
         letterSpacing: "wider",
         textTransform: "uppercase",
+        "--rdg-selection-color": "none",
+        backgroundColor: "var(--rdg-header-background-color)",
         "&:first-of-type": {
           borderTopLeftRadius: "lg",
         },
@@ -519,8 +521,13 @@ export const themeOverrides = {
       },
       ".rdg-checkbox": {
         "--rdg-selection-color": "none",
+        backgroundColor: "var(--rdg-header-background-color)",
         display: "flex",
         alignItems: "center",
+      },
+      ".rdg-cell-rownum": {
+        backgroundColor: "var(--rdg-header-background-color)",
+        textAlign: "end",
       },
     },
   },

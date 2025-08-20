@@ -12,6 +12,10 @@ export default {
       control: "boolean",
       defaultValue: true,
     },
+    numberedRows: {
+      control: "boolean",
+      defaultValue: true,
+    },
   },
 }
 
