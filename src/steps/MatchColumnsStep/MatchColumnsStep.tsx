@@ -167,7 +167,6 @@ export const MatchColumnsStep = <T extends string>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
-  console.log(unmatchedRequiredFields);
   return (
     <>
       <UnmatchedFieldsAlert
