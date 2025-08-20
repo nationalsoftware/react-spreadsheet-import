@@ -7,7 +7,7 @@ export const downloadAsCsv = (
   if (!data || data.length === 0) return
 
   // Remove internal fields
-  const cleaned = data.map(({ __index, __errors, ...rest }) => rest)
+  const cleaned = data.map(({ __index, __rownum, __errors, ...rest }) => rest)
 
   const worksheet = XLSX.utils.json_to_sheet(cleaned)
   const csv = XLSX.utils.sheet_to_csv(worksheet)
