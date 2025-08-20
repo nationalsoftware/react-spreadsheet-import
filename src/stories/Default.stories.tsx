@@ -3,12 +3,19 @@ import { Box, Link, Code, Button, useDisclosure } from "@chakra-ui/react"
 import { mockRsiValues } from "./mockRsiValues"
 import { useState } from "react"
 import type { Result } from "src/types"
+import { RsiProps } from "src/types"
 
 export default {
   title: "React spreadsheet import",
+  argTypes: {
+    allowDiscard: {
+      control: "boolean",
+      defaultValue: true,
+    },
+  },
 }
 
-export const Basic = () => {
+export const Basic = (args: RsiProps<string>) => {
   const [data, setData] = useState<Result<any> | null>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
@@ -22,7 +29,13 @@ export const Basic = () => {
       <Link href="./exampleFile.csv" border="2px solid #718096" p="8px" borderRadius="8px" download="exampleCSV">
         Download example file
       </Link>
-      <ReactSpreadsheetImport {...mockRsiValues} isOpen={isOpen} onClose={onClose} onSubmit={setData} />
+      <ReactSpreadsheetImport
+        {...mockRsiValues}
+        {...args}
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={setData}
+      />
       {!!data && (
         <Box pt={64} display="flex" gap="8px" flexDirection="column">
           <b>Returned data (showing first 100 rows):</b>
