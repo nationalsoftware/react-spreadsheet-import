@@ -527,6 +527,9 @@ export const themeOverrides = {
       },
       ".rdg-cell-rownum": {
         backgroundColor: "var(--rdg-header-background-color)",
+        color: "textColor",
+        fontSize: "xs",
+        fontWeight: "bold",
         textAlign: "end",
       },
     },
