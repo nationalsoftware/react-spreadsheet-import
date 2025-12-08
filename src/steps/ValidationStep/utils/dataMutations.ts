@@ -131,6 +131,13 @@ export const addErrorsAndRunHooks = async <T extends string>(
         if (errors[index]) {
           return { ...newValue, __errors: errors[index] }
         }
+
+        // had only table errors before, and now there are none -> clear them
+        // this clears uniqueness error on rows that were not re-validated
+        if (newValue.__errors) {
+          return { ...newValue, __errors: null }
+        }
+
         return newValue
       }
 
