@@ -61,10 +61,17 @@ export const addErrorsAndRunHooks = async <T extends string>(
 
           values.forEach((value, index) => {
             if (duplicates.has(value)) {
-              addError(ErrorSources.Table, index, field.key as T, {
+              addError(ErrorSources.Unique, index, field.key as T, {
                 level: validation.level || "error",
                 message: validation.errorMessage || "Field must be unique",
               })
+            } else {
+              // If this row *previously* had a unique error but now its value is no longer a duplicate,
+              // mark it as changed so the unique error can be cleared on both/all affected rows.
+              const hasUniqueError =
+                data[index].__errors && Object.values(data[index].__errors).some((error) => error.source === ErrorSources.Unique);
+
+              if (hasUniqueError) changedRowIndexes?.push(index);
             }
           })
           break

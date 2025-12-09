@@ -145,6 +145,7 @@ export type Info = {
 }
 
 export enum ErrorSources {
+  Unique = "unique",
   Table = "table",
   Row = "row",
 }
