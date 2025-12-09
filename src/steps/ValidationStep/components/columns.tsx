@@ -81,12 +81,12 @@ export const generateColumns = <T extends string>(
         resizable: true,
         headerRenderer: () => (
           <Box display="flex" gap={1} alignItems="center" position="relative">
-            <Box flex={1} overflow="hidden" textOverflow="ellipsis">
+            <Box /* flex={1} */ overflow="hidden" textOverflow="ellipsis">
               {column.label}
             </Box>
             {column.description && (
               <Tooltip placement="top" hasArrow label={column.description}>
-                <Box flex={"0 0 auto"}>
+                <Box /* flex={"0 0 auto"} */>
                   <CgInfo size="16px" />
                 </Box>
               </Tooltip>
