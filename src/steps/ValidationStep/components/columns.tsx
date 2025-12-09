@@ -61,7 +61,7 @@ export const generateColumns = <T extends string>(
       {
         key: "__rownum",
         name: "",
-        width: 40,
+        width: 55,
         minWidth: 40,
         maxWidth: 80,
         resizable: false,
