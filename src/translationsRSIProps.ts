@@ -41,7 +41,7 @@ export const translations = {
     duplicateColumnWarningTitle: "Another column unselected",
     duplicateColumnWarningDescription: "Columns cannot duplicate",
     unmatchedRequiredFields: {
-      listTitle: "Columns not matched:",
+      listTitle: "Required fields not matched:",
     },
   },
   validationStep: {

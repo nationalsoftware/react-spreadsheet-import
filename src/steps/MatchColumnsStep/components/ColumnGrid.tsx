@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Column, Columns } from "../MatchColumnsStep"
 import { Box, Flex, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
+import { CgCheckO, CgInfo } from "react-icons/cg"
 import { ContinueButton } from "../../../components/ContinueButton"
 import { useRsi } from "../../../hooks/useRsi"
 import type { themeOverrides } from "../../../theme"
@@ -34,14 +35,28 @@ export const ColumnGrid = <T extends string>({
       <ModalBody flexDir="column" p={8} overflow="auto">
         <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
         <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
-        <Box>
-          <Text display="inline">{translations.matchColumnsStep.unmatchedRequiredFields.listTitle}</Text>
-          <Text display="inline" fontWeight="bold">
-            {" "}
-            {unmatchedRequiredFields.join(", ")}
-          </Text>
-        </Box>
-        <Flex mt={4} gap={10} justifyContent={"space-between"}>
+        {unmatchedRequiredFields.length > 0 ? (
+          <Flex gap={2} alignItems="center">
+            <Text color="orange.500">
+              <CgInfo size="24px" />
+            </Text>
+            <Box>
+              <Text display="inline">{translations.matchColumnsStep.unmatchedRequiredFields.listTitle}</Text>
+              <Text display="inline" fontWeight="bold">
+                {" "}
+                {unmatchedRequiredFields.join(", ")}
+              </Text>
+            </Box>
+          </Flex>
+        ) : (
+          <Flex gap={2} alignItems="center">
+            <Text color="green.500">
+              <CgCheckO size="24px" />
+            </Text>
+            <Text display="inline">All required fields are matched</Text>
+          </Flex>
+        )}
+        <Flex mt={4} gap={2} justifyContent={"space-between"}>
           <Box flex={1}>
             <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
             {columns.map((column, index) => (
