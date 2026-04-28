@@ -101,7 +101,7 @@ export const generateColumns = <T extends string>(
             case "select":
               component = (
                 <TableSelect
-                  value={column.fieldType.options.find((option) => option.value === (row[column.key] as string))}
+                  value={column.fieldType.options.find((option) => option.value === (row[column.key as T] as string))}
                   onChange={(value) => {
                     onRowChange({ ...row, [column.key]: value?.value }, true)
                   }}
@@ -117,7 +117,7 @@ export const generateColumns = <T extends string>(
                     variant="unstyled"
                     autoFocus
                     size="small"
-                    value={row[column.key] as string}
+                    value={row[column.key as T] as string}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       onRowChange({ ...row, [column.key]: event.target.value })
                     }}
@@ -147,7 +147,7 @@ export const generateColumns = <T extends string>(
                   }}
                 >
                   <Switch
-                    isChecked={row[column.key] as boolean}
+                    isChecked={row[column.key as T] as boolean}
                     onChange={() => {
                       onRowChange({ ...row, [column.key]: !row[column.key as T] })
                     }}
@@ -158,7 +158,9 @@ export const generateColumns = <T extends string>(
             case "select":
               component = (
                 <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                  {column.fieldType.options.find((option) => option.value === row[column.key as T])?.label || null}
+                  {column.fieldType.options.find((option) => option.value === row[column.key as T])?.label ||
+                    (row[column.key as T] as string) ||
+                    null}
                 </Box>
               )
               break

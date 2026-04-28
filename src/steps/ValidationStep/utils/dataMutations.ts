@@ -38,6 +38,23 @@ export const addErrorsAndRunHooks = async <T extends string>(
   }
 
   fields.forEach((field) => {
+    if (field.fieldType.type === "select") {
+      const validValues = new Set(field.fieldType.options.map((opt) => opt.value))
+      const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
+      dataToValidate.forEach((entry, index) => {
+        const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
+        const value = entry[field.key as T]
+        if (value !== null && value !== undefined && value !== "" && !validValues.has(value as string)) {
+          addError(ErrorSources.Row, realIndex, field.key as T, {
+            level: "error",
+            message: "Value is not a valid option",
+          })
+        }
+      })
+    }
+  })
+
+  fields.forEach((field) => {
     field.validations?.forEach((validation) => {
       switch (validation.rule) {
         case "unique": {

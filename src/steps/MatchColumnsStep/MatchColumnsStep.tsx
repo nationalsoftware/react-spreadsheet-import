@@ -6,7 +6,6 @@ import { TemplateColumn } from "./components/TemplateColumn"
 import { ColumnGrid } from "./components/ColumnGrid"
 import { setColumn } from "./utils/setColumn"
 import { setIgnoreColumn } from "./utils/setIgnoreColumn"
-import { setSubColumn } from "./utils/setSubColumn"
 import { normalizeTableData } from "./utils/normalizeTableData"
 import type { Field, RawData } from "../../types"
 import { getMatchedColumns } from "./utils/getMatchedColumns"
@@ -25,41 +24,18 @@ export enum ColumnType {
   ignored,
   matched,
   matchedCheckbox,
-  matchedSelect,
-  matchedSelectOptions,
-}
-
-export type MatchedOptions<T> = {
-  entry: string
-  value: T
 }
 
 type EmptyColumn = { type: ColumnType.empty; index: number; header: string }
 type IgnoredColumn = { type: ColumnType.ignored; index: number; header: string }
 type MatchedColumn<T> = { type: ColumnType.matched; index: number; header: string; value: T }
 type MatchedSwitchColumn<T> = { type: ColumnType.matchedCheckbox; index: number; header: string; value: T }
-export type MatchedSelectColumn<T> = {
-  type: ColumnType.matchedSelect
-  index: number
-  header: string
-  value: T
-  matchedOptions: Partial<MatchedOptions<T>>[]
-}
-export type MatchedSelectOptionsColumn<T> = {
-  type: ColumnType.matchedSelectOptions
-  index: number
-  header: string
-  value: T
-  matchedOptions: MatchedOptions<T>[]
-}
 
 export type Column<T extends string> =
   | EmptyColumn
   | IgnoredColumn
   | MatchedColumn<T>
   | MatchedSwitchColumn<T>
-  | MatchedSelectColumn<T>
-  | MatchedSelectOptionsColumn<T>
 
 export type Columns<T extends string> = Column<T>[]
 
@@ -71,7 +47,7 @@ export const MatchColumnsStep = <T extends string>({
 }: MatchColumnsProps<T>) => {
   const toast = useToast()
   const dataExample = data.slice(0, 2)
-  const { fields, autoMapHeaders, autoMapSelectValues, autoMapDistance, translations } = useRsi<T>()
+  const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
   const [isLoading, setIsLoading] = useState(false)
   const [columns, setColumns] = useState<Columns<T>>(
     // Do not remove spread, it indexes empty array elements, otherwise map() skips over them
@@ -85,9 +61,8 @@ export const MatchColumnsStep = <T extends string>({
       const existingFieldIndex = columns.findIndex((column) => "value" in column && column.value === field.key)
       setColumns(
         columns.map<Column<T>>((column, index) => {
-          columnIndex === index ? setColumn(column, field, data) : column
           if (columnIndex === index) {
-            return setColumn(column, field, data, autoMapSelectValues)
+            return setColumn(column, field)
           } else if (index === existingFieldIndex) {
             toast({
               status: "warning",
@@ -105,9 +80,7 @@ export const MatchColumnsStep = <T extends string>({
       )
     },
     [
-      autoMapSelectValues,
       columns,
-      data,
       fields,
       toast,
       translations.matchColumnsStep.duplicateColumnWarningDescription,
@@ -129,16 +102,6 @@ export const MatchColumnsStep = <T extends string>({
     [columns, setColumns],
   )
 
-  const onSubChange = useCallback(
-    (value: string, columnIndex: number, entry: string) => {
-      setColumns(
-        columns.map((column, index) =>
-          columnIndex === index && "matchedOptions" in column ? setSubColumn(column, entry, value) : column,
-        ),
-      )
-    },
-    [columns, setColumns],
-  )
   const unmatchedRequiredFields = useMemo(() => findUnmatchedRequiredFields(fields, columns), [fields, columns])
 
   const handleOnContinue = useCallback(async () => {
@@ -161,7 +124,7 @@ export const MatchColumnsStep = <T extends string>({
   useEffect(
     () => {
       if (autoMapHeaders) {
-        setColumns(getMatchedColumns(columns, fields, data, autoMapDistance, autoMapSelectValues))
+        setColumns(getMatchedColumns(columns, fields, autoMapDistance))
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,9 +143,7 @@ export const MatchColumnsStep = <T extends string>({
         onContinue={handleOnContinue}
         onBack={onBack}
         isLoading={isLoading}
-
         unmatchedRequiredFields={unmatchedRequiredFields}
-
         userColumn={(column) => (
           <UserTableColumn
             column={column}
@@ -195,7 +156,6 @@ export const MatchColumnsStep = <T extends string>({
           <TemplateColumn
             column={column}
             onChange={onChange}
-            onSubChange={onSubChange}
           />
         )}
       />

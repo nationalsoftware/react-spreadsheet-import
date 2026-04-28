@@ -3,7 +3,7 @@ import { ColumnType } from "../MatchColumnsStep"
 import type { Data, Fields, RawData } from "../../../types"
 import { normalizeCheckboxValue } from "./normalizeCheckboxValue"
 
-export const normalizeTableData = <T extends string>(columns: Columns<T>, data: RawData[], fields: Fields<T>) => 
+export const normalizeTableData = <T extends string>(columns: Columns<T>, data: RawData[], fields: Fields<T>) =>
   data.map((row, rowIndex) => {
     return {
       __rownum: rowIndex + 2,
@@ -25,12 +25,6 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
           }
           case ColumnType.matched: {
             acc[column.value] = curr === "" ? undefined : curr
-            return acc
-          }
-          case ColumnType.matchedSelect:
-          case ColumnType.matchedSelectOptions: {
-            const matchedOption = column.matchedOptions.find(({ entry, value }) => entry === curr)
-            acc[column.value] = matchedOption?.value || undefined
             return acc
           }
           case ColumnType.empty:
