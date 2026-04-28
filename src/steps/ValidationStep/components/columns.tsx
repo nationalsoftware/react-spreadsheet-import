@@ -98,10 +98,12 @@ export const generateColumns = <T extends string>(
           let component
 
           switch (column.fieldType.type) {
-            case "select":
+            case "select": {
+              const rawValue = row[column.key as T] as string
+              const matchedOption = column.fieldType.options.find((option) => option.value === rawValue)
               component = (
                 <TableSelect
-                  value={column.fieldType.options.find((option) => option.value === (row[column.key as T] as string))}
+                  value={matchedOption ?? (rawValue ? { label: rawValue, value: rawValue } : undefined)}
                   onChange={(value) => {
                     onRowChange({ ...row, [column.key]: value?.value }, true)
                   }}
@@ -109,6 +111,7 @@ export const generateColumns = <T extends string>(
                 />
               )
               break
+            }
             default:
               component = (
                 <Box paddingInlineStart="0.5rem">

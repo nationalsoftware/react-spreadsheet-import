@@ -315,11 +315,12 @@ export const themeOverrides = {
             ...provided,
             p: 0,
             mt: 0,
+            boxShadow: "md",
           }),
           menuList: (provided) => ({
             ...provided,
-            bg: "background",
-            borderColor: "border",
+            bg: "secondaryBackground",
+            borderColor: "inactiveColor",
           }),
           option: (provided, state) => ({
             ...provided,
