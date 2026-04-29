@@ -273,7 +273,7 @@ describe("Match Columns automatic matching", () => {
 })
 
 describe("Match Columns general tests", () => {
-  test("Displays all schema field labels", async () => {
+  test("Displays all user header columns", async () => {
     const header = ["namezz", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -290,14 +290,13 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    fields.forEach((field) => {
-      expect(screen.getByText(field.label)).toBeInTheDocument()
-    })
+    expect(screen.getByText(header[0])).toBeInTheDocument()
+    expect(screen.getByText(header[1])).toBeInTheDocument()
+    expect(screen.getByText(header[2])).toBeInTheDocument()
   })
 
-  test("Displays example data from first row for matched columns", async () => {
-    // Use exact field keys as headers so all three auto-match
-    const header = ["name", "mobile", "is_cool"]
+  test("Displays two rows of example data", async () => {
+    const header = ["namezz", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
       ["Dane", "333", "dane@bane.com"],
@@ -313,17 +312,19 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    // First row sample data is shown for all auto-matched columns
+    // only displays two rows
     expect(screen.queryByText(data[0][0])).toBeInTheDocument()
     expect(screen.queryByText(data[0][1])).toBeInTheDocument()
     expect(screen.queryByText(data[0][2])).toBeInTheDocument()
-
-    // Second and third rows are not shown (only first row as sample)
-    expect(screen.queryByText(data[1][0])).not.toBeInTheDocument()
+    expect(screen.queryByText(data[1][0])).toBeInTheDocument()
+    expect(screen.queryByText(data[1][1])).toBeInTheDocument()
+    expect(screen.queryByText(data[1][2])).toBeInTheDocument()
     expect(screen.queryByText(data[2][0])).not.toBeInTheDocument()
+    expect(screen.queryByText(data[2][1])).not.toBeInTheDocument()
+    expect(screen.queryByText(data[2][2])).not.toBeInTheDocument()
   })
 
-  test("Displays all csv columns in field select dropdown", async () => {
+  test("Displays all fields in selects dropdown", async () => {
     const header = ["Something random", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -340,13 +341,12 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    // Open dropdown for the first field (Name)
-    const firstFieldSelect = screen.getByLabelText(fields[0].label)
-    await userEvent.click(firstFieldSelect)
+    const firstSelect = screen.getByLabelText(header[0])
 
-    // All CSV column headers should appear as options
-    header.forEach((h) => {
-      expect(screen.queryByText(h)).toBeInTheDocument()
+    await userEvent.click(firstSelect)
+
+    fields.forEach((field) => {
+      expect(screen.queryByText(field.label)).toBeInTheDocument()
     })
   })
 
@@ -373,8 +373,7 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    // Select CSV column "Something random" for schema field "Name"
-    await selectEvent.select(screen.getByLabelText(fields[0].label), header[0], {
+    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
       container: document.getElementById(SELECT_DROPDOWN_ID)!,
     })
 
@@ -409,14 +408,40 @@ describe("Match Columns general tests", () => {
     )
 
     const checkmark = screen.getAllByTestId("column-checkmark")[0]
+    // kinda dumb way to check if it has checkmark or not
     expect(checkmark).toBeEmptyDOMElement()
 
-    // Select a CSV column for the first field (Name)
-    await selectEvent.select(screen.getByLabelText(fields[0].label), header[0], {
+    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
       container: document.getElementById(SELECT_DROPDOWN_ID)!,
     })
 
     expect(checkmark).not.toBeEmptyDOMElement()
+  })
+
+  test("Can ignore columns", async () => {
+    const header = ["Something random", "Phone", "Email"]
+    const data = [
+      ["John", "123", "j@j.com"],
+      ["Dane", "333", "dane@bane.com"],
+      ["Kane", "534", "kane@linch.com"],
+    ]
+
+    const onContinue = jest.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    const ignoreButton = screen.getAllByLabelText("Ignore column")[0]
+
+    expect(screen.queryByText(translations.matchColumnsStep.ignoredColumnText)).not.toBeInTheDocument()
+
+    await userEvent.click(ignoreButton)
+
+    expect(screen.queryByText(translations.matchColumnsStep.ignoredColumnText)).toBeInTheDocument()
   })
 
   test("Required unselected fields show warning alert on submit", async () => {
@@ -473,7 +498,7 @@ describe("Match Columns general tests", () => {
     })
   })
 
-  test("Selecting the same csv column for two fields shows toast", async () => {
+  test("Selecting the same field twice shows toast", async () => {
     const header = ["Something random", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -491,12 +516,10 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    // Map "Something random" to "Name"
-    await selectEvent.select(screen.getByLabelText(fields[0].label), header[0], {
+    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
       container: document.getElementById(SELECT_DROPDOWN_ID)!,
     })
-    // Map "Something random" (same column) to "Mobile Phone" — should trigger duplicate warning
-    await selectEvent.select(screen.getByLabelText(fields[1].label), header[0], {
+    await selectEvent.select(screen.getByLabelText(header[1]), fields[0].label, {
       container: document.getElementById(SELECT_DROPDOWN_ID)!,
     })
 

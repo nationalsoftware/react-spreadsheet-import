@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useToast } from "@chakra-ui/react"
+import { UserTableColumn } from "./components/UserTableColumn"
 import { useRsi } from "../../hooks/useRsi"
-import { FieldRow } from "./components/FieldRow"
+import { TemplateColumn } from "./components/TemplateColumn"
 import { ColumnGrid } from "./components/ColumnGrid"
 import { setColumn } from "./utils/setColumn"
+import { setIgnoreColumn } from "./utils/setIgnoreColumn"
 import { normalizeTableData } from "./utils/normalizeTableData"
 import type { Field, RawData } from "../../types"
 import { getMatchedColumns } from "./utils/getMatchedColumns"
@@ -44,6 +46,7 @@ export const MatchColumnsStep = <T extends string>({
   onBack,
 }: MatchColumnsProps<T>) => {
   const toast = useToast()
+  const dataExample = data.slice(0, 2)
   const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
   const [isLoading, setIsLoading] = useState(false)
   const [columns, setColumns] = useState<Columns<T>>(
@@ -52,33 +55,23 @@ export const MatchColumnsStep = <T extends string>({
   )
   const [showUnmatchedFieldsAlert, setShowUnmatchedFieldsAlert] = useState(false)
 
-  const firstDataRow = data[0] ?? []
-
-  const onFieldMap = useCallback(
-    (fieldKey: T, csvColumnIndex: number | null) => {
-      const field = fields.find((f) => f.key === fieldKey) as unknown as Field<T>
-      const previousColumnIndex = columns.findIndex((c) => "value" in c && c.value === fieldKey)
-
-      const targetColumn = csvColumnIndex !== null ? columns[csvColumnIndex] : null
-      const isDisplacingAnotherField =
-        targetColumn !== null && "value" in targetColumn && targetColumn.value !== fieldKey
-
-      if (isDisplacingAnotherField) {
-        toast({
-          status: "warning",
-          variant: "left-accent",
-          position: "bottom-left",
-          title: translations.matchColumnsStep.duplicateColumnWarningTitle,
-          description: translations.matchColumnsStep.duplicateColumnWarningDescription,
-          isClosable: true,
-        })
-      }
-
+  const onChange = useCallback(
+    (value: T, columnIndex: number) => {
+      const field = fields.find((field) => field.key === value) as unknown as Field<T>
+      const existingFieldIndex = columns.findIndex((column) => "value" in column && column.value === field.key)
       setColumns(
         columns.map<Column<T>>((column, index) => {
-          if (csvColumnIndex !== null && index === csvColumnIndex) {
+          if (columnIndex === index) {
             return setColumn(column, field)
-          } else if (index === previousColumnIndex) {
+          } else if (index === existingFieldIndex) {
+            toast({
+              status: "warning",
+              variant: "left-accent",
+              position: "bottom-left",
+              title: translations.matchColumnsStep.duplicateColumnWarningTitle,
+              description: translations.matchColumnsStep.duplicateColumnWarningDescription,
+              isClosable: true,
+            })
             return setColumn(column)
           } else {
             return column
@@ -93,6 +86,20 @@ export const MatchColumnsStep = <T extends string>({
       translations.matchColumnsStep.duplicateColumnWarningDescription,
       translations.matchColumnsStep.duplicateColumnWarningTitle,
     ],
+  )
+
+  const onIgnore = useCallback(
+    (columnIndex: number) => {
+      setColumns(columns.map((column, index) => (columnIndex === index ? setIgnoreColumn<T>(column) : column)))
+    },
+    [columns, setColumns],
+  )
+
+  const onRevertIgnore = useCallback(
+    (columnIndex: number) => {
+      setColumns(columns.map((column, index) => (columnIndex === index ? setColumn(column) : column)))
+    },
+    [columns, setColumns],
   )
 
   const unmatchedRequiredFields = useMemo(() => findUnmatchedRequiredFields(fields, columns), [fields, columns])
@@ -123,7 +130,6 @@ export const MatchColumnsStep = <T extends string>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
-
   return (
     <>
       <UnmatchedFieldsAlert
@@ -133,18 +139,23 @@ export const MatchColumnsStep = <T extends string>({
         onConfirm={handleAlertOnContinue}
       />
       <ColumnGrid
-        fields={fields}
-        unmatchedRequiredFields={unmatchedRequiredFields}
+        columns={columns}
         onContinue={handleOnContinue}
         onBack={onBack}
         isLoading={isLoading}
-        fieldRow={(field) => (
-          <FieldRow
-            field={field}
-            columns={columns}
-            headerValues={headerValues}
-            firstDataRow={firstDataRow}
-            onMap={onFieldMap}
+        unmatchedRequiredFields={unmatchedRequiredFields}
+        userColumn={(column) => (
+          <UserTableColumn
+            column={column}
+            onIgnore={onIgnore}
+            onRevertIgnore={onRevertIgnore}
+            entries={dataExample.map((row) => row[column.index])}
+          />
+        )}
+        templateColumn={(column) => (
+          <TemplateColumn
+            column={column}
+            onChange={onChange}
           />
         )}
       />

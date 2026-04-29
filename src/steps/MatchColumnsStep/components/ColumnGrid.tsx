@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Fields } from "../../../types"
+import type { Column, Columns } from "../MatchColumnsStep"
 import { Box, Flex, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
 import { CgCheckO, CgInfo } from "react-icons/cg"
 import { ContinueButton } from "../../../components/ContinueButton"
@@ -7,10 +7,11 @@ import { useRsi } from "../../../hooks/useRsi"
 import type { themeOverrides } from "../../../theme"
 
 type ColumnGridProps<T extends string> = {
-  fields: Fields<T>
+  columns: Columns<T>
   unmatchedRequiredFields: string[]
-  fieldRow: (field: Fields<T>[number]) => React.ReactNode
-  onContinue: () => void
+  userColumn: (column: Column<T>) => React.ReactNode
+  templateColumn: (column: Column<T>) => React.ReactNode
+  onContinue: (val: Record<string, string>[]) => void
   onBack?: () => void
   isLoading: boolean
 }
@@ -18,14 +19,15 @@ type ColumnGridProps<T extends string> = {
 export type Styles = (typeof themeOverrides)["components"]["MatchColumnsStep"]["baseStyle"]
 
 export const ColumnGrid = <T extends string>({
-  fields,
+  columns,
   unmatchedRequiredFields,
-  fieldRow,
+  userColumn,
+  templateColumn,
   onContinue,
   onBack,
   isLoading,
 }: ColumnGridProps<T>) => {
-  const { translations } = useRsi<T>()
+  const { translations } = useRsi()
   const styles = useStyleConfig("MatchColumnsStep") as Styles
 
   return (
@@ -54,20 +56,28 @@ export const ColumnGrid = <T extends string>({
             <Text display="inline">All required fields are matched</Text>
           </Flex>
         )}
-        <Flex mt={4} gap={2} alignItems="center" pb={2}>
+        <Flex mt={4} gap={2} justifyContent={"space-between"}>
           <Box flex={1}>
-            <Text sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
+            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
+            {columns.map((column, index) => (
+              <Box
+                key={column.header + index}
+              >
+                {userColumn(column)}
+              </Box>
+            ))}
           </Box>
-          <Box w="300px">
-            <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
-          </Box>
-          <Box minW="300px" pl={4}>
-            <Text sx={styles.title}>Sample</Text>
+          <Box flexShrink={0} minW={"300px"}>
+            <Text pb={2} sx={styles.title}>{translations.matchColumnsStep.templateTitle}</Text>
+            {columns.map((column, index) => (
+              <Box
+                key={column.header + index}
+              >
+                {templateColumn(column)}
+              </Box>
+            ))}
           </Box>
         </Flex>
-        {fields.map((field) => (
-          <Box key={field.key}>{fieldRow(field)}</Box>
-        ))}
       </ModalBody>
       <ContinueButton
         isLoading={isLoading}
