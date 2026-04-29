@@ -27,8 +27,7 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
             acc[column.value] = curr === "" ? undefined : curr
             return acc
           }
-          case ColumnType.empty:
-          case ColumnType.ignored: {
+          case ColumnType.empty: {
             return acc
           }
           default:
