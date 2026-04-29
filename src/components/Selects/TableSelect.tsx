@@ -25,7 +25,7 @@ export const TableSelect = ({ onChange, value, options }: Props) => {
       placeholder=" "
       closeMenuOnScroll
       menuPosition="fixed"
-      menuIsOpen
+      defaultMenuIsOpen
       menuPortalTarget={document.getElementById(rootId)}
       options={options}
       chakraStyles={styles.select}
