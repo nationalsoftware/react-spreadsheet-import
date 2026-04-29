@@ -25,12 +25,13 @@ export const FieldRow = <T extends string>({
   const { translations } = useRsi<T>()
   const styles = useStyleConfig("MatchColumnsStep") as Styles
 
-  const matchedColumn = columns.find((c): c is Extract<Column<T>, { value: T }> => "value" in c && c.value === field.key)
-
-  const isMatched = matchedColumn !== undefined && (
-    matchedColumn.type === ColumnType.matched ||
-    matchedColumn.type === ColumnType.matchedCheckbox
+  const matchedColumn = columns.find(
+    (c): c is Extract<Column<T>, { value: T }> => "value" in c && c.value === field.key,
   )
+
+  const isMatched =
+    matchedColumn !== undefined &&
+    (matchedColumn.type === ColumnType.matched || matchedColumn.type === ColumnType.matchedCheckbox)
 
   const isRequired = field.validations?.some((v) => v.rule === "required") ?? false
 
@@ -46,17 +47,13 @@ export const FieldRow = <T extends string>({
   const sampleValue = matchedColumn !== undefined ? firstDataRow[matchedColumn.index] : undefined
 
   return (
-    <Flex minH={14} gap={2} w="100%" alignItems="center">
+    <Flex minH={14} w="100%" alignItems="center">
       <Flex flex={1} alignItems="center" overflow="hidden" gap={1}>
         <MatchIcon isChecked={isMatched} />
         <Text sx={styles.userTable.header} noOfLines={1} flex={1}>
           {field.label}
+          {isRequired && <Text as="span" color="orange.500">*</Text>}
         </Text>
-        {isRequired && (
-          <Text color="orange.500" fontSize="xs" fontWeight="bold" flexShrink={0} mr={2}>
-            *
-          </Text>
-        )}
       </Flex>
       <Box w="300px">
         <MatchColumnSelect
@@ -65,10 +62,9 @@ export const FieldRow = <T extends string>({
           onChange={(opt) => onMap(field.key as T, opt ? Number(opt.value) : null)}
           options={csvOptions}
           name={field.label}
-          isClearable
         />
       </Box>
-      <Box minW="300px">
+      <Box w="300px" pl={4}>
         {sampleValue !== undefined && (
           <Text sx={styles.userTable.cell} noOfLines={1}>
             {sampleValue}
