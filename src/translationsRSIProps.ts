@@ -34,7 +34,6 @@ export const translations = {
     userTableTitle: "Your data",
     templateTitle: "Matched field",
     selectPlaceholder: "Select column...",
-    ignoredColumnText: "Column ignored",
     subSelectPlaceholder: "Select...",
     matchDropdownTitle: "Match",
     unmatched: "Unmatched",
@@ -74,7 +73,7 @@ export const translations = {
     },
     unmatchedRequiredFields: {
       headerTitle: "Not all columns matched",
-      bodyText: "There are required columns that are not matched or ignored. Do you want to continue?",
+      bodyText: "There are required columns that are not matched. Do you want to continue?",
       listTitle: "Columns not matched:",
       cancelButtonTitle: "Cancel",
       continueButtonTitle: "Continue",

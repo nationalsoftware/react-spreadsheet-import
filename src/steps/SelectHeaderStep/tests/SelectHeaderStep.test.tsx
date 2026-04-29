@@ -104,8 +104,14 @@ describe("Select header step tests", () => {
     )
     const continueButton = screen.getByText(CONTINUE_BUTTON)
     fireEvent.click(continueButton)
-    const mutatedHeader = await screen.findByText(MUTATED_HEADER)
 
+    // Wait for MatchColumnsStep to render — comboboxes appear once field rows are mounted
+    const selects = await screen.findAllByRole("combobox", undefined, { timeout: 5000 })
+
+    // Open the first field's select so CSV column names become visible as options
+    await userEvent.click(selects[0])
+
+    const mutatedHeader = await screen.findByText(MUTATED_HEADER)
     await waitFor(() => {
       expect(mutatedHeader).toBeInTheDocument()
     })

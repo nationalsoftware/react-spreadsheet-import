@@ -204,9 +204,6 @@ export const themeOverrides = {
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
-            ["&[data-ignored]"]: {
-              color: "inactiveColor",
-            },
           },
           cell: {
             fontSize: "sm",
@@ -218,14 +215,6 @@ export const themeOverrides = {
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
-            ["&[data-ignored]"]: {
-              color: "inactiveColor",
-            },
-          },
-          ignoreButton: {
-            size: "xs",
-            colorScheme: "gray",
-            color: "textColor",
           },
         },
         selectColumn: {
