@@ -52,7 +52,11 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
     const onContinue = jest.fn()
     render(
@@ -83,7 +87,7 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{}, {}, {}]
+    const result = [{ __rownum: 2 }, { __rownum: 3 }, { __rownum: 4 }]
 
     const onContinue = jest.fn()
     render(
@@ -114,7 +118,11 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
     const onContinue = jest.fn()
     render(
@@ -145,7 +153,11 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][1] }, { name: data[1][1] }, { name: data[2][1] }]
+    const result = [
+      { __rownum: 2, name: data[0][1] },
+      { __rownum: 3, name: data[1][1] },
+      { __rownum: 4, name: data[2][1] },
+    ]
 
     const alternativeFields = [
       {
@@ -191,11 +203,11 @@ describe("Match Columns automatic matching", () => {
     ]
 
     const result = [
-      { name: data[0][0], is_cool: true },
-      { name: data[1][0], is_cool: true },
-      { name: data[2][0], is_cool: false },
-      { name: data[3][0], is_cool: false },
-      { name: data[4][0], is_cool: false },
+      { __rownum: 2, name: data[0][0], is_cool: true },
+      { __rownum: 3, name: data[1][0], is_cool: true },
+      { __rownum: 4, name: data[2][0], is_cool: false },
+      { __rownum: 5, name: data[3][0], is_cool: false },
+      { __rownum: 6, name: data[4][0], is_cool: false },
     ]
 
     const onContinue = jest.fn()
@@ -236,7 +248,7 @@ describe("Match Columns automatic matching", () => {
       },
     ] as const
 
-    const result = [{ is_cool: true }, { is_cool: false }, { is_cool: true }]
+    const result = [{ __rownum: 2, is_cool: true }, { __rownum: 3, is_cool: false }, { __rownum: 4, is_cool: true }]
 
     const onContinue = jest.fn()
     render(
@@ -345,7 +357,11 @@ describe("Match Columns general tests", () => {
       ["Dane", "333", "dane@bane.com"],
       ["Kane", "534", "kane@linch.com"],
     ]
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
     const onContinue = jest.fn()
     render(
