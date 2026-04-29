@@ -177,7 +177,7 @@ export const generateColumns = <T extends string>(
 
           if (row.__errors?.[column.key]) {
             return (
-              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message}>
+              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message} closeDelay={50}>
                 {component}
               </Tooltip>
             )
