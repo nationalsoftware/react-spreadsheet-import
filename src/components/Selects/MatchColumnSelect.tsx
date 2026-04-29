@@ -9,9 +9,10 @@ interface Props {
   options: readonly SelectOption[]
   placeholder?: string
   name?: string
+  isClearable?: boolean
 }
 
-export const MatchColumnSelect = ({ onChange, value, options, placeholder, name }: Props) => {
+export const MatchColumnSelect = ({ onChange, value, options, placeholder, name, isClearable }: Props) => {
   const styles = useStyleConfig("MatchColumnsStep") as Styles
   return (
     <Select<SelectOption, false>
@@ -25,6 +26,7 @@ export const MatchColumnSelect = ({ onChange, value, options, placeholder, name 
       menuPosition="fixed"
       components={customComponents}
       aria-label={name}
+      isClearable={isClearable}
     />
   )
 }
