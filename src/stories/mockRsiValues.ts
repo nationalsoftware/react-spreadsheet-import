@@ -123,6 +123,47 @@ export const mockRsiValues = mockComponentBehaviourForTypes({
   // },
 })
 
+export const mock1099NECValues = mockComponentBehaviourForTypes({
+  ...defaultRSIProps,
+  fields: f1099nec,
+  ignoredSheetNames,
+  isNavigationEnabled: true,
+  onSubmit: (data) => {
+    console.log(data.all.map((value) => value))
+  },
+  isOpen: true,
+  onClose: () => {},
+  // uploadStepHook: async (data) => {
+  //   await new Promise((resolve) => {
+  //     setTimeout(() => resolve(data), 4000)
+  //   })
+  //   return data
+  // },
+  // selectHeaderStepHook: async (hData, data) => {
+  //   await new Promise((resolve) => {
+  //     setTimeout(
+  //       () =>
+  //         resolve({
+  //           headerValues: hData,
+  //           data,
+  //         }),
+  //       4000,
+  //     )
+  //   })
+  //   return {
+  //     headerValues: hData,
+  //     data,
+  //   }
+  // },
+  // // Runs after column matching and on entry change, more performant
+  // matchColumnsStepHook: async (data) => {
+  //   await new Promise((resolve) => {
+  //     setTimeout(() => resolve(data), 4000)
+  //   })
+  //   return data
+  // },
+})
+
 export const editableTableInitialData = [
   {
     name: "Hello",
