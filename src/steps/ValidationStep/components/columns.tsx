@@ -1,7 +1,7 @@
 import { Column, useRowSelection } from "react-data-grid"
 import { Box, Checkbox, Input, Switch, Tooltip } from "@chakra-ui/react"
 import type { Data, Fields } from "../../../types"
-import { useState, type ChangeEvent, type ReactNode } from "react"
+import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
 import { CgInfo } from "react-icons/cg"
 import { TableSelect } from "../../../components/Selects/TableSelect"
@@ -13,19 +13,6 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
   input?.select()
 }
 
-// Controlled tooltip that closes synchronously on mouseleave (no setTimeout).
-// Chakra's default close mechanism uses window.setTimeout which gets dropped
-// under React 19's aggressive batching when RDG is re-rendering concurrently.
-const HoverTooltip = ({ label, children }: { label: ReactNode; children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  return (
-    <Tooltip isOpen={isOpen} placement="top" hasArrow label={label}>
-      <Box onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-        {children}
-      </Box>
-    </Tooltip>
-  )
-}
 
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
@@ -99,11 +86,11 @@ export const generateColumns = <T extends string>(
               {column.label}
             </Box>
             {column.description && (
-              <HoverTooltip label={column.description}>
+              <Tooltip placement="top" hasArrow label={column.description}>
                 <Box /* flex={"0 0 auto"} */>
                   <CgInfo size="16px" />
                 </Box>
-              </HoverTooltip>
+              </Tooltip>
             )}
           </Box>
         ),
@@ -191,9 +178,9 @@ export const generateColumns = <T extends string>(
 
           if (row.__errors?.[column.key]) {
             return (
-              <HoverTooltip label={row.__errors?.[column.key]?.message}>
+              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message} closeDelay={20}>
                 {component}
-              </HoverTooltip>
+              </Tooltip>
             )
           }
 
