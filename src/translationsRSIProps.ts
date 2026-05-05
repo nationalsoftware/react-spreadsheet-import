@@ -28,7 +28,7 @@ export const translations = {
   },
   matchColumnsStep: {
     title: "Match Columns",
-    instructions: "Match the columns from your spreadsheet to the fields we expect",
+    instructions: "Match the columns from your spreadsheet to the fields we expect.",
     nextButtonTitle: "Next",
     backButtonTitle: "Back",
     userTableTitle: "Your data",
@@ -45,13 +45,16 @@ export const translations = {
   },
   validationStep: {
     title: "Validate data",
+    instructions: "Review and correct any errors in your data before submitting.",
     nextButtonTitle: "Confirm",
     backButtonTitle: "Back",
     noRowsMessage: "No data found",
     noRowsMessageWhenFiltered: "No data containing errors",
     discardButtonTitle: "Discard selected rows",
     exportButtonTitle: "Export data",
-    filterSwitchTitle: "Show only rows with errors",
+    allRowsCountTitle: "All",
+    errorRowsCountTitle: "Error",
+    warningRowsCountTitle: "Warning",
   },
   alerts: {
     confirmClose: {
