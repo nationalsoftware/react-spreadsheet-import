@@ -187,25 +187,35 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             )}
           </Box>
         </Box>
-        <Table
-          rowKeyGetter={rowKeyGetter}
-          rows={tableData}
-          onRowsChange={updateRows}
-          columns={columns}
-          selectedRows={selectedRows}
-          onSelectedRowsChange={setSelectedRows}
-          components={{
-            noRowsFallback: (
-              <Box display="flex" justifyContent="center" gridColumn="1/-1" mt="32px">
-                {filter === "errors"
-                  ? translations.validationStep.noRowsMessageWhenFilteredByErrors
-                  : filter === "warnings"
-                    ? translations.validationStep.noRowsMessageWhenFilteredByWarnings
-                    : translations.validationStep.noRowsMessage}
-              </Box>
-            ),
-          }}
-        />
+        <Box flex={1} minH={0} position="relative" display="flex" flexDirection="column">
+          <Table
+            rowKeyGetter={rowKeyGetter}
+            rows={tableData}
+            onRowsChange={updateRows}
+            columns={columns}
+            selectedRows={selectedRows}
+            onSelectedRowsChange={setSelectedRows}
+          />
+          {tableData.length === 0 && (
+            <Box
+              position="absolute"
+              top="35px"
+              left={0}
+              right={0}
+              bottom={0}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              pointerEvents="none"
+            >
+              {filter === "errors"
+                ? translations.validationStep.noRowsMessageWhenFilteredByErrors
+                : filter === "warnings"
+                  ? translations.validationStep.noRowsMessageWhenFilteredByWarnings
+                  : translations.validationStep.noRowsMessage}
+            </Box>
+          )}
+        </Box>
       </ModalBody>
       <ContinueButton
         isLoading={isSubmitting}
