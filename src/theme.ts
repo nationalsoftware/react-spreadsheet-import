@@ -98,7 +98,7 @@ export const themeOverrides = {
         heading: {
           fontSize: "3xl",
           color: "textColor",
-          mb: "1.5rem",
+          mb: "1rem",
         },
         instructions: {
           fontSize: "md",
@@ -145,7 +145,7 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: "1.5rem",
+          mb: "1rem",
           fontSize: "3xl",
         },
         instructions: {
@@ -164,7 +164,7 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: "1.5rem",
+          mb: "1rem",
           fontSize: "3xl",
         },
         instructions: {
@@ -180,7 +180,7 @@ export const themeOverrides = {
         heading: {
           fontSize: "3xl",
           color: "textColor",
-          mb: "1.5rem",
+          mb: "1rem",
         },
         instructions: {
           fontSize: "md",
@@ -288,8 +288,15 @@ export const themeOverrides = {
     ValidationStep: {
       baseStyle: {
         heading: {
-          color: "textColor",
           fontSize: "3xl",
+          color: "textColor",
+          mb: "1rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
         select: {
           valueContainer: (provided) => ({

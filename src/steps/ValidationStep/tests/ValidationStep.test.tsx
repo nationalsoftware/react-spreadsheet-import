@@ -19,10 +19,12 @@ const mockValues = {
   onClose: () => {},
 } as const
 
-const getFilterSwitch = () =>
-  screen.getByRole("checkbox", {
-    name: translations.validationStep.filterSwitchTitle,
-  })
+const getAllRowsButton = () =>
+  screen.getByRole("button", { name: new RegExp(`^${translations.validationStep.allRowsCountTitle}`) })
+const getErrorsButton = () =>
+  screen.getByRole("button", { name: new RegExp(`^${translations.validationStep.errorRowsCountTitle}`) })
+const getWarningsButton = () =>
+  screen.getByRole("button", { name: new RegExp(`^${translations.validationStep.warningRowsCountTitle}`) })
 
 const file = new File([""], "file.csv")
 
@@ -183,9 +185,7 @@ describe("Validation step tests", () => {
     const validRow = screen.getByText(UNIQUE_NAME)
     expect(validRow).toBeInTheDocument()
 
-    const switchFilter = getFilterSwitch()
-
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     const filteredRowsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsWithHeader).toHaveLength(2)
@@ -240,9 +240,7 @@ describe("Validation step tests", () => {
     const validRow = screen.getByText(UNIQUE_NAME)
     expect(validRow).toBeInTheDocument()
 
-    const switchFilter = getFilterSwitch()
-
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     const filteredRowsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsWithHeader).toHaveLength(2)
@@ -256,7 +254,7 @@ describe("Validation step tests", () => {
     const filteredRowsNoErrorsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsNoErrorsWithHeader).toHaveLength(1)
 
-    await userEvent.click(switchFilter)
+    await userEvent.click(getAllRowsButton())
 
     const allRowsFixedWithHeader = await screen.findAllByRole("row")
     expect(allRowsFixedWithHeader).toHaveLength(4)
@@ -314,9 +312,7 @@ describe("Validation step tests", () => {
     const allRowsWithHeader = await screen.findAllByRole("row")
     expect(allRowsWithHeader).toHaveLength(4)
 
-    const switchFilter = getFilterSwitch()
-
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     const filteredRowsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsWithHeader).toHaveLength(3)
@@ -364,12 +360,57 @@ describe("Validation step tests", () => {
     const allRowsWithHeader = await screen.findAllByRole("row")
     expect(allRowsWithHeader).toHaveLength(4)
 
-    const switchFilter = getFilterSwitch()
-
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     const filteredRowsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsWithHeader).toHaveLength(2)
+  })
+
+  test("Filters rows with warnings", async () => {
+    const WARNED_NAME = "warned"
+    const FINE_NAME = "fine"
+    const fields = [
+      {
+        label: "Name",
+        key: "name",
+        fieldType: {
+          type: "input",
+        },
+      },
+    ] as const
+    const rowHook: RowHook<fieldKeys<typeof fields>> = (value, setError) => {
+      if (value.name === WARNED_NAME) {
+        setError(fields[0].key, { message: "Name has a warning", level: "warning" })
+      }
+      return value
+    }
+    const initialData = await addErrorsAndRunHooks([{ name: WARNED_NAME }, { name: FINE_NAME }], fields, rowHook)
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields, rowHook }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    const allRowsWithHeader = await screen.findAllByRole("row")
+    expect(allRowsWithHeader).toHaveLength(3)
+
+    await userEvent.click(getWarningsButton())
+
+    const filteredRowsWithHeader = await screen.findAllByRole("row")
+    expect(filteredRowsWithHeader).toHaveLength(2)
+
+    const warnedRow = screen.getByText(WARNED_NAME)
+    expect(warnedRow).toBeInTheDocument()
+
+    const fineRow = screen.queryByText(FINE_NAME)
+    expect(fineRow).not.toBeInTheDocument()
+
+    await userEvent.click(getAllRowsButton())
+
+    const allRowsRestoredWithHeader = await screen.findAllByRole("row")
+    expect(allRowsRestoredWithHeader).toHaveLength(3)
   })
 
   test("Deletes selected rows", async () => {
@@ -797,11 +838,9 @@ describe("Validation step tests", () => {
       ),
     )
 
-    const switchFilter = getFilterSwitch()
-
     await expect(await screen.findAllByRole("row")).toHaveLength(2)
 
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     await expect(await screen.findAllByRole("row")).toHaveLength(2)
 
@@ -934,11 +973,9 @@ describe("Validation step tests", () => {
       </Providers>,
     )
 
-    const switchFilter = getFilterSwitch()
-
     await expect(await screen.findAllByRole("row")).toHaveLength(3)
 
-    await userEvent.click(switchFilter)
+    await userEvent.click(getErrorsButton())
 
     await expect(await screen.findAllByRole("row")).toHaveLength(3)
 
