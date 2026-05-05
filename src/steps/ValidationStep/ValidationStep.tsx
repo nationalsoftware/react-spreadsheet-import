@@ -197,9 +197,11 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
           components={{
             noRowsFallback: (
               <Box display="flex" justifyContent="center" gridColumn="1/-1" mt="32px">
-                {filter !== "all"
-                  ? translations.validationStep.noRowsMessageWhenFiltered
-                  : translations.validationStep.noRowsMessage}
+                {filter === "errors"
+                  ? translations.validationStep.noRowsMessageWhenFilteredByErrors
+                  : filter === "warnings"
+                    ? translations.validationStep.noRowsMessageWhenFilteredByWarnings
+                    : translations.validationStep.noRowsMessage}
               </Box>
             ),
           }}
