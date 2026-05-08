@@ -298,6 +298,15 @@ export const themeOverrides = {
           color: "subtitleColor",
           mb: "1rem",
         },
+        exportMenuItemTitle: {
+          fontSize: "md",
+          fontWeight: "medium",
+          color: "textColor",
+        },
+        exportMenuItemDescription: {
+          fontSize: "md",
+          color: "subtitleColor",
+        },
         select: {
           valueContainer: (provided) => ({
             ...provided,

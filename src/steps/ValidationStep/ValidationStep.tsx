@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
-import { Box, Button, Badge, Heading, ModalBody, Text, useStyleConfig, useToast } from "@chakra-ui/react"
+import { Box, Button, Badge, Heading, Menu, MenuButton, MenuDivider, MenuList, MenuItem, ModalBody, Text, useStyleConfig, useToast } from "@chakra-ui/react"
+import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6";
 import { ContinueButton } from "../../components/ContinueButton"
 import { useRsi } from "../../hooks/useRsi"
 import type { Meta } from "./types"
@@ -10,7 +11,7 @@ import { SubmitDataAlert } from "../../components/Alerts/SubmitDataAlert"
 import type { Data } from "../../types"
 import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
-import { downloadAsCsv } from "../../utils/downloadAsCsv"
+import { downloadAsCsv, downloadAsXlsx } from "../../utils/downloadSpreadsheet"
 
 type Props<T extends string> = {
   initialData: (Data<T> & Meta)[]
@@ -177,9 +178,24 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             </Button>
           </Box>
           <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
-            <Button variant="outline" size="sm" onClick={() => downloadAsCsv(data)}>
-              {translations.validationStep.exportButtonTitle}
-            </Button>
+            
+            <Menu>
+              <MenuButton as={Button} variant="outline" size="sm" rightIcon={<FaChevronDown />}>
+                {translations.validationStep.exportButtonTitle}
+              </MenuButton>
+              <MenuList>
+                <MenuItem icon={<FaFileCsv size="32px" color="#2B73B6" />} onClick={() => downloadAsCsv(data, fields)}>
+                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>{translations.validationStep.exportCsvButtonDescription}</Text>
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem icon={<FaFileExcel size="32px" color="#217346" />} onClick={() => downloadAsXlsx(data, fields)}>
+                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportXlsxButtonTitle}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>{translations.validationStep.exportXlsxButtonDescription}</Text>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+
             {allowDiscard && (
               <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
                 {translations.validationStep.discardButtonTitle}
