@@ -4,6 +4,7 @@ const titleMap: Record<Field<string>["fieldType"]["type"], string> = {
   checkbox: "Boolean",
   select: "Options",
   input: "Text",
+  numeric: "Number",
 };
 
 export const generateTableData = <T extends string>(fields: Fields<T>) => {

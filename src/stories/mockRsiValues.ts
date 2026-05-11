@@ -627,7 +627,8 @@ export const f1099nec = [
             "Box 1 - Nonemployee Compensation",
         ],
         example: "$12,500.00",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -652,7 +653,8 @@ export const f1099nec = [
             "Box 3 - Excess golden parachute payments",
         ],
         example: "$500.00",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -665,7 +667,8 @@ export const f1099nec = [
             "Box 4 - Federal income tax withheld",
         ],
         example: "$500.00",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -702,7 +705,8 @@ export const f1099nec = [
             "State 1 - State Tax Withheld",
         ],
         example: "$150.00",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -715,7 +719,8 @@ export const f1099nec = [
             "State 1 - State Income",
         ],
         example: "$12,000.00",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -751,7 +756,8 @@ export const f1099nec = [
             "State 2 - State Tax Withheld",
         ],
         example: "",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
@@ -764,7 +770,8 @@ export const f1099nec = [
             "State 2 - State Income",
         ],
         example: "",
-        ...fieldTypes.input,
+        fieldType: { type: "numeric", decimalPlaces: 2 },
+        columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
             ...validations.MaxLength(12),
