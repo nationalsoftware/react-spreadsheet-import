@@ -74,9 +74,11 @@ export type Field<T extends string> = {
   // Validations used for field entries
   validations?: Validation[]
   // Field entry component, default: Input
-  fieldType: Checkbox | Select | Input
+  fieldType: Checkbox | Select | Input | Numeric
   // UI-facing values shown to user as field examples pre-upload phase
   example?: string
+  // Display styles applied to the field column in the ValidationStep table
+  columnStyle?: ColumnStyle
 }
 
 export type Checkbox = {
@@ -100,6 +102,17 @@ export type SelectOption = {
 
 export type Input = {
   type: "input"
+}
+
+export type Numeric = {
+  type: "numeric"
+  decimalPlaces?: number
+}
+
+export type ColumnStyle = {
+  textAlign?: "left" | "right" | "center"
+  prefix?: string
+  suffix?: string
 }
 
 export type Validation = RequiredValidation | UniqueValidation | RegexValidation

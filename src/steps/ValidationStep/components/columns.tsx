@@ -1,5 +1,5 @@
 import { Column, useRowSelection } from "react-data-grid"
-import { Box, Checkbox, Input, Switch, Tooltip } from "@chakra-ui/react"
+import { Box, Checkbox, Input, InputGroup, InputLeftElement, InputRightElement, Switch, Tooltip } from "@chakra-ui/react"
 import type { Data, Fields } from "../../../types"
 import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
@@ -115,19 +115,31 @@ export const generateColumns = <T extends string>(
             }
             default:
               component = (
-                <Box paddingInlineStart="0.5rem">
+                <InputGroup size="sm" height="100%">
+                  {column.columnStyle?.prefix && (
+                    <InputLeftElement pointerEvents="none" color="gray.500" height="100%">
+                      {column.columnStyle.prefix}
+                    </InputLeftElement>
+                  )}
                   <Input
                     ref={autoFocusAndSelect}
                     variant="unstyled"
                     autoFocus
-                    size="small"
                     value={row[column.key as T] as string}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       onRowChange({ ...row, [column.key]: event.target.value })
                     }}
                     onBlur={() => onClose(true)}
+                    textAlign={column.columnStyle?.textAlign}
+                    paddingLeft={column.columnStyle?.prefix ? "2rem" : "0.5rem"}
+                    paddingRight={column.columnStyle?.suffix ? "2rem" : undefined}
                   />
-                </Box>
+                  {column.columnStyle?.suffix && (
+                    <InputRightElement pointerEvents="none" color="gray.500" height="100%">
+                      {column.columnStyle.suffix}
+                    </InputRightElement>
+                  )}
+                </InputGroup>
               )
           }
 
@@ -138,6 +150,17 @@ export const generateColumns = <T extends string>(
         },
         formatter: ({ row, onRowChange }) => {
           let component
+
+          const getDisplayValue = (value: string | boolean | undefined) => {
+            if (column.fieldType.type !== "numeric" || !value) return value
+            const num = Number(value)
+            return isNaN(num)
+              ? value
+              : num.toLocaleString("en-US", {
+                  minimumFractionDigits: column.fieldType.decimalPlaces ?? 2,
+                  maximumFractionDigits: column.fieldType.decimalPlaces ?? 2,
+                })
+          }
 
           switch (column.fieldType.type) {
             case "checkbox":
@@ -168,12 +191,23 @@ export const generateColumns = <T extends string>(
                 </Box>
               )
               break
-            default:
+            case "numeric":
+            default: {
+              const cellValue = row[column.key as T]
               component = (
-                <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                  {row[column.key as T]}
+                <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
+                  {column.columnStyle?.prefix && cellValue && (
+                    <Box as="span" color="gray.500" flexShrink={0} mr={1}>{column.columnStyle.prefix}</Box>
+                  )}
+                  <Box flex={1} overflow="hidden" textOverflow="ellipsis" textAlign={column.columnStyle?.textAlign}>
+                    {getDisplayValue(cellValue)}
+                  </Box>
+                  {column.columnStyle?.suffix && cellValue && (
+                    <Box as="span" color="gray.500" flexShrink={0} ml={1}>{column.columnStyle.suffix}</Box>
+                  )}
                 </Box>
               )
+            }
           }
 
           if (row.__errors?.[column.key]) {

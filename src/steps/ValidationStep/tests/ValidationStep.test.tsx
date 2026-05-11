@@ -366,6 +366,146 @@ describe("Validation step tests", () => {
     expect(filteredRowsWithHeader).toHaveLength(2)
   })
 
+  describe("Numeric field type", () => {
+    const numericField = {
+      label: "Amount",
+      key: "amount",
+      fieldType: { type: "numeric" as const, decimalPlaces: 2 },
+    } as const
+    const fields = [numericField] as const
+
+    test("normalizes valid input and displays with locale formatting", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "1000" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("1,000.00")).toBeInTheDocument()
+    })
+
+    test("coerces currency-formatted input", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "$1,000" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("1,000.00")).toBeInTheDocument()
+    })
+
+    test("respects decimalPlaces: 0 configuration", async () => {
+      const zeroDecimalFields = [
+        { label: "Amount", key: "amount", fieldType: { type: "numeric" as const, decimalPlaces: 0 } },
+      ] as const
+      const initialData = await addErrorsAndRunHooks([{ amount: "1000" }], zeroDecimalFields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields: zeroDecimalFields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("1,000")).toBeInTheDocument()
+    })
+
+    test("shows error and filters row for invalid numeric input", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "100a0" }, { amount: "500" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      const allRowsWithHeader = await screen.findAllByRole("row")
+      expect(allRowsWithHeader).toHaveLength(3)
+
+      await userEvent.click(getErrorsButton())
+      const filteredRowsWithHeader = await screen.findAllByRole("row")
+      expect(filteredRowsWithHeader).toHaveLength(2)
+    })
+
+    test("empty cell displays blank with no error", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "" }, { amount: "100" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      const allRowsWithHeader = await screen.findAllByRole("row")
+      expect(allRowsWithHeader).toHaveLength(3)
+
+      await userEvent.click(getErrorsButton())
+      const filteredRowsWithHeader = await screen.findAllByRole("row")
+      expect(filteredRowsWithHeader).toHaveLength(1)
+    })
+
+    test("required validation applies independently to empty numeric cell", async () => {
+      const requiredNumericFields = [
+        {
+          label: "Amount",
+          key: "amount",
+          fieldType: { type: "numeric" as const, decimalPlaces: 2 },
+          validations: [{ rule: "required" as const, errorMessage: "Amount is required" }],
+        },
+      ] as const
+      const initialData = await addErrorsAndRunHooks([{ amount: "" }, { amount: "500" }], requiredNumericFields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields: requiredNumericFields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      await userEvent.click(getErrorsButton())
+      const filteredRowsWithHeader = await screen.findAllByRole("row")
+      expect(filteredRowsWithHeader).toHaveLength(2)
+    })
+
+    test("zero displays as '0.00' not blank", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "0" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("0.00")).toBeInTheDocument()
+    })
+
+    test("displays negative number correctly", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "-100" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("-100.00")).toBeInTheDocument()
+    })
+
+    test("strips non-dollar currency symbols", async () => {
+      const initialData = await addErrorsAndRunHooks([{ amount: "€500" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("500.00")).toBeInTheDocument()
+    })
+  })
+
   test("Filters rows with warnings", async () => {
     const WARNED_NAME = "warned"
     const FINE_NAME = "fine"

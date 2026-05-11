@@ -2,6 +2,7 @@ import type { Data, Fields, Info, RowHook, TableHook } from "../../../types"
 import type { Meta, Error, Errors } from "../types"
 import { v4 } from "uuid"
 import { ErrorSources } from "../../../types"
+import { parseNumeric, formatNumeric } from "../../../utils/parseNumeric"
 
 export const addErrorsAndRunHooks = async <T extends string>(
   data: (Data<T> & Partial<Meta>)[],
@@ -49,6 +50,27 @@ export const addErrorsAndRunHooks = async <T extends string>(
             level: "error",
             message: "Value is not a valid option",
           })
+        }
+      })
+    }
+  })
+
+  fields.forEach((field) => {
+    if (field.fieldType.type === "numeric") {
+      const decimalPlaces = field.fieldType.decimalPlaces ?? 2
+      const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
+      dataToValidate.forEach((entry, index) => {
+        const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
+        const value = entry[field.key as T]
+        if (value === null || value === undefined || value === "") return
+        const result = parseNumeric(value)
+        if (!result.valid) {
+          addError(ErrorSources.Row, realIndex, field.key as T, {
+            level: "error",
+            message: "Value must be a valid number",
+          })
+        } else {
+          data[realIndex] = { ...data[realIndex], [field.key]: formatNumeric(result.value, decimalPlaces) }
         }
       })
     }
