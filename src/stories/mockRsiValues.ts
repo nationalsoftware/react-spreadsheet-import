@@ -667,7 +667,7 @@ export const f1099nec = [
             "Box 4 - Federal income tax withheld",
         ],
         example: "$500.00",
-        fieldType: { type: "numeric", decimalPlaces: 2 },
+        fieldType: { type: "numeric", decimalPlaces: 2, min: 0, max: 2000 },
         columnStyle: { textAlign: "right", prefix: "$" },
         validations: [
             ...validations.USDecimalAmountNNType,
