@@ -107,6 +107,8 @@ export type Input = {
 export type Numeric = {
   type: "numeric"
   decimalPlaces?: number
+  min?: number
+  max?: number
 }
 
 export type ColumnStyle = {

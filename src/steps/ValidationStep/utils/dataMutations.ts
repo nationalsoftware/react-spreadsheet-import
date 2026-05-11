@@ -57,7 +57,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
 
   fields.forEach((field) => {
     if (field.fieldType.type === "numeric") {
-      const decimalPlaces = field.fieldType.decimalPlaces ?? 2
+      const { decimalPlaces = 2, min, max } = field.fieldType
       const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
@@ -71,6 +71,17 @@ export const addErrorsAndRunHooks = async <T extends string>(
           })
         } else {
           data[realIndex] = { ...data[realIndex], [field.key]: formatNumeric(result.value, decimalPlaces) }
+          if (min !== undefined && result.value < min) {
+            addError(ErrorSources.Row, realIndex, field.key as T, {
+              level: "error",
+              message: `Value must be at least ${min}`,
+            })
+          } else if (max !== undefined && result.value > max) {
+            addError(ErrorSources.Row, realIndex, field.key as T, {
+              level: "error",
+              message: `Value cannot exceed ${max}`,
+            })
+          }
         }
       })
     }
