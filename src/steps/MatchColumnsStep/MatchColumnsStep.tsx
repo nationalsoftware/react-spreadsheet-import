@@ -99,6 +99,7 @@ export const MatchColumnsStep = <T extends string>({
       setShowUnmatchedFieldsAlert(true)
     } else {
       setIsLoading(true)
+      await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
       await onContinue(normalizeTableData(columns, data, fields), data, columns)
       setIsLoading(false)
     }
@@ -107,6 +108,7 @@ export const MatchColumnsStep = <T extends string>({
   const handleAlertOnContinue = useCallback(async () => {
     setShowUnmatchedFieldsAlert(false)
     setIsLoading(true)
+    await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
     await onContinue(normalizeTableData(columns, data, fields), data, columns)
     setIsLoading(false)
   }, [onContinue, columns, data, fields])
