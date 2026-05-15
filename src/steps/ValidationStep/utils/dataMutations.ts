@@ -94,7 +94,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
         if (value !== null && value !== undefined && value !== "" && !validValues.has(value as string)) {
           addError(ErrorSources.Row, realIndex, field.key as T, {
             level: "error",
-            message: "Value is not a valid option",
+            message: `'${value}' is not a valid option`,
           })
         }
       })
