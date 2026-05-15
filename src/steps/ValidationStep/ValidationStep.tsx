@@ -68,8 +68,8 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
   )
 
   const columns = useMemo(() => generateColumns(
-    fields, allowDiscard, numberedRows),
-    [fields, allowDiscard, numberedRows]
+    fields, allowDiscard, numberedRows, initialData.length),
+    [fields, allowDiscard, numberedRows, initialData.length]
   )
 
   const errorCount = useMemo(
