@@ -91,29 +91,31 @@ export const addErrorsAndRunHooks = async <T extends string>(
     field.validations?.forEach((validation) => {
       switch (validation.rule) {
         case "unique": {
-          const values = data.map((entry) => entry[field.key as T])
+          const values = data.map((entry) => ({
+            key: validation.keys?.length
+              ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
+              : entry[field.key as T],
+            rownum: (entry as any).__rownum as number,
+          }))
 
-          const taken = new Set() // Set of items used at least once
-          const duplicates = new Set() // Set of items used multiple times
-
-          values.forEach((value) => {
-            if (validation.allowEmpty && !value) {
-              // If allowEmpty is set, we will not validate falsy fields such as undefined or empty string.
-              return
-            }
-
-            if (taken.has(value)) {
-              duplicates.add(value)
+          const keyToRownums = new Map<unknown, number[]>()
+          values.forEach(({ key, rownum }) => {
+            if (validation.allowEmpty && !key) return
+            const existing = keyToRownums.get(key)
+            if (existing) {
+              existing.push(rownum)
             } else {
-              taken.add(value)
+              keyToRownums.set(key, [rownum])
             }
           })
 
-          values.forEach((value, index) => {
-            if (duplicates.has(value)) {
+          values.forEach(({ key }, index) => {
+            if (validation.allowEmpty && !key) return
+            const rownums = keyToRownums.get(key)!
+            if (rownums.length > 1) {
               addError(ErrorSources.Unique, index, field.key as T, {
                 level: validation.level || "error",
-                message: validation.errorMessage || "Field must be unique",
+                message: `${validation.errorMessage || "Field must be unique"} (rows ${rownums.join(", ")})`,
               })
             } else {
               // If this row *previously* had a unique error but now its value is no longer a duplicate,
