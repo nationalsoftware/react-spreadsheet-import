@@ -19,7 +19,7 @@ export const generateColumns = (): Column<any>[] => [
       <Box display="flex" gap={1} alignItems="center">
         <Box flex="0 0 auto" width="16px" height="16px" display="flex" alignItems="center" justifyContent="center">
           {row.description ? (
-            <Tooltip placement="top-end" hasArrow label={row.description}>
+            <Tooltip placement="top-end" hasArrow label={row.description} whiteSpace="pre-line">
               <Box>
                 <CgInfo size="16px" />
               </Box>
