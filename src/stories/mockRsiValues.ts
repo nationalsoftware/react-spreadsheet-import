@@ -845,6 +845,8 @@ export const mock1099NECValues = mockComponentBehaviourForTypes({
   ...defaultRSIProps,
   fields: f1099nec,
   ignoredSheetNames,
+  numberedRows: true,
+  allowDiscard: false,
   isNavigationEnabled: true,
   onSubmit: (data) => {
     console.log(data.all.map((value) => value))
