@@ -38,6 +38,51 @@ export const addErrorsAndRunHooks = async <T extends string>(
     }
   }
 
+  // Unique validations run first (table-scoped) so they can expand changedRowIndexes
+  // before any row-level validations execute — prevents row errors being incorrectly
+  // cleared on rows that become non-duplicate as a side-effect of another row's edit.
+  fields.forEach((field) => {
+    field.validations?.forEach((validation) => {
+      if (validation.rule !== "unique") return
+      const values = data.map((entry) => ({
+        key: validation.keys?.length
+          ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
+          : entry[field.key as T],
+        rownum: (entry as any).__rownum as number,
+      }))
+
+      const keyToRownums = new Map<unknown, number[]>()
+      values.forEach(({ key, rownum }) => {
+        if (validation.allowEmpty && !key) return
+        const existing = keyToRownums.get(key)
+        if (existing) {
+          existing.push(rownum)
+        } else {
+          keyToRownums.set(key, [rownum])
+        }
+      })
+
+      values.forEach(({ key }, index) => {
+        if (validation.allowEmpty && !key) return
+        const rownums = keyToRownums.get(key)!
+        if (rownums.length > 1) {
+          addError(ErrorSources.Unique, index, field.key as T, {
+            level: validation.level || "error",
+            message: `${validation.errorMessage || "Field must be unique"} (rows ${rownums.join(", ")})`,
+          })
+        } else {
+          // If this row *previously* had a unique error but now its value is no longer a duplicate,
+          // mark it as changed so the unique error can be cleared on both/all affected rows.
+          const rowErrors = (data[index].__errors ?? {}) as Error;
+          const hasUniqueError = Object.values(rowErrors).some((error) => error.source === ErrorSources.Unique);
+
+          if (hasUniqueError) changedRowIndexes?.push(index);
+        }
+      })
+    })
+  })
+
+  // Row-level validations run after unique so changedRowIndexes is fully expanded.
   fields.forEach((field) => {
     if (field.fieldType.type === "select") {
       const validValues = new Set(field.fieldType.options.map((opt) => opt.value))
@@ -90,44 +135,6 @@ export const addErrorsAndRunHooks = async <T extends string>(
   fields.forEach((field) => {
     field.validations?.forEach((validation) => {
       switch (validation.rule) {
-        case "unique": {
-          const values = data.map((entry) => ({
-            key: validation.keys?.length
-              ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
-              : entry[field.key as T],
-            rownum: (entry as any).__rownum as number,
-          }))
-
-          const keyToRownums = new Map<unknown, number[]>()
-          values.forEach(({ key, rownum }) => {
-            if (validation.allowEmpty && !key) return
-            const existing = keyToRownums.get(key)
-            if (existing) {
-              existing.push(rownum)
-            } else {
-              keyToRownums.set(key, [rownum])
-            }
-          })
-
-          values.forEach(({ key }, index) => {
-            if (validation.allowEmpty && !key) return
-            const rownums = keyToRownums.get(key)!
-            if (rownums.length > 1) {
-              addError(ErrorSources.Unique, index, field.key as T, {
-                level: validation.level || "error",
-                message: `${validation.errorMessage || "Field must be unique"} (rows ${rownums.join(", ")})`,
-              })
-            } else {
-              // If this row *previously* had a unique error but now its value is no longer a duplicate,
-              // mark it as changed so the unique error can be cleared on both/all affected rows.
-              const rowErrors = (data[index].__errors ?? {}) as Error;
-              const hasUniqueError = Object.values(rowErrors).some((error) => error.source === ErrorSources.Unique);
-
-              if (hasUniqueError) changedRowIndexes?.push(index);
-            }
-          })
-          break
-        }
         case "required": {
           const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
           dataToValidate.forEach((entry, index) => {

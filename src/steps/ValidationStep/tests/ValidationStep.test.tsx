@@ -374,6 +374,45 @@ describe("Validation step tests", () => {
     expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
     expect(result[1].__errors).toBeFalsy()
   })
+  test("Required errors on bystander rows survive when unique constraint resolves", async () => {
+    const fields = [
+      {
+        label: "Phone",
+        key: "phone",
+        fieldType: { type: "input" },
+        validations: [{ rule: "required", errorMessage: "Phone is required" }],
+      },
+      {
+        label: "Name",
+        key: "name",
+        fieldType: { type: "input" },
+        validations: [{ rule: "unique", errorMessage: "Name must be unique" }],
+      },
+    ] as const
+
+    // Full initial validation: rows 1 and 2 are duplicate; all rows have empty phone.
+    const initialData = await addErrorsAndRunHooks(
+      [
+        { __rownum: 2, phone: "", name: "UNIQUE" } as any,
+        { __rownum: 3, phone: "", name: "DUP" } as any,
+        { __rownum: 4, phone: "", name: "DUP" } as any,
+      ],
+      fields,
+    )
+
+    // Simulate fixing row at index 1 (give it a unique name, phone still empty).
+    // Row at index 2 becomes non-duplicate and must have its unique error cleared,
+    // but its required error must be preserved.
+    const updatedData = initialData.map((row, i) =>
+      i === 1 ? { ...row, name: "NOW_UNIQUE" } : row
+    )
+    const result = await addErrorsAndRunHooks(updatedData, fields, undefined, undefined, [1])
+
+    expect(result[1].__errors!["phone"].message).toBe("Phone is required")
+    expect(result[1].__errors!["name"]).toBeUndefined()
+    expect(result[2].__errors!["phone"].message).toBe("Phone is required")
+    expect(result[2].__errors!["name"]).toBeUndefined()
+  })
   test("Filters rows with regex errors", async () => {
     const NOT_A_NUMBER = "not a number"
     const fields = [
