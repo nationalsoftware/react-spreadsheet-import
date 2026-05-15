@@ -417,6 +417,38 @@ export const f1099nec = [
         validations: [
             ...validations.TINType,
             ...validations.required,
+            {
+                rule: "unique",
+                keys: ["RecipientAccountNum", "RecipientDetail.TIN"],
+                errorMessage: "The composite Recipient TIN + Account Number must be unique",
+                level: "warning",
+            },
+        ],
+    },
+    {
+        key: "RecipientAccountNum",
+        label: "Recipient Account Number",
+        alternateMatches: [
+            "Recipient Account Number",
+            "Form Account Number",
+        ],
+        example: "987654321",
+        ...fieldTypes.input,
+        description: "The account number is required if you have multiple accounts for a recipient for whom you are filing more than one Form 1099-NEC.",
+        validations: [
+            ...validations.MaxLength(30),
+            {
+                rule: "regex",
+                value: "^$|^[\\x20-\\x7E\\u00A3\\u00A7\\u00C1\\u00C9\\u00CD\\u00D1\\u00D3\\u00D7\\u00DA\\u00DC\\u00E1\\u00E9\\u00ED\\u00F1\\u00F3\\u00FA\\u00FC]+$",
+                errorMessage: "Invalid characters",
+                level: "error",
+            },
+            {
+                rule: "unique",
+                keys: ["RecipientAccountNum", "RecipientDetail.TIN"],
+                errorMessage: "Duplicate combination of Recipient TIN and Account Number",
+                level: "warning",
+            },
         ],
     },
     /* RecipientDetail.BusinessName */
@@ -586,26 +618,6 @@ export const f1099nec = [
         ...fieldTypes.input,
         validations: [
             ...validations.MaxLength(4),
-        ],
-    },
-    {
-        key: "RecipientAccountNum",
-        label: "Recipient Account Number",
-        alternateMatches: [
-            "Recipient Account Number",
-            "Form Account Number",
-        ],
-        example: "987654321",
-        ...fieldTypes.input,
-        description: "The account number is required if you have multiple accounts for a recipient for whom you are filing more than one Form 1099-NEC.",
-        validations: [
-            ...validations.MaxLength(30),
-            {
-                rule: "regex",
-                value: "^$|^[\\x20-\\x7E\\u00A3\\u00A7\\u00C1\\u00C9\\u00CD\\u00D1\\u00D3\\u00D7\\u00DA\\u00DC\\u00E1\\u00E9\\u00ED\\u00F1\\u00F3\\u00FA\\u00FC]+$",
-                errorMessage: "Invalid characters",
-                level: "error",
-            },
         ],
     },
     {

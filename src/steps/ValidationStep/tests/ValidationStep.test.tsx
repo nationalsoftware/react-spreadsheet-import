@@ -317,6 +317,63 @@ describe("Validation step tests", () => {
     const filteredRowsWithHeader = await screen.findAllByRole("row")
     expect(filteredRowsWithHeader).toHaveLength(3)
   })
+  test("Composite unique: only flags rows where composite key is duplicated", async () => {
+    const fields = [
+      {
+        label: "First Name",
+        key: "firstName",
+        fieldType: { type: "input" },
+        validations: [
+          {
+            rule: "unique",
+            errorMessage: "Full name must be unique",
+            keys: ["firstName", "lastName"],
+          },
+        ],
+      },
+      {
+        label: "Last Name",
+        key: "lastName",
+        fieldType: { type: "input" },
+      },
+    ] as const
+    const result = await addErrorsAndRunHooks(
+      [
+        { __rownum: 2, firstName: "John", lastName: "Doe" },   // duplicate composite
+        { __rownum: 3, firstName: "John", lastName: "Doe" },   // duplicate composite
+        { __rownum: 4, firstName: "John", lastName: "Smith" }, // different composite — fine
+        { __rownum: 5, firstName: "Jane", lastName: "Doe" },   // different composite — fine
+      ] as any,
+      fields,
+    )
+    expect(result[0].__errors).toBeTruthy()
+    expect(result[1].__errors).toBeTruthy()
+    expect(result[2].__errors).toBeFalsy()
+    expect(result[3].__errors).toBeFalsy()
+    expect(result[0].__errors!["firstName"].message).toBe("Full name must be unique (rows 2, 3)")
+    expect(result[1].__errors!["firstName"].message).toBe("Full name must be unique (rows 2, 3)")
+  })
+  test("Unique error message includes duplicate row numbers", async () => {
+    const fields = [
+      {
+        label: "Name",
+        key: "name",
+        fieldType: { type: "input" },
+        validations: [{ rule: "unique", errorMessage: "Name must be unique" }],
+      },
+    ] as const
+    const result = await addErrorsAndRunHooks(
+      [
+        { __rownum: 2, name: "Alice" },
+        { __rownum: 3, name: "Bob" },
+        { __rownum: 4, name: "Alice" },
+      ] as any,
+      fields,
+    )
+    expect(result[0].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+    expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+    expect(result[1].__errors).toBeFalsy()
+  })
   test("Filters rows with regex errors", async () => {
     const NOT_A_NUMBER = "not a number"
     const fields = [

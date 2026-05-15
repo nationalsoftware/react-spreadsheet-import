@@ -130,6 +130,8 @@ export type UniqueValidation = {
   allowEmpty?: boolean
   errorMessage?: string
   level?: ErrorLevel
+  // If provided, uniqueness is checked on the composite of these field keys rather than the declaring field alone
+  keys?: string[]
 }
 
 export type RegexValidation = {
