@@ -388,6 +388,11 @@ export const f1099nec = [
         ...fieldTypes.input,
         validations: [
             ...validations.PhoneType,
+            {
+                rule: "required",
+                errorMessage: `Submitting a Payer without a phone number result in an 'Accepted with Errors' status`,
+                level: "error",
+            },
         ],
     },
     /* RecipientDetail */
