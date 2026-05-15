@@ -18,6 +18,7 @@ export const generateColumns = <T extends string>(
   fields: Fields<T>,
   allowDiscard: boolean = true,
   numeredRows: boolean = false,
+  rowCount: number = 0,
 ): Column<Data<T> & Meta>[] => {
   const columns: Column<Data<T> & Meta>[] = [];
 
@@ -58,13 +59,16 @@ export const generateColumns = <T extends string>(
 
   // row number
   if (numeredRows) {
+    const maxRowNum = rowCount + 1 // __rownum starts at 2 (row 1 is the header)
+    const numDigits = maxRowNum > 0 ? String(maxRowNum).length : 1
+    const rowNumWidth = Math.max(40, numDigits * 10 + 14)
     columns.push(
       {
         key: "__rownum",
         name: "",
-        width: 55,
-        minWidth: 40,
-        maxWidth: 80,
+        width: rowNumWidth,
+        minWidth: rowNumWidth,
+        maxWidth: rowNumWidth,
         resizable: false,
         sortable: false,
         frozen: true,
