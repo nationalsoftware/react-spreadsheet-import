@@ -86,7 +86,7 @@ export const generateColumns = <T extends string>(
               {column.label}
             </Box>
             {column.description && (
-              <Tooltip placement="top" hasArrow label={column.description}>
+              <Tooltip placement="top" hasArrow label={column.description} whiteSpace="pre-line">
                 <Box /* flex={"0 0 auto"} */>
                   <CgInfo size="16px" />
                 </Box>
@@ -212,7 +212,7 @@ export const generateColumns = <T extends string>(
 
           if (row.__errors?.[column.key]) {
             return (
-              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message} closeDelay={20}>
+              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message} closeDelay={20} whiteSpace="pre-line">
                 {component}
               </Tooltip>
             )
