@@ -84,9 +84,10 @@ export const addErrorsAndRunHooks = async <T extends string>(
 
   // Row-level validations run after unique so changedRowIndexes is fully expanded.
   fields.forEach((field) => {
+    const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
+
     if (field.fieldType.type === "select") {
       const validValues = new Set(field.fieldType.options.map((opt) => opt.value))
-      const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
         const value = entry[field.key as T]
@@ -98,12 +99,9 @@ export const addErrorsAndRunHooks = async <T extends string>(
         }
       })
     }
-  })
 
-  fields.forEach((field) => {
     if (field.fieldType.type === "numeric") {
       const { decimalPlaces = 2, min, max } = field.fieldType
-      const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
         const value = entry[field.key as T]
@@ -130,13 +128,10 @@ export const addErrorsAndRunHooks = async <T extends string>(
         }
       })
     }
-  })
 
-  fields.forEach((field) => {
     field.validations?.forEach((validation) => {
       switch (validation.rule) {
         case "required": {
-          const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
           dataToValidate.forEach((entry, index) => {
             const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
             if (entry[field.key as T] === null || entry[field.key as T] === undefined || entry[field.key as T] === "") {
@@ -146,11 +141,9 @@ export const addErrorsAndRunHooks = async <T extends string>(
               })
             }
           })
-
           break
         }
         case "regex": {
-          const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
           const regex = new RegExp(validation.value, validation.flags)
           dataToValidate.forEach((entry, index) => {
             const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
@@ -163,7 +156,6 @@ export const addErrorsAndRunHooks = async <T extends string>(
               })
             }
           })
-
           break
         }
       }
