@@ -74,7 +74,7 @@ const fields = [
     alternateMatches: ["first name", "first"],
     // Used when editing and validating information.
     fieldType: {
-      // There are 3 types - "input" / "checkbox" / "select".
+      // There are 4 types - "input" / "numeric" / "checkbox" / "select".
       type: "input",
     },
     // Used in the first step to provide an example of what data is expected in this field. Optional.
