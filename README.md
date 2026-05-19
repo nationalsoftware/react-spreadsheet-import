@@ -75,6 +75,7 @@ const fields = [
     // Used when editing and validating information.
     fieldType: {
       // There are 4 types - "input" / "numeric" / "checkbox" / "select".
+      // "select" supports multiSelect: true.
       type: "input",
     },
     // Used in the first step to provide an example of what data is expected in this field. Optional.

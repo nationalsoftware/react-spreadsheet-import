@@ -87,11 +87,23 @@ export const addErrorsAndRunHooks = async <T extends string>(
     const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
 
     if (field.fieldType.type === "select") {
-      const validValues = new Set(field.fieldType.options.map((opt) => opt.value))
+      const selectFieldType = field.fieldType
+      const validValues = new Set(selectFieldType.options.map((opt) => opt.value))
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
         const value = entry[field.key as T]
-        if (value !== null && value !== undefined && value !== "" && !validValues.has(value as string)) {
+        if (value === null || value === undefined || value === "") return
+
+        if (selectFieldType.multiSelect) {
+          const parts = (value as string).split(",").filter(Boolean)
+          const invalid = parts.filter((p) => !validValues.has(p))
+          if (invalid.length > 0) {
+            addError(ErrorSources.Row, realIndex, field.key as T, {
+              level: "error",
+              message: `${invalid.map((v) => `'${v}'`).join(", ")} ${invalid.length === 1 ? "is not a valid option" : "are not valid options"}`,
+            })
+          }
+        } else if (!validValues.has(value as string)) {
           addError(ErrorSources.Row, realIndex, field.key as T, {
             level: "error",
             message: `'${value}' is not a valid option`,
