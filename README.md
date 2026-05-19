@@ -88,6 +88,14 @@ const fields = [
         // There can be "info" / "warning" / "error" levels. Optional. Default "error".
         level: "error",
       },
+      {
+        rule: "unique",
+        errorMessage: "Account number must be unique",
+        // Error message is appended with conflicting row numbers, e.g. "(rows 2, 5)".
+        level: "warning",
+        // Optional: check uniqueness across a composite of field keys rather than this field alone.
+        keys: ["accountNumber", "recipientTIN"],
+      },
     ],
   },
 ] as const
