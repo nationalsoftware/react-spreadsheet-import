@@ -5,6 +5,7 @@ import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
 import { CgInfo } from "react-icons/cg"
 import { TableSelect } from "../../../components/Selects/TableSelect"
+import { TableMultiSelect } from "../../../components/Selects/TableMultiSelect"
 
 const SELECT_COLUMN_KEY = "select-row"
 
@@ -12,7 +13,6 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
   input?.focus()
   input?.select()
 }
-
 
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
@@ -107,16 +107,33 @@ export const generateColumns = <T extends string>(
           switch (column.fieldType.type) {
             case "select": {
               const rawValue = row[column.key as T] as string
-              const matchedOption = column.fieldType.options.find((option) => option.value === rawValue)
-              component = (
-                <TableSelect
-                  value={matchedOption ?? (rawValue ? { label: rawValue, value: rawValue } : undefined)}
-                  onChange={(value) => {
-                    onRowChange({ ...row, [column.key]: value?.value }, true)
-                  }}
-                  options={column.fieldType.options}
-                />
-              )
+              const fieldType = column.fieldType
+              if (fieldType.multiSelect) {
+                const selectedValues = rawValue ? rawValue.split(",") : []
+                const selectedOptions = selectedValues.map(
+                  (v) => fieldType.options.find((o) => o.value === v) ?? { label: v, value: v },
+                )
+                component = (
+                  <TableMultiSelect
+                    value={selectedOptions}
+                    onChange={(values) => {
+                      onRowChange({ ...row, [column.key]: values.map((v) => v.value).join(",") }, false)
+                    }}
+                    options={fieldType.options}
+                  />
+                )
+              } else {
+                const matchedOption = fieldType.options.find((option) => option.value === rawValue)
+                component = (
+                  <TableSelect
+                    value={matchedOption ?? (rawValue ? { label: rawValue, value: rawValue } : undefined)}
+                    onChange={(value) => {
+                      onRowChange({ ...row, [column.key]: value?.value }, true)
+                    }}
+                    options={fieldType.options}
+                  />
+                )
+              }
               break
             }
             default:
@@ -188,15 +205,30 @@ export const generateColumns = <T extends string>(
                 </Box>
               )
               break
-            case "select":
-              component = (
-                <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                  {column.fieldType.options.find((option) => option.value === row[column.key as T])?.label ||
-                    (row[column.key as T] as string) ||
-                    null}
-                </Box>
-              )
+            case "select": {
+              const fieldType = column.fieldType
+              const rawValue = row[column.key as T] as string
+              if (fieldType.multiSelect) {
+                const labels = rawValue
+                  ? rawValue
+                      .split(",")
+                      .map((v) => fieldType.options.find((o) => o.value === v)?.label ?? v)
+                      .join(", ")
+                  : null
+                component = (
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
+                    {labels}
+                  </Box>
+                )
+              } else {
+                component = (
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
+                    {fieldType.options.find((option) => option.value === rawValue)?.label || rawValue || null}
+                  </Box>
+                )
+              }
               break
+            }
             case "numeric":
             default: {
               const cellValue = row[column.key as T]

@@ -91,6 +91,8 @@ export type Select = {
   type: "select"
   // Options displayed in Select component
   options: SelectOption[]
+  // Allow selecting multiple options. Values stored as comma-separated string.
+  multiSelect?: boolean
 }
 
 export type SelectOption = {

@@ -71,6 +71,22 @@ const fields = [
     ],
   },
   {
+    label: "Skills",
+    key: "skills",
+    alternateMatches: ["skill", "competencies"],
+    fieldType: {
+      type: "select",
+      multiSelect: true,
+      options: [
+        { label: "JavaScript", value: "js" },
+        { label: "TypeScript", value: "ts" },
+        { label: "Python", value: "py" },
+        { label: "React", value: "react" },
+      ],
+    },
+    example: "js,ts",
+  },
+  {
     label: "Is manager",
     key: "is_manager",
     alternateMatches: ["manages"],

@@ -1226,4 +1226,83 @@ describe("Validation step tests", () => {
 
     await expect(await screen.findAllByRole("row")).toHaveLength(2)
   })
+
+  describe("Multiselect", () => {
+    const OPTIONS = [
+      { value: "one", label: "ONE" },
+      { value: "two", label: "TWO" },
+      { value: "three", label: "THREE" },
+    ] as const
+
+    const fields = [
+      {
+        label: "Tags",
+        key: "tags",
+        fieldType: {
+          type: "select" as const,
+          multiSelect: true,
+          options: OPTIONS,
+        },
+      },
+    ] as const
+
+    test("no error for a single valid value", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "one" }], fields)
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("no error for multiple valid comma-separated values", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "one,two" }], fields)
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("no error for an empty value", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "" }], fields)
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("error for a single invalid value", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "invalid" }], fields)
+      expect(result[0].__errors?.["tags"].message).toBe("'invalid' is not a valid option")
+    })
+
+    test("error lists all invalid values when multiple are invalid", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "bad,worse" }], fields)
+      expect(result[0].__errors?.["tags"].message).toContain("'bad'")
+      expect(result[0].__errors?.["tags"].message).toContain("'worse'")
+    })
+
+    test("error only references the invalid part of a mixed valid/invalid value", async () => {
+      const result = await addErrorsAndRunHooks([{ tags: "one,bad" }], fields)
+      expect(result[0].__errors?.["tags"].message).toContain("'bad'")
+      expect(result[0].__errors?.["tags"].message).not.toContain("'one'")
+    })
+
+    test("displays comma-separated labels in the validation table", async () => {
+      const initialData = await addErrorsAndRunHooks([{ tags: "one,two" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      const cell = await screen.findByRole("gridcell", { name: "ONE, TWO" })
+      expect(cell).toBeInTheDocument()
+    })
+
+    test("shows error row in the validation table for an invalid multiselect value", async () => {
+      const initialData = await addErrorsAndRunHooks([{ tags: "one,invalid" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      await userEvent.click(getErrorsButton())
+      const rows = await screen.findAllByRole("row")
+      expect(rows).toHaveLength(2) // header + 1 error row
+    })
+  })
 })
