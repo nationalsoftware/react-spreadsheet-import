@@ -71,18 +71,46 @@ Storybook is the primary dev environment for visual work. Stories live alongside
 
 ## Testing
 
-Only Jest unit tests are used regularly:
+### `npm run test:unit` — Jest
+
+React Testing Library + jsdom. ~38 tests across 6 step test files plus one root-level test.
 
 ```powershell
-npm run test:unit     # Jest with jsdom
+npm run test:unit
 ```
 
-- Tests live colocated in each step folder: `steps/<StepName>/tests/<StepName>.test.tsx`
-- Root-level tests: `src/tests/ReactSpreadsheetImport.test.tsx`
-- DOM mocks (ResizeObserver, matchMedia, scrollIntoView) are in `src/tests/setup.ts`
-- Module alias: `~/` maps to `src/`
+**Test file locations:**
 
-Playwright E2E tests (`npm run test:e2e`) exist but are not actively used.
+| File | What it covers |
+|---|---|
+| `src/tests/ReactSpreadsheetImport.test.tsx` | Close modal confirmation flow |
+| `src/steps/UploadStep/tests/UploadStep.test.tsx` | File drop, `uploadStepHook` call and mutation, hook error handling |
+| `src/steps/SelectSheetStep/tests/SelectSheetStep.test.tsx` | Multi-sheet vs single-sheet detection, sheet selection, hook error |
+| `src/steps/SelectHeaderStep/tests/SelectHeaderStep.test.tsx` | Header row selection, `selectHeaderStepHook`, date formatting (`dateFormat` + `parseRaw`) |
+| `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning |
+| `src/steps/ValidationStep/tests/ValidationStep.test.tsx` | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field |
+
+**Setup file:** `src/tests/setup.ts` — mocks ResizeObserver, `matchMedia`, `scrollIntoView`, and `clientWidth`/`clientHeight` (returns 1920×1080 for React Data Grid elements).
+
+**Module alias:** `~/` → `src/`
+
+**Timeout:** 30 seconds per test (set in setup.ts for async file-parsing tests).
+
+---
+
+### `npm run test:e2e` — Playwright visual regression
+
+> **Do not run this.** It requires Storybook to be running (`npm start`) and must be run manually by the user.
+
+Captures screenshots of each step's Storybook story and diffs them against committed baseline images in `e2e/visual.spec.ts-snapshots/`. Runs against Chromium, Firefox, and WebKit. Fails if any screenshot differs from its baseline by more than 5 pixels.
+
+**Test file:** `e2e/visual.spec.ts` — one test per step (Upload, Select Sheet, Select Header, Match Columns, Validation).
+
+**Baselines:** `e2e/visual.spec.ts-snapshots/` — committed PNG files named `<story>-<browser>-win32.png`. To regenerate after an intentional visual change:
+
+```powershell
+npx playwright test --update-snapshots
+```
 
 ## Field Type System
 
