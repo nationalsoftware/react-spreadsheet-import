@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -15,7 +16,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: 0,
   outputDir: './e2e/test-results',
-  reporter: [['html', { outputFolder: './e2e/playwright-report' }]],
+  reporter: [['html', { outputFolder: './e2e/playwright-report', open: 'always' }]],
   use: {
     trace: 'on-first-retry',
     screenshot: 'on',
