@@ -33,6 +33,6 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
           default:
             return acc
         }
-      }, {} as Data<T>)
+      }, {} as Data<T>),
     }
   })

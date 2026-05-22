@@ -18,6 +18,7 @@
     "ts": "tsc",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write .",
     "prebuild": "npm run clean",
     "build": "rollup -c rollup.config.ts",
     "build-storybook": "storybook build -o docs-build",

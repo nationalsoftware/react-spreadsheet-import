@@ -339,10 +339,10 @@ describe("Validation step tests", () => {
     ] as const
     const result = await addErrorsAndRunHooks(
       [
-        { __rownum: 2, firstName: "John", lastName: "Doe" },   // duplicate composite
-        { __rownum: 3, firstName: "John", lastName: "Doe" },   // duplicate composite
+        { __rownum: 2, firstName: "John", lastName: "Doe" }, // duplicate composite
+        { __rownum: 3, firstName: "John", lastName: "Doe" }, // duplicate composite
         { __rownum: 4, firstName: "John", lastName: "Smith" }, // different composite — fine
-        { __rownum: 5, firstName: "Jane", lastName: "Doe" },   // different composite — fine
+        { __rownum: 5, firstName: "Jane", lastName: "Doe" }, // different composite — fine
       ] as any,
       fields,
     )
@@ -403,9 +403,7 @@ describe("Validation step tests", () => {
     // Simulate fixing row at index 1 (give it a unique name, phone still empty).
     // Row at index 2 becomes non-duplicate and must have its unique error cleared,
     // but its required error must be preserved.
-    const updatedData = initialData.map((row, i) =>
-      i === 1 ? { ...row, name: "NOW_UNIQUE" } : row
-    )
+    const updatedData = initialData.map((row, i) => (i === 1 ? { ...row, name: "NOW_UNIQUE" } : row))
     const result = await addErrorsAndRunHooks(updatedData, fields, undefined, undefined, [1])
 
     expect(result[1].__errors!["phone"].message).toBe("Phone is required")

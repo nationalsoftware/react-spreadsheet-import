@@ -8,9 +8,7 @@ test("Full import flow", async ({ page }) => {
   const csvPath = "src/stories/static/exampleFile.csv"
 
   // Open the Basic story and launch the import flow
-  await page.goto(
-    "http://localhost:6006/iframe.html?viewMode=story&id=react-spreadsheet-import--basic",
-  )
+  await page.goto("http://localhost:6006/iframe.html?viewMode=story&id=react-spreadsheet-import--basic")
   await page.getByRole("button", { name: "Open Flow" }).click()
   await page.locator('[role="dialog"]').waitFor({ state: "visible" })
 

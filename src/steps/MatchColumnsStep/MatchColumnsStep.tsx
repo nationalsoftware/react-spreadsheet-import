@@ -27,10 +27,7 @@ type EmptyColumn = { type: ColumnType.empty; index: number; header: string }
 type MatchedColumn<T> = { type: ColumnType.matched; index: number; header: string; value: T }
 type MatchedSwitchColumn<T> = { type: ColumnType.matchedCheckbox; index: number; header: string; value: T }
 
-export type Column<T extends string> =
-  | EmptyColumn
-  | MatchedColumn<T>
-  | MatchedSwitchColumn<T>
+export type Column<T extends string> = EmptyColumn | MatchedColumn<T> | MatchedSwitchColumn<T>
 
 export type Columns<T extends string> = Column<T>[]
 

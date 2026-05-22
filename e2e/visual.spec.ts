@@ -4,8 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" })
 })
 
-const storyUrl = (id: string) =>
-  `http://localhost:6006/iframe.html?viewMode=story&id=${id}`
+const storyUrl = (id: string) => `http://localhost:6006/iframe.html?viewMode=story&id=${id}`
 
 test("Upload Step", async ({ page }) => {
   await page.goto(storyUrl("upload-step--basic"))

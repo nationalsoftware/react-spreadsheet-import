@@ -15,13 +15,7 @@ type FieldRowProps<T extends string> = {
   onMap: (fieldKey: T, csvColumnIndex: number | null) => void
 }
 
-export const FieldRow = <T extends string>({
-  field,
-  columns,
-  headerValues,
-  firstDataRow,
-  onMap,
-}: FieldRowProps<T>) => {
+export const FieldRow = <T extends string>({ field, columns, headerValues, firstDataRow, onMap }: FieldRowProps<T>) => {
   const { translations } = useRsi<T>()
   const styles = useStyleConfig("MatchColumnsStep") as Styles
 
@@ -40,9 +34,7 @@ export const FieldRow = <T extends string>({
     label: header ?? `Column ${index + 1}`,
   }))
 
-  const selectedOption = matchedColumn
-    ? csvOptions.find((opt) => opt.value === String(matchedColumn.index))
-    : undefined
+  const selectedOption = matchedColumn ? csvOptions.find((opt) => opt.value === String(matchedColumn.index)) : undefined
 
   const sampleValue = matchedColumn !== undefined ? firstDataRow[matchedColumn.index] : undefined
 
@@ -52,7 +44,11 @@ export const FieldRow = <T extends string>({
         <MatchIcon isChecked={isMatched} />
         <Text sx={styles.userTable.header} noOfLines={1} flex={1}>
           {field.label}
-          {isRequired && <Text as="span" color="orange.500">*</Text>}
+          {isRequired && (
+            <Text as="span" color="orange.500">
+              *
+            </Text>
+          )}
         </Text>
       </Flex>
       <Box w="300px">

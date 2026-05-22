@@ -33,13 +33,7 @@ export const Basic = (args: RsiProps<string>) => {
       <Link href="./exampleFile.csv" border="2px solid #718096" p="8px" borderRadius="8px" download="exampleCSV">
         Download example file
       </Link>
-      <ReactSpreadsheetImport
-        {...mockRsiValues}
-        {...args}
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={setData}
-      />
+      <ReactSpreadsheetImport {...mockRsiValues} {...args} isOpen={isOpen} onClose={onClose} onSubmit={setData} />
       {!!data && (
         <Box pt={64} display="flex" gap="8px" flexDirection="column">
           <b>Returned data (showing first 100 rows):</b>
@@ -81,13 +75,7 @@ export const F1099NEC = (args: RsiProps<string>) => {
         </Button>
         (make sure you have a file to upload)
       </Box>
-      <ReactSpreadsheetImport
-        {...mock1099NECValues}
-        {...args}
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={setData}
-      />
+      <ReactSpreadsheetImport {...mock1099NECValues} {...args} isOpen={isOpen} onClose={onClose} onSubmit={setData} />
       {!!data && (
         <Box pt={64} display="flex" gap="8px" flexDirection="column">
           <b>Returned data (showing first 100 rows):</b>

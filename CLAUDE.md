@@ -45,13 +45,13 @@ Hooks run at each transition; `rowHook` and `tableHook` run repeatedly in the va
 
 ## Key Files
 
-| File | Purpose |
-|---|---|
-| `src/types.ts` | All types — start here when adding new props or field types |
-| `src/theme.ts` | Styling for all steps; extend here for visual changes |
-| `src/translationsRSIProps.ts` | Every user-facing string; add keys here for new UI text |
-| `src/steps/ValidationStep/utils/dataMutations.ts` | Validation logic applied to rows |
-| `src/steps/MatchColumnsStep/utils/findMatch.ts` | Fuzzy header matching logic |
+| File                                              | Purpose                                                     |
+| ------------------------------------------------- | ----------------------------------------------------------- |
+| `src/types.ts`                                    | All types — start here when adding new props or field types |
+| `src/theme.ts`                                    | Styling for all steps; extend here for visual changes       |
+| `src/translationsRSIProps.ts`                     | Every user-facing string; add keys here for new UI text     |
+| `src/steps/ValidationStep/utils/dataMutations.ts` | Validation logic applied to rows                            |
+| `src/steps/MatchColumnsStep/utils/findMatch.ts`   | Fuzzy header matching logic                                 |
 
 ## Build
 
@@ -81,14 +81,14 @@ npm run test:unit
 
 **Test file locations:**
 
-| File | What it covers |
-|---|---|
-| `src/tests/ReactSpreadsheetImport.test.tsx` | Close modal confirmation flow |
-| `src/steps/UploadStep/tests/UploadStep.test.tsx` | File drop, `uploadStepHook` call and mutation, hook error handling |
-| `src/steps/SelectSheetStep/tests/SelectSheetStep.test.tsx` | Multi-sheet vs single-sheet detection, sheet selection, hook error |
-| `src/steps/SelectHeaderStep/tests/SelectHeaderStep.test.tsx` | Header row selection, `selectHeaderStepHook`, date formatting (`dateFormat` + `parseRaw`) |
-| `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning |
-| `src/steps/ValidationStep/tests/ValidationStep.test.tsx` | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field |
+| File                                                         | What it covers                                                                                                                                                 |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/tests/ReactSpreadsheetImport.test.tsx`                  | Close modal confirmation flow                                                                                                                                  |
+| `src/steps/UploadStep/tests/UploadStep.test.tsx`             | File drop, `uploadStepHook` call and mutation, hook error handling                                                                                             |
+| `src/steps/SelectSheetStep/tests/SelectSheetStep.test.tsx`   | Multi-sheet vs single-sheet detection, sheet selection, hook error                                                                                             |
+| `src/steps/SelectHeaderStep/tests/SelectHeaderStep.test.tsx` | Header row selection, `selectHeaderStepHook`, date formatting (`dateFormat` + `parseRaw`)                                                                      |
+| `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning               |
+| `src/steps/ValidationStep/tests/ValidationStep.test.tsx`     | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field |
 
 **Setup file:** `src/tests/setup.ts` — mocks ResizeObserver, `matchMedia`, `scrollIntoView`, and `clientWidth`/`clientHeight` (returns 1920×1080 for React Data Grid elements).
 

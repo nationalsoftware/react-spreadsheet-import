@@ -21,11 +21,7 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
-export const downloadAsCsv = (
-  data: Record<string, any>[],
-  fields?: Fields,
-  filename = "spreadsheet_data.csv",
-) => {
+export const downloadAsCsv = (data: Record<string, any>[], fields?: Fields, filename = "spreadsheet_data.csv") => {
   if (!data || data.length === 0) return
 
   const { keys, labelByKey } = getKeysAndLabels(data, fields)
