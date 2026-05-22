@@ -109,7 +109,8 @@
     "tabWidth": 2,
     "trailingComma": "all",
     "semi": false,
-    "printWidth": 120
+    "printWidth": 120,
+    "endOfLine": "auto"
   },
   "readme": "ERROR: No README data found!"
 }
