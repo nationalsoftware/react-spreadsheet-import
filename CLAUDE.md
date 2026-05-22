@@ -18,7 +18,7 @@ Avoid using `any` wherever possible. Prefer specific types, `unknown` with narro
 - **ExcelJS / SheetJS** for file parsing
 - **Vite** for building (dual ESM + CommonJS output)
 - **Vitest + jsdom** for unit tests
-- **Storybook 7** for component dev and visual testing
+- **Storybook 8** for component dev and visual testing
 
 ## Project Structure
 
