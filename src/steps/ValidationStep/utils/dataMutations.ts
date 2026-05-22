@@ -1,6 +1,5 @@
 import type { Data, Fields, Info, RowHook, TableHook } from "../../../types"
 import type { Meta, Error, Errors } from "../types"
-import { v4 } from "uuid"
 import { ErrorSources } from "../../../types"
 import { parseNumeric, formatNumeric } from "../../../utils/parseNumeric"
 
@@ -177,7 +176,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
   return data.map((value, index) => {
     // This is required only for table. Mutates to prevent needless rerenders
     if (!("__index" in value)) {
-      value.__index = v4()
+      value.__index = crypto.randomUUID()
     }
     const newValue = value as Data<T> & Meta
 

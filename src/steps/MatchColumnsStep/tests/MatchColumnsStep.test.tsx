@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { act, render, waitFor, screen, within, fireEvent } from "@testing-library/react"
 import { MatchColumnsStep } from "../MatchColumnsStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
@@ -57,7 +56,7 @@ describe("Match Columns automatic matching", () => {
       { __rownum: 4, name: data[2][0] },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -88,7 +87,7 @@ describe("Match Columns automatic matching", () => {
     // finds only names with automatic matching
     const result = [{ __rownum: 2 }, { __rownum: 3 }, { __rownum: 4 }]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapHeaders: false }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -123,7 +122,7 @@ describe("Match Columns automatic matching", () => {
       { __rownum: 4, name: data[2][0] },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapDistance: 1 }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -170,7 +169,7 @@ describe("Match Columns automatic matching", () => {
       },
     ] as const
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: alternativeFields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -209,7 +208,7 @@ describe("Match Columns automatic matching", () => {
       { __rownum: 6, name: data[4][0], is_cool: false },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -253,7 +252,7 @@ describe("Match Columns automatic matching", () => {
       { __rownum: 4, is_cool: true },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -284,7 +283,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -307,7 +306,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -333,7 +332,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -365,7 +364,7 @@ describe("Match Columns general tests", () => {
       { __rownum: 4, name: data[2][0] },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -399,7 +398,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -444,7 +443,7 @@ describe("Match Columns general tests", () => {
       },
     ] as const
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: requiredFields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -481,7 +480,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -503,7 +502,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("matchColumnsStepHook should be called after columns are matched", async () => {
-    const matchColumnsStepHook = jest.fn(async (values) => values)
+    const matchColumnsStepHook = vi.fn(async (values) => values)
     const mockValues = {
       ...mockRsiValues,
       fields: mockRsiValues.fields.filter((field) => field.key === "name" || field.key === "age"),
@@ -533,7 +532,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("matchColumnsStepHook mutations to rawData should show up in ValidationStep", async () => {
-    const matchColumnsStepHook = jest.fn(async ([firstEntry, ...values]) => {
+    const matchColumnsStepHook = vi.fn(async ([firstEntry, ...values]) => {
       return [{ ...firstEntry, name: MUTATED_ENTRY }, ...values]
     })
     const mockValues = {
@@ -564,7 +563,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("Should show error toast if error is thrown in matchColumnsStepHook", async () => {
-    const matchColumnsStepHook = jest.fn(async () => {
+    const matchColumnsStepHook = vi.fn(async () => {
       throw new Error(ERROR_MESSAGE)
       return undefined as any
     })
