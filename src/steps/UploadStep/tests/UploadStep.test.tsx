@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render, fireEvent, waitFor, screen } from "@testing-library/react"
 import { UploadStep } from "../UploadStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
@@ -12,7 +11,7 @@ const ERROR_MESSAGE = "Something happened while uploading"
 test("Upload a file", async () => {
   const file = new File(["Hello, Hello, Hello, Hello"], "test.csv", { type: "text/csv" })
 
-  const onContinue = jest.fn()
+  const onContinue = vi.fn()
   render(
     <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
       <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -35,7 +34,7 @@ test("Upload a file", async () => {
 
 test("Should call uploadStepHook on file upload", async () => {
   const file = new File(["Hello, Hello, Hello, Hello"], "test.csv", { type: "text/csv" })
-  const uploadStepHook = jest.fn(async (values) => {
+  const uploadStepHook = vi.fn(async (values) => {
     return values
   })
   render(<ReactSpreadsheetImport {...mockRsiValues} uploadStepHook={uploadStepHook} />)
@@ -54,7 +53,7 @@ test("Should call uploadStepHook on file upload", async () => {
 
 test("uploadStepHook should be able to mutate raw upload data", async () => {
   const file = new File(["Hello, Hello, Hello, Hello"], "test.csv", { type: "text/csv" })
-  const uploadStepHook = jest.fn(async ([[, ...values]]) => {
+  const uploadStepHook = vi.fn(async ([[, ...values]]) => {
     return [[MUTATED_RAW_DATA, ...values]]
   })
   render(<ReactSpreadsheetImport {...mockRsiValues} uploadStepHook={uploadStepHook} />)
@@ -70,7 +69,7 @@ test("uploadStepHook should be able to mutate raw upload data", async () => {
 
 test("Should show error toast if error is thrown in uploadStepHook", async () => {
   const file = new File(["Hello, Hello, Hello, Hello"], "test.csv", { type: "text/csv" })
-  const uploadStepHook = jest.fn(async () => {
+  const uploadStepHook = vi.fn(async () => {
     throw new Error(ERROR_MESSAGE)
     return undefined as any
   })

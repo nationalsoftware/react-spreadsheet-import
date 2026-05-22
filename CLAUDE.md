@@ -12,12 +12,12 @@ Avoid using `any` wherever possible. Prefer specific types, `unknown` with narro
 
 ## Tech Stack
 
-- **React 18** + **TypeScript 4.9**
+- **React 18** + **TypeScript 5**
 - **Chakra UI 2** for all UI components and theming
 - **React Data Grid 7** for the validation/editing table
 - **ExcelJS / SheetJS** for file parsing
-- **Rollup** for building (dual ESM + CommonJS output)
-- **Jest + jsdom** for unit tests
+- **Vite** for building (dual ESM + CommonJS output)
+- **Vitest + jsdom** for unit tests
 - **Storybook 7** for component dev and visual testing
 
 ## Project Structure
@@ -60,7 +60,7 @@ Hooks run at each transition; `rowHook` and `tableHook` run repeatedly in the va
 ## Build
 
 ```powershell
-npm run build         # Rollup: outputs to dist/ (ESM) and dist-commonjs/ (CJS)
+npm run build         # Vite: outputs to dist/ (ESM) and dist-commonjs/ (CJS)
 npm run ts            # TypeScript type-check only
 npm run lint          # ESLint
 ```
@@ -75,9 +75,9 @@ Storybook is the primary dev environment for visual work. Stories live alongside
 
 ## Testing
 
-### `npm run test:unit` — Jest
+### `npm run test:unit` — Vitest
 
-React Testing Library + jsdom. ~38 tests across 6 step test files plus one root-level test.
+React Testing Library + jsdom. 70 tests across 6 step test files plus one root-level test.
 
 ```powershell
 npm run test:unit
@@ -94,11 +94,13 @@ npm run test:unit
 | `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning               |
 | `src/steps/ValidationStep/tests/ValidationStep.test.tsx`     | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field |
 
-**Setup file:** `src/tests/setup.ts` — mocks ResizeObserver, `matchMedia`, `scrollIntoView`, and `clientWidth`/`clientHeight` (returns 1920×1080 for React Data Grid elements).
+**Setup file:** `src/tests/setup.ts` — imports `@testing-library/jest-dom`, mocks ResizeObserver, `matchMedia`, `scrollIntoView`, and `clientWidth`/`clientHeight` (returns 1920×1080 for React Data Grid elements).
+
+**Vitest globals:** `src/tests/vitest-env.d.ts` provides the `/// <reference types="vitest/globals" />` declaration so `vi`, `describe`, `it`, `expect` etc. are available without imports in test files.
 
 **Module alias:** `~/` → `src/`
 
-**Timeout:** 30 seconds per test (set in setup.ts for async file-parsing tests).
+**Timeout:** 30 seconds per test (set via `testTimeout` in `vitest.config.ts`).
 
 ---
 

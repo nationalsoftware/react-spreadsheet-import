@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render, waitFor, screen, act } from "@testing-library/react"
 import { ValidationStep } from "../ValidationStep"
 import { defaultRSIProps, defaultTheme } from "../../../ReactSpreadsheetImport"
@@ -30,7 +29,7 @@ const file = new File([""], "file.csv")
 
 describe("Validation step tests", () => {
   test("Submit data", async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockValues, onSubmit: onSubmit }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -51,11 +50,11 @@ describe("Validation step tests", () => {
   })
 
   test("Submit data without returning promise", async () => {
-    const onSuccess = jest.fn()
-    const onSubmit = jest.fn(() => {
+    const onSuccess = vi.fn()
+    const onSubmit = vi.fn(() => {
       onSuccess()
     })
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockValues, onSubmit, onClose }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -80,12 +79,12 @@ describe("Validation step tests", () => {
   })
 
   test("Submit data with a successful async return", async () => {
-    const onSuccess = jest.fn()
-    const onSubmit = jest.fn(async (): Promise<void> => {
+    const onSuccess = vi.fn()
+    const onSubmit = vi.fn(async (): Promise<void> => {
       onSuccess()
       return Promise.resolve()
     })
-    const onClose = jest.fn()
+    const onClose = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockValues, onSubmit, onClose }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -111,12 +110,12 @@ describe("Validation step tests", () => {
 
   test("Submit data with a unsuccessful async return", async () => {
     const ERROR_MESSAGE = "ERROR has occurred"
-    const onReject = jest.fn()
-    const onSubmit = jest.fn(async (): Promise<void> => {
+    const onReject = vi.fn()
+    const onSubmit = vi.fn(async (): Promise<void> => {
       onReject()
       throw new Error(ERROR_MESSAGE)
     })
-    const onClose = jest.fn()
+    const onClose = vi.fn()
 
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockValues, onSubmit, onClose }}>
@@ -225,7 +224,7 @@ describe("Validation step tests", () => {
       ],
       fields,
     )
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields, onSubmit }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -978,7 +977,7 @@ describe("Validation step tests", () => {
         },
       },
     ] as const
-    const mockedHook = jest.fn((a) => a)
+    const mockedHook = vi.fn((a) => a)
     const initialData = await addErrorsAndRunHooks(
       [
         {

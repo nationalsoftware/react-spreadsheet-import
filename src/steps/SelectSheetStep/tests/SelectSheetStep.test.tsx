@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render, waitFor, screen, fireEvent, act } from "@testing-library/react"
 import { SelectSheetStep } from "../SelectSheetStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
@@ -60,7 +59,7 @@ test("Select sheet and click next", async () => {
   const sheetNames = ["Sheet1", "Sheet2"]
   const selectSheetIndex = 1
 
-  const onContinue = jest.fn()
+  const onContinue = vi.fn()
   render(
     <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
       <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -86,7 +85,7 @@ test("Select sheet and click next", async () => {
 })
 
 test("Should show error toast if error is thrown in uploadStepHook", async () => {
-  const uploadStepHook = jest.fn(async () => {
+  const uploadStepHook = vi.fn(async () => {
     throw new Error(ERROR_MESSAGE)
     return undefined as any
   })

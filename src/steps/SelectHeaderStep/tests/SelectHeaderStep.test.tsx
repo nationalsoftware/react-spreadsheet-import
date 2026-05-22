@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render, waitFor, screen, fireEvent } from "@testing-library/react"
 import { SelectHeaderStep } from "../SelectHeaderStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
@@ -27,8 +26,8 @@ describe("Select header step tests", () => {
     ]
     const selectRowIndex = 2
 
-    const onContinue = jest.fn()
-    const onBack = jest.fn()
+    const onContinue = vi.fn()
+    const onBack = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -55,7 +54,7 @@ describe("Select header step tests", () => {
   })
 
   test("selectHeaderStepHook should be called after header is selected", async () => {
-    const selectHeaderStepHook = jest.fn(async (headerValues, data) => {
+    const selectHeaderStepHook = vi.fn(async (headerValues, data) => {
       return { headerValues, data }
     })
     render(<ReactSpreadsheetImport {...mockRsiValues} selectHeaderStepHook={selectHeaderStepHook} />)
@@ -84,7 +83,7 @@ describe("Select header step tests", () => {
     })
   })
   test("selectHeaderStepHook should be able to modify raw data", async () => {
-    const selectHeaderStepHook = jest.fn(async ([val, ...headerValues], data) => {
+    const selectHeaderStepHook = vi.fn(async ([val, ...headerValues], data) => {
       return { headerValues: [MUTATED_HEADER, ...headerValues], data }
     })
     render(
@@ -118,7 +117,7 @@ describe("Select header step tests", () => {
   })
 
   test("Should show error toast if error is thrown in selectHeaderStepHook", async () => {
-    const selectHeaderStepHook = jest.fn(async () => {
+    const selectHeaderStepHook = vi.fn(async () => {
       throw new Error(ERROR_MESSAGE)
       return undefined as any
     })
@@ -195,7 +194,7 @@ describe("Select header step tests", () => {
     "trailing (not under a header) cells should be rendered in SelectHeaderStep table, " +
       "but not in MatchColumnStep if a shorter row is selected as a header",
     async () => {
-      const selectHeaderStepHook = jest.fn(async (headerValues, data) => {
+      const selectHeaderStepHook = vi.fn(async (headerValues, data) => {
         return { headerValues, data }
       })
       render(<ReactSpreadsheetImport {...mockRsiValues} selectHeaderStepHook={selectHeaderStepHook} />)
