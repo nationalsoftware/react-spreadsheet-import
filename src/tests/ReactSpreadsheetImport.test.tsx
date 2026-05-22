@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { ReactSpreadsheetImport } from "../ReactSpreadsheetImport"
@@ -6,7 +5,7 @@ import { mockRsiValues } from "../stories/mockRsiValues"
 
 test("Close modal", async () => {
   let isOpen = true
-  const onClose = jest.fn(() => {
+  const onClose = vi.fn(() => {
     isOpen = !isOpen
   })
   const { getByText, getByLabelText } = render(
