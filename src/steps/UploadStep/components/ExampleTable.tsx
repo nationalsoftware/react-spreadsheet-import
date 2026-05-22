@@ -10,7 +10,7 @@ interface Props<T extends string> {
 
 export const ExampleTable = <T extends string>({ fields }: Props<T>) => {
   const data = useMemo(() => generateTableData(fields), [fields])
-  const columns = useMemo(() => generateColumns(), [fields])
+  const columns = useMemo(() => generateColumns(), [])
 
   return <Table rows={data} columns={columns} className={"rdg-example"} />
 }
