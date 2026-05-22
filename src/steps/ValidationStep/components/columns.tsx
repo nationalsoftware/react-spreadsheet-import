@@ -25,9 +25,9 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
 
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
-  allowDiscard: boolean = true,
-  numeredRows: boolean = false,
-  rowCount: number = 0,
+  allowDiscard = true,
+  numeredRows = false,
+  rowCount = 0,
 ): Column<Data<T> & Meta>[] => {
   const columns: Column<Data<T> & Meta>[] = []
 
