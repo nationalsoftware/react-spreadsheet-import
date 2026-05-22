@@ -16,7 +16,8 @@ export const findMatch = <T extends string>(
       ...[
         lavenstein(field.key.toLowerCase(), header.toLowerCase()),
         lavenstein(field.label.toLowerCase(), header.toLowerCase()),
-        ...(field.alternateMatches?.map((alternate) => lavenstein(alternate.toLowerCase(), header.toLowerCase())) || []),
+        ...(field.alternateMatches?.map((alternate) => lavenstein(alternate.toLowerCase(), header.toLowerCase())) ||
+          []),
       ],
     )
     return distance < acc.distance || acc.distance === undefined

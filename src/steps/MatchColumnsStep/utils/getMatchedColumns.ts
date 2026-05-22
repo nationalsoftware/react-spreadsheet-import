@@ -4,11 +4,7 @@ import type { Field, Fields } from "../../../types"
 import { setColumn } from "./setColumn"
 import type { Column, Columns } from "../MatchColumnsStep"
 
-export const getMatchedColumns = <T extends string>(
-  columns: Columns<T>,
-  fields: Fields<T>,
-  autoMapDistance: number,
-) =>
+export const getMatchedColumns = <T extends string>(columns: Columns<T>, fields: Fields<T>, autoMapDistance: number) =>
   columns.reduce<Column<T>[]>((arr, column) => {
     const autoMatch = findMatch(column.header, fields, autoMapDistance)
     if (autoMatch) {

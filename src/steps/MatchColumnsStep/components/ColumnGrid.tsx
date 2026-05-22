@@ -56,7 +56,9 @@ export const ColumnGrid = <T extends string>({
         )}
         <Flex mt={4} gap={2} alignItems="center" pb={2}>
           <Flex flex={1} alignItems="center" overflow="hidden" gap={1}>
-            <Text sx={styles.title} noOfLines={1}>{translations.matchColumnsStep.templateTitle}</Text>
+            <Text sx={styles.title} noOfLines={1}>
+              {translations.matchColumnsStep.templateTitle}
+            </Text>
           </Flex>
           <Box w="300px">
             <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>

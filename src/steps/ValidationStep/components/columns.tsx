@@ -1,5 +1,14 @@
 import { Column, useRowSelection } from "react-data-grid"
-import { Box, Checkbox, Input, InputGroup, InputLeftElement, InputRightElement, Switch, Tooltip } from "@chakra-ui/react"
+import {
+  Box,
+  Checkbox,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Switch,
+  Tooltip,
+} from "@chakra-ui/react"
 import type { Data, Fields } from "../../../types"
 import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
@@ -20,41 +29,39 @@ export const generateColumns = <T extends string>(
   numeredRows: boolean = false,
   rowCount: number = 0,
 ): Column<Data<T> & Meta>[] => {
-  const columns: Column<Data<T> & Meta>[] = [];
+  const columns: Column<Data<T> & Meta>[] = []
 
   // discard row checkbox
   if (allowDiscard) {
-    columns.push(
-      {
-        key: SELECT_COLUMN_KEY,
-        name: "",
-        width: 35,
-        minWidth: 35,
-        maxWidth: 35,
-        resizable: false,
-        sortable: false,
-        frozen: true,
-        cellClass: "rdg-checkbox",
-        formatter: (props) => {
-          // eslint-disable-next-line  react-hooks/rules-of-hooks
-          const [isRowSelected, onRowSelectionChange] = useRowSelection()
-          return (
-            <Checkbox
-              bg="white"
-              aria-label="Select"
-              isChecked={isRowSelected}
-              onChange={(event) => {
-                onRowSelectionChange({
-                  row: props.row,
-                  checked: Boolean(event.target.checked),
-                  isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
-                })
-              }}
-            />
-          )
-        },
+    columns.push({
+      key: SELECT_COLUMN_KEY,
+      name: "",
+      width: 35,
+      minWidth: 35,
+      maxWidth: 35,
+      resizable: false,
+      sortable: false,
+      frozen: true,
+      cellClass: "rdg-checkbox",
+      formatter: (props) => {
+        // eslint-disable-next-line  react-hooks/rules-of-hooks
+        const [isRowSelected, onRowSelectionChange] = useRowSelection()
+        return (
+          <Checkbox
+            bg="white"
+            aria-label="Select"
+            isChecked={isRowSelected}
+            onChange={(event) => {
+              onRowSelectionChange({
+                row: props.row,
+                checked: Boolean(event.target.checked),
+                isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
+              })
+            }}
+          />
+        )
       },
-    )
+    })
   }
 
   // row number
@@ -62,19 +69,17 @@ export const generateColumns = <T extends string>(
     const maxRowNum = rowCount + 1 // __rownum starts at 2 (row 1 is the header)
     const numDigits = maxRowNum > 0 ? String(maxRowNum).length : 1
     const rowNumWidth = Math.max(40, numDigits * 10 + 14)
-    columns.push(
-      {
-        key: "__rownum",
-        name: "",
-        width: rowNumWidth,
-        minWidth: rowNumWidth,
-        maxWidth: rowNumWidth,
-        resizable: false,
-        sortable: false,
-        frozen: true,
-        cellClass: "rdg-cell-rownum",
-      },
-    )
+    columns.push({
+      key: "__rownum",
+      name: "",
+      width: rowNumWidth,
+      minWidth: rowNumWidth,
+      maxWidth: rowNumWidth,
+      resizable: false,
+      sortable: false,
+      frozen: true,
+      cellClass: "rdg-cell-rownum",
+    })
   }
 
   columns.push(
@@ -86,7 +91,17 @@ export const generateColumns = <T extends string>(
         resizable: true,
         headerRenderer: () => (
           <Box display="flex" gap={1} alignItems="center" position="relative">
-            <Tooltip placement="top" label={column.label} bg="gray.100" color="gray.700" fontSize="xs" fontWeight="medium" px={2} py={1} borderRadius="md">
+            <Tooltip
+              placement="top"
+              label={column.label}
+              bg="gray.100"
+              color="gray.700"
+              fontSize="xs"
+              fontWeight="medium"
+              px={2}
+              py={1}
+              borderRadius="md"
+            >
               <Box /* flex={1} */ overflow="hidden" textOverflow="ellipsis">
                 {column.label}
               </Box>
@@ -235,13 +250,17 @@ export const generateColumns = <T extends string>(
               component = (
                 <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
                   {column.columnStyle?.prefix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} mr={1}>{column.columnStyle.prefix}</Box>
+                    <Box as="span" color="gray.500" flexShrink={0} mr={1}>
+                      {column.columnStyle.prefix}
+                    </Box>
                   )}
                   <Box flex={1} overflow="hidden" textOverflow="ellipsis" textAlign={column.columnStyle?.textAlign}>
                     {getDisplayValue(cellValue)}
                   </Box>
                   {column.columnStyle?.suffix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} ml={1}>{column.columnStyle.suffix}</Box>
+                    <Box as="span" color="gray.500" flexShrink={0} ml={1}>
+                      {column.columnStyle.suffix}
+                    </Box>
                   )}
                 </Box>
               )
@@ -250,7 +269,13 @@ export const generateColumns = <T extends string>(
 
           if (row.__errors?.[column.key]) {
             return (
-              <Tooltip placement="top" hasArrow label={row.__errors?.[column.key]?.message} closeDelay={20} whiteSpace="pre-line">
+              <Tooltip
+                placement="top"
+                hasArrow
+                label={row.__errors?.[column.key]?.message}
+                closeDelay={20}
+                whiteSpace="pre-line"
+              >
                 {component}
               </Tooltip>
             )

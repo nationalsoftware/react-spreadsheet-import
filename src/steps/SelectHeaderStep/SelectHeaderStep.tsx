@@ -20,17 +20,14 @@ export const SelectHeaderStep = ({ data, onContinue, onBack }: SelectHeaderProps
   const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(new Set([0]))
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleContinue = useCallback(
-    async () => {
-      const [selectedRowIndex] = selectedRows
-      // We consider data above header to be redundant
-      const trimmedData = data.slice(selectedRowIndex + 1)
-      setIsLoading(true)
-      await onContinue(data[selectedRowIndex], trimmedData)
-      setIsLoading(false)
-    },
-    [onContinue, data, selectedRows]
-  )
+  const handleContinue = useCallback(async () => {
+    const [selectedRowIndex] = selectedRows
+    // We consider data above header to be redundant
+    const trimmedData = data.slice(selectedRowIndex + 1)
+    setIsLoading(true)
+    await onContinue(data[selectedRowIndex], trimmedData)
+    setIsLoading(false)
+  }, [onContinue, data, selectedRows])
 
   return (
     <>

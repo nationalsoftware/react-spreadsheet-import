@@ -247,7 +247,11 @@ describe("Match Columns automatic matching", () => {
       },
     ] as const
 
-    const result = [{ __rownum: 2, is_cool: true }, { __rownum: 3, is_cool: false }, { __rownum: 4, is_cool: true }]
+    const result = [
+      { __rownum: 2, is_cool: true },
+      { __rownum: 3, is_cool: false },
+      { __rownum: 4, is_cool: true },
+    ]
 
     const onContinue = jest.fn()
     render(
@@ -346,7 +350,6 @@ describe("Match Columns general tests", () => {
     header.forEach((h) => {
       expect(screen.queryByText(h)).toBeInTheDocument()
     })
-
   })
 
   test("Manually matches first column", async () => {

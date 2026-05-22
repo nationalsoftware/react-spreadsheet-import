@@ -1,6 +1,6 @@
-import type { Column } from "react-data-grid";
-import { Box, Tooltip } from "@chakra-ui/react";
-import { CgInfo } from "react-icons/cg";
+import type { Column } from "react-data-grid"
+import { Box, Tooltip } from "@chakra-ui/react"
+import { CgInfo } from "react-icons/cg"
 
 export const generateColumns = (): Column<any>[] => [
   {
@@ -42,4 +42,4 @@ export const generateColumns = (): Column<any>[] => [
       </Box>
     ),
   },
-];
+]

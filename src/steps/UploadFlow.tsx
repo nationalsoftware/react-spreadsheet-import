@@ -84,7 +84,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
             setUploadedFile(file)
 
             // Remove ignored sheets from the workbook
-            ignoredSheetNames.forEach(sheetName => deleteSheet(workbook, sheetName));
+            ignoredSheetNames.forEach((sheetName) => deleteSheet(workbook, sheetName))
 
             const isSingleSheet = workbook.SheetNames.length === 1
             if (isSingleSheet) {

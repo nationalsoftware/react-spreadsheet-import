@@ -1,6 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
-import { Box, Button, Badge, Heading, Menu, MenuButton, MenuDivider, MenuList, MenuItem, ModalBody, Text, useStyleConfig, useToast } from "@chakra-ui/react"
-import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6";
+import {
+  Box,
+  Button,
+  Badge,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuList,
+  MenuItem,
+  ModalBody,
+  Text,
+  useStyleConfig,
+  useToast,
+} from "@chakra-ui/react"
+import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6"
 import { ContinueButton } from "../../components/ContinueButton"
 import { useRsi } from "../../hooks/useRsi"
 import type { Meta } from "./types"
@@ -54,12 +68,15 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
 
   const updateRows = useCallback(
     (rows: typeof data, changedData?: RowsChangeData<(typeof data)[number]>) => {
-      const changes = changedData?.indexes.reduce((acc, index) => {
-        // when data is filtered val !== actual index in data
-        const realIndex = data.findIndex((value) => value.__index === rows[index].__index)
-        acc[realIndex] = rows[index]
-        return acc
-      }, {} as Record<number, (typeof data)[number]>)
+      const changes = changedData?.indexes.reduce(
+        (acc, index) => {
+          // when data is filtered val !== actual index in data
+          const realIndex = data.findIndex((value) => value.__index === rows[index].__index)
+          acc[realIndex] = rows[index]
+          return acc
+        },
+        {} as Record<number, (typeof data)[number]>,
+      )
       const realIndexes = changes && Object.keys(changes).map((index) => Number(index))
       const newData = Object.assign([], data, changes)
       updateData(newData, realIndexes)
@@ -67,9 +84,9 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     [data, updateData],
   )
 
-  const columns = useMemo(() => generateColumns(
-    fields, allowDiscard, numberedRows, initialData.length),
-    [fields, allowDiscard, numberedRows, initialData.length]
+  const columns = useMemo(
+    () => generateColumns(fields, allowDiscard, numberedRows, initialData.length),
+    [fields, allowDiscard, numberedRows, initialData.length],
   )
 
   const errorCount = useMemo(
@@ -160,9 +177,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
           <Box display="flex" gap="8px" alignItems="center" flexWrap="wrap">
             <Button variant="ghost" size="sm" isActive={filter === "all"} onClick={() => setFilter("all")}>
               {translations.validationStep.allRowsCountTitle}
-              <Badge ml="3">
-                {data.length}
-              </Badge>
+              <Badge ml="3">{data.length}</Badge>
             </Button>
             <Button variant="ghost" size="sm" isActive={filter === "warnings"} onClick={() => setFilter("warnings")}>
               {translations.validationStep.warningRowsCountTitle}
@@ -178,7 +193,6 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             </Button>
           </Box>
           <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
-            
             <Menu>
               <MenuButton as={Button} variant="outline" size="sm" rightIcon={<FaChevronDown />}>
                 {translations.validationStep.exportButtonTitle}
@@ -186,12 +200,19 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
               <MenuList>
                 <MenuItem icon={<FaFileCsv size="32px" color="#2B73B6" />} onClick={() => downloadAsCsv(data, fields)}>
                   <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
-                  <Text sx={styles.exportMenuItemDescription}>{translations.validationStep.exportCsvButtonDescription}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>
+                    {translations.validationStep.exportCsvButtonDescription}
+                  </Text>
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem icon={<FaFileExcel size="32px" color="#217346" />} onClick={() => downloadAsXlsx(data, fields)}>
+                <MenuItem
+                  icon={<FaFileExcel size="32px" color="#217346" />}
+                  onClick={() => downloadAsXlsx(data, fields)}
+                >
                   <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportXlsxButtonTitle}</Text>
-                  <Text sx={styles.exportMenuItemDescription}>{translations.validationStep.exportXlsxButtonDescription}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>
+                    {translations.validationStep.exportXlsxButtonDescription}
+                  </Text>
                 </MenuItem>
               </MenuList>
             </Menu>
