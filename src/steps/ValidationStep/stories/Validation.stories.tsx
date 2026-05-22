@@ -4,7 +4,7 @@ import { Providers } from "../../../components/Providers"
 import { defaultTheme } from "../../../ReactSpreadsheetImport"
 import { ModalWrapper } from "../../../components/ModalWrapper"
 import { addErrorsAndRunHooks } from "../utils/dataMutations"
-import { RsiProps } from "src/types"
+import { RsiProps } from "../../../types"
 
 export default {
   title: "Validation Step",
