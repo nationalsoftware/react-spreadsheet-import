@@ -231,7 +231,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             onRowsChange={updateRows}
             columns={columns}
             selectedRows={selectedRows}
-            onSelectedRowsChange={setSelectedRows}
+            onSelectedRowsChange={(rows) => setSelectedRows(rows as ReadonlySet<string | number>)}
           />
           {tableData.length === 0 && (
             <Box

@@ -6,6 +6,10 @@ A forked, customized version of [UgnisSoftware/react-spreadsheet-import](https:/
 
 This is a private fork maintained to add custom features beyond the upstream library. Changes here are built as a library and consumed elsewhere, not contributed upstream.
 
+## TypeScript
+
+Avoid using `any` wherever possible. Prefer specific types, `unknown` with narrowing, or generics. Only use `any` as a last resort when the type is genuinely unknowable.
+
 ## Tech Stack
 
 - **React 18** + **TypeScript 4.9**
