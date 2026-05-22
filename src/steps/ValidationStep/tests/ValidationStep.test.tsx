@@ -373,6 +373,24 @@ describe("Validation step tests", () => {
     expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
     expect(result[1].__errors).toBeFalsy()
   })
+  test("auto-assigns __rownum when data has none (initialStepState bypass)", async () => {
+    const fields = [
+      {
+        label: "Name",
+        key: "name",
+        fieldType: { type: "input" },
+        validations: [{ rule: "unique", errorMessage: "Name must be unique" }],
+      },
+    ] as const
+    // No __rownum in data — simulates data injected via initialStepState that bypassed normalizeTableData
+    const result = await addErrorsAndRunHooks([{ name: "Alice" }, { name: "Bob" }, { name: "Alice" }], fields)
+    expect(result[0].__rownum).toBe(2)
+    expect(result[1].__rownum).toBe(3)
+    expect(result[2].__rownum).toBe(4)
+    expect(result[0].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+    expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+  })
+
   test("Required errors on bystander rows survive when unique constraint resolves", async () => {
     const fields = [
       {
