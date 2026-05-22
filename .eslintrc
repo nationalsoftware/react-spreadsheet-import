@@ -1,7 +1,6 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {},
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",

@@ -4,7 +4,6 @@ import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
 import { min, over } from "lodash"
-import { backgroundColor, display, overflow, padding, textAlign } from "styled-system"
 
 const StepsComponent: typeof StepsTheme = {
   ...StepsTheme,
