@@ -191,7 +191,7 @@ describe("Select header step tests", () => {
     expect(el).toBeInTheDocument()
   })
 
-  test.skip(
+  test(
     "trailing (not under a header) cells should be rendered in SelectHeaderStep table, " +
       "but not in MatchColumnStep if a shorter row is selected as a header",
     async () => {
@@ -216,8 +216,12 @@ describe("Select header step tests", () => {
         name: "Next",
       })
       await userEvent.click(nextButton)
-      const trailingCellNextPage = await screen.findByText(TRAILING_CELL, undefined, { timeout: 10000 })
-      expect(trailingCellNextPage).not.toBeInTheDocument()
+      await waitFor(
+        () => {
+          expect(screen.queryByText(TRAILING_CELL)).not.toBeInTheDocument()
+        },
+        { timeout: 10000 },
+      )
     },
   )
 })
