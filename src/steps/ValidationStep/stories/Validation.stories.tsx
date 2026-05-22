@@ -24,7 +24,12 @@ export default {
 }
 
 const file = new File([""], "file.csv")
-const data = await addErrorsAndRunHooks(editableTableInitialData, mockRsiValues.fields)
+// Cast needed: TypeScript infers T=string here, making Data<T> an index signature that
+// rejects __rownum: number. At runtime the shape is correct.
+const data = await addErrorsAndRunHooks(
+  editableTableInitialData as unknown as Parameters<typeof addErrorsAndRunHooks>[0],
+  mockRsiValues.fields,
+)
 
 export const Basic = (args: RsiProps<string>) => {
   return (
