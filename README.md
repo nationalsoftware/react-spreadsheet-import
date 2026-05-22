@@ -44,7 +44,6 @@ Using the component: (it's up to you when the flow is open and what you do on su
 
 ```tsx
 import { ReactSpreadsheetImport } from "react-spreadsheet-import"
-
 ;<ReactSpreadsheetImport isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} fields={fields} />
 ```
 
@@ -173,7 +172,6 @@ Example:
 
 ```tsx
 import { ReactSpreadsheetImport, StepType } from "react-spreadsheet-import"
-
 ;<ReactSpreadsheetImport
   initialStepState={{
     type: StepType.matchColumns,
