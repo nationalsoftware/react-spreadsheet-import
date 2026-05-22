@@ -39,7 +39,7 @@ export const Steps = () => {
   const onNext = (v: StepState) => {
     history.current.push(state)
     setState(v)
-    v.type !== StepType.selectSheet && nextStep()
+    if (v.type !== StepType.selectSheet) nextStep()
   }
 
   return (
