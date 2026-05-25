@@ -19,6 +19,13 @@ export const addErrorsAndRunHooks = async <T extends string>(
     }
   }
 
+  // Normally set by normalizeTableData; this handles data injected via initialStepState.
+  data.forEach((entry, index) => {
+    if (!("__rownum" in entry)) {
+      entry.__rownum = index + 2
+    }
+  })
+
   if (tableHook) {
     data = await tableHook(data, (...props) => addError(ErrorSources.Table, ...props))
   }
@@ -47,7 +54,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
         key: validation.keys?.length
           ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
           : entry[field.key as T],
-        rownum: (entry as any).__rownum as number,
+        rownum: entry.__rownum!,
       }))
 
       const keyToRownums = new Map<unknown, number[]>()

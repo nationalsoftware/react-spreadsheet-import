@@ -2,8 +2,8 @@ import { ReactSpreadsheetImport } from "../ReactSpreadsheetImport"
 import { Box, Link, Code, Button, useDisclosure } from "@chakra-ui/react"
 import { mockRsiValues, mock1099NECValues } from "./mockRsiValues"
 import { useState } from "react"
-import type { Result } from "src/types"
-import { RsiProps } from "src/types"
+import type { Result } from "../types"
+import { RsiProps } from "../types"
 
 export default {
   title: "React spreadsheet import",

@@ -82,10 +82,9 @@
     "@types/node": "^22.19.19",
     "@types/react": "^18.3.29",
     "@types/react-dom": "^18.3.7",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "ajv": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
+    "@vitejs/plugin-react": "^5.2.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-prettier": "^5.5.5",
@@ -99,9 +98,9 @@
     "storybook": "^8.6.18",
     "ts-essentials": "9.3.2",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^2.1.9"
+    "vite": "^6.4.2",
+    "vite-plugin-dts": "^5.0.1",
+    "vitest": "^4.1.7"
   },
   "overrides": {
     "semver": "^7.5.3"
@@ -110,7 +109,8 @@
     "tabWidth": 2,
     "trailingComma": "all",
     "semi": false,
-    "printWidth": 120
+    "printWidth": 120,
+    "endOfLine": "auto"
   },
   "readme": "ERROR: No README data found!"
 }
