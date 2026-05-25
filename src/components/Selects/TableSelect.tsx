@@ -17,7 +17,6 @@ export const TableSelect = ({ onChange, value, options }: Props) => {
   return (
     <Select<SelectOption, false>
       autoFocus
-      useBasicStyles
       isClearable
       size="sm"
       value={value}
