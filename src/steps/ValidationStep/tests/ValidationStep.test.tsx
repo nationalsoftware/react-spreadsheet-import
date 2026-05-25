@@ -875,7 +875,7 @@ describe("Validation step tests", () => {
     })
     await userEvent.click(lastNameCell)
 
-    const newOption = screen.getByRole("button", {
+    const newOption = screen.getByRole("option", {
       name: OPTIONS[1].label,
     })
     await userEvent.click(newOption)
