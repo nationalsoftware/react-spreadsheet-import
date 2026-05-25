@@ -6,10 +6,6 @@
     "moduleResolution": "node",
     "ignoreDeprecations": "5.0",
     "jsx": "react-jsx",
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["src/*"]
-    },
     "sourceMap": true,
     "noEmit": true,
     "strict": true,
