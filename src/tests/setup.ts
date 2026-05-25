@@ -50,11 +50,13 @@ if (typeof window !== "undefined") {
 
   Object.defineProperty(global, "ResizeObserver", {
     writable: true,
-    value: vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })),
+    value: vi.fn(function () {
+      return {
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      }
+    }),
   })
 
   Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
