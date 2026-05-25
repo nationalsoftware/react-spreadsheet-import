@@ -18,7 +18,6 @@ export const TableMultiSelect = ({ onChange, value, options }: Props) => {
     <Select<SelectOption, true>
       isMulti
       autoFocus
-      useBasicStyles
       isClearable={false}
       size="sm"
       value={value}
