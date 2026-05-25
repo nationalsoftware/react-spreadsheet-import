@@ -48,7 +48,7 @@ if (typeof window !== "undefined") {
     })),
   })
 
-  Object.defineProperty(global, "ResizeObserver", {
+  Object.defineProperty(globalThis, "ResizeObserver", {
     writable: true,
     value: vi.fn(function () {
       return {
