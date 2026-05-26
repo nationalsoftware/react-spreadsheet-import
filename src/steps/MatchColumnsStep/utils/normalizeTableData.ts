@@ -24,7 +24,32 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
             return acc
           }
           case ColumnType.matched: {
-            acc[column.value] = curr === "" ? undefined : curr
+            const value = curr === "" ? undefined : curr
+            if (value !== undefined) {
+              const field = fields.find((f) => f.key === column.value)
+              if (field?.fieldType.type === "select") {
+                const selectFieldType = field.fieldType
+                const resolveOption = (raw: string) => {
+                  const lower = raw.toLowerCase()
+                  return selectFieldType.options.find(
+                    (opt) =>
+                      opt.label.toLowerCase() === lower ||
+                      opt.alternateMatches?.some((alt) => alt.toLowerCase() === lower),
+                  )
+                }
+                if (field.fieldType.multiSelect) {
+                  const parts = value.split(",").map((p) => p.trim())
+                  acc[column.value] = parts.map((part) => resolveOption(part)?.value ?? part).join(",")
+                  return acc
+                }
+                const matched = resolveOption(value)
+                if (matched) {
+                  acc[column.value] = matched.value
+                  return acc
+                }
+              }
+            }
+            acc[column.value] = value
             return acc
           }
           case ColumnType.empty: {

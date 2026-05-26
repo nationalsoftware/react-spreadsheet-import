@@ -598,6 +598,133 @@ describe("Match Columns general tests", () => {
   })
 })
 
+describe("Match Columns select alternateMatches", () => {
+  const selectOptions = [
+    { value: "CA", label: "(CA) Canada", alternateMatches: ["Canada"] },
+    { value: "US", label: "(US) United States", alternateMatches: ["United States", "United States of America"] },
+  ] as const
+
+  const selectFields = [
+    {
+      label: "Country",
+      key: "country",
+      fieldType: {
+        type: "select" as const,
+        options: selectOptions,
+      },
+    },
+  ] as const
+
+  const multiSelectFields = [
+    {
+      label: "Countries",
+      key: "countries",
+      fieldType: {
+        type: "select" as const,
+        multiSelect: true,
+        options: selectOptions,
+      },
+    },
+  ] as const
+
+  test("alternateMatches entry is converted to canonical value", async () => {
+    const header = ["country"]
+    const data = [["Canada"], ["United States of America"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("option label is implicitly treated as an alternate match", async () => {
+    const header = ["country"]
+    const data = [["(CA) Canada"], ["(US) United States"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("non-matching value passes through unchanged", async () => {
+    const header = ["country"]
+    const data = [["Deutschland"]]
+    const result = [{ __rownum: 2, country: "Deutschland" }]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("multiSelect: each comma-separated part is normalized via alternateMatches", async () => {
+    const header = ["countries"]
+    const data = [["Canada, United States"], ["(CA) Canada,(US) United States"]]
+    const result = [
+      { __rownum: 2, countries: "CA,US" },
+      { __rownum: 3, countries: "CA,US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: multiSelectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+})
+
 describe("Match Columns initialColumns prop", () => {
   test("uses initialColumns as initial state without requiring manual mapping", async () => {
     const header = ["Something random", "Phone", "Email"]
