@@ -58,8 +58,16 @@ const fields = [
     fieldType: {
       type: "select",
       options: [
-        { label: "Team One", value: "one" },
-        { label: "Team Two", value: "two" },
+        {
+          label: "Team One",
+          value: "one",
+          alternateMatches: ["Developer", "Worker"],
+        },
+        {
+          label: "Team Two",
+          value: "two",
+          alternateMatches: ["HR", "Recruitment"],
+        },
       ],
     },
     example: "Team one",

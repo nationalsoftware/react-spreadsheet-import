@@ -100,6 +100,8 @@ export type SelectOption = {
   label: string
   // Field entry matching criteria as well as select output
   value: string
+  // Alternate raw values that are automatically converted to this option's value (case-insensitive, exact match)
+  alternateMatches?: readonly string[]
 }
 
 export type Input = {
