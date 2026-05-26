@@ -37,6 +37,8 @@ export const translations = {
     subSelectPlaceholder: "Select...",
     matchDropdownTitle: "Match",
     unmatched: "Unmatched",
+    unmatchedGroupLabel: "Unmatched",
+    matchedGroupLabel: "Matched",
     duplicateColumnWarningTitle: "Another column unselected",
     duplicateColumnWarningDescription: "Columns cannot duplicate",
     unmatchedRequiredFields: {
