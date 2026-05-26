@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { Heading, ModalBody, Text, useStyleConfig, Box } from "@chakra-ui/react"
+import { Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
 import { SelectHeaderTable } from "./components/SelectHeaderTable"
 import { ContinueButton } from "../../components/ContinueButton"
 import { useRsi } from "../../hooks/useRsi"
