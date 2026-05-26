@@ -24,6 +24,7 @@ export const MatchColumnSelect = ({ onChange, value, options, placeholder, name 
       menuPosition="fixed"
       components={customComponents}
       aria-label={name}
+      isClearable
     />
   )
 }
