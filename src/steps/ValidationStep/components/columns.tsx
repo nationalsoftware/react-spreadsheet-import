@@ -163,7 +163,7 @@ export const generateColumns = <T extends string>(
                     ref={autoFocusAndSelect}
                     variant="unstyled"
                     autoFocus
-                    value={row[column.key as T] as string}
+                    value={(row[column.key as T] as string) ?? ""}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       onRowChange({ ...row, [column.key]: event.target.value })
                     }}
