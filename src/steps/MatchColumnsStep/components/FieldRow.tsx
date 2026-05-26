@@ -36,6 +36,23 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
 
   const selectedOption = matchedColumn ? csvOptions.find((opt) => opt.value === String(matchedColumn.index)) : undefined
 
+  const matchedOption = new Set(
+    columns
+      .filter((c): c is Extract<Column<T>, { value: T }> => "value" in c && c.value !== field.key)
+      .map((c) => c.index),
+  )
+
+  const groupedOptions = [
+    {
+      label: translations.matchColumnsStep.unmatchedGroupLabel,
+      options: csvOptions.filter((opt) => !matchedOption.has(Number(opt.value))),
+    },
+    {
+      label: translations.matchColumnsStep.matchedGroupLabel,
+      options: csvOptions.filter((opt) => matchedOption.has(Number(opt.value))),
+    },
+  ].filter((g) => g.options.length > 0)
+
   const sampleValue = matchedColumn !== undefined ? firstDataRow[matchedColumn.index] : undefined
 
   return (
@@ -56,7 +73,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
           placeholder={translations.matchColumnsStep.selectPlaceholder}
           value={selectedOption}
           onChange={(opt) => onMap(field.key as T, opt ? Number(opt.value) : null)}
-          options={csvOptions}
+          options={groupedOptions}
           name={field.label}
         />
       </Box>
