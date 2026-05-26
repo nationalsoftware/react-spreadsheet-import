@@ -9,6 +9,7 @@ import { deleteSheet } from "../utils/deleteSheet"
 import { ValidationStep } from "./ValidationStep/ValidationStep"
 import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
+import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
 import { exceedsMaxRecords } from "../utils/exceedsMaxRecords"
 import { useRsi } from "../hooks/useRsi"
 import type { RawData } from "../types"
@@ -61,6 +62,13 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     ignoredSheetNames,
   } = useRsi()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [savedMatchState, setSavedMatchState] = useState<
+    | {
+        columns: Columns<string>
+        headerValues: RawData
+      }
+    | undefined
+  >(undefined)
   const toast = useToast()
   const errorToast = useCallback(
     (description: string) => {
@@ -148,12 +156,20 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
           onBack={onBack}
         />
       )
-    case StepType.matchColumns:
+    case StepType.matchColumns: {
+      const initialColumns =
+        savedMatchState &&
+        savedMatchState.headerValues.length === state.headerValues.length &&
+        savedMatchState.headerValues.every((v, i) => v === state.headerValues[i])
+          ? savedMatchState.columns
+          : undefined
       return (
         <MatchColumnsStep
           data={state.data}
           headerValues={state.headerValues}
+          initialColumns={initialColumns}
           onContinue={async (values, rawData, columns) => {
+            setSavedMatchState({ columns, headerValues: state.headerValues })
             try {
               const data = await matchColumnsStepHook(values, rawData, columns)
               const dataWithMeta = await addErrorsAndRunHooks(data, fields, rowHook, tableHook)
@@ -168,6 +184,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
           onBack={onBack}
         />
       )
+    }
     case StepType.validateData:
       return <ValidationStep initialData={state.data} file={uploadedFile!} onBack={onBack} />
     default:

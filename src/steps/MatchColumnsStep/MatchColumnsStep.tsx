@@ -13,6 +13,7 @@ import { findUnmatchedRequiredFields } from "./utils/findUnmatchedRequiredFields
 export type MatchColumnsProps<T extends string> = {
   data: RawData[]
   headerValues: RawData
+  initialColumns?: Columns<T>
   onContinue: (data: any[], rawData: RawData[], columns: Columns<T>) => void
   onBack?: () => void
 }
@@ -34,6 +35,7 @@ export type Columns<T extends string> = Column<T>[]
 export const MatchColumnsStep = <T extends string>({
   data,
   headerValues,
+  initialColumns,
   onContinue,
   onBack,
 }: MatchColumnsProps<T>) => {
@@ -42,7 +44,8 @@ export const MatchColumnsStep = <T extends string>({
   const [isLoading, setIsLoading] = useState(false)
   const [columns, setColumns] = useState<Columns<T>>(
     // Do not remove spread, it indexes empty array elements, otherwise map() skips over them
-    ([...headerValues] as string[]).map((value, index) => ({ type: ColumnType.empty, index, header: value ?? "" })),
+    initialColumns ??
+      ([...headerValues] as string[]).map((value, index) => ({ type: ColumnType.empty, index, header: value ?? "" })),
   )
   const [showUnmatchedFieldsAlert, setShowUnmatchedFieldsAlert] = useState(false)
 
@@ -112,7 +115,7 @@ export const MatchColumnsStep = <T extends string>({
 
   useEffect(
     () => {
-      if (autoMapHeaders) {
+      if (autoMapHeaders && !initialColumns) {
         setColumns(getMatchedColumns(columns, fields, autoMapDistance))
       }
     },

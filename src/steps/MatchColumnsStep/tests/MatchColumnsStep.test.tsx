@@ -1,5 +1,6 @@
 import { act, render, waitFor, screen, within, fireEvent } from "@testing-library/react"
-import { MatchColumnsStep } from "../MatchColumnsStep"
+import { MatchColumnsStep, ColumnType } from "../MatchColumnsStep"
+import type { Columns } from "../MatchColumnsStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
 import { mockRsiValues } from "../../../stories/mockRsiValues"
 import { Providers } from "../../../components/Providers"
@@ -594,5 +595,82 @@ describe("Match Columns general tests", () => {
 
     const errorToast = await screen.findAllByText(ERROR_MESSAGE, undefined, { timeout: 5000 })
     expect(errorToast?.[0]).toBeInTheDocument()
+  })
+})
+
+describe("Match Columns initialColumns prop", () => {
+  test("uses initialColumns as initial state without requiring manual mapping", async () => {
+    const header = ["Something random", "Phone", "Email"]
+    const data = [
+      ["John", "123", "j@j.com"],
+      ["Dane", "333", "dane@bane.com"],
+      ["Kane", "534", "kane@linch.com"],
+    ]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
+
+    const initialColumns: Columns<string> = [
+      { type: ColumnType.matched, index: 0, header: "Something random", value: "name" },
+      { type: ColumnType.empty, index: 1, header: "Phone" },
+      { type: ColumnType.empty, index: 2, header: "Email" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapHeaders: false }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} initialColumns={initialColumns} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("skips auto-matching when initialColumns is provided", async () => {
+    // "Name" header would normally auto-match to the "name" field,
+    // but initialColumns maps "Phone" → "name" instead
+    const header = ["Name", "Phone", "Email"]
+    const data = [
+      ["John", "123", "j@j.com"],
+      ["Dane", "333", "dane@bane.com"],
+      ["Kane", "534", "kane@linch.com"],
+    ]
+    // Expect Phone column values (index 1), not Name column values (index 0)
+    const result = [
+      { __rownum: 2, name: data[0][1] },
+      { __rownum: 3, name: data[1][1] },
+      { __rownum: 4, name: data[2][1] },
+    ]
+
+    const initialColumns: Columns<string> = [
+      { type: ColumnType.empty, index: 0, header: "Name" },
+      { type: ColumnType.matched, index: 1, header: "Phone", value: "name" },
+      { type: ColumnType.empty, index: 2, header: "Email" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} initialColumns={initialColumns} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
   })
 })
