@@ -101,6 +101,30 @@ const fields = [
 ] as const
 ```
 
+### Select field options
+
+Select fields support an `alternateMatches` array on each option. When a raw spreadsheet value matches an option's `value`, `label`, or any `alternateMatches` entry (all case-insensitive), it is automatically normalized to the canonical `value` before hooks run. For `multiSelect` fields, each comma-separated part is normalized individually.
+
+```tsx
+const fields = [
+  {
+    label: "Country",
+    key: "countryCd",
+    fieldType: {
+      type: "select",
+      options: [
+        {
+          value: "US",
+          label: "United States",
+          alternateMatches: ["USA", "United States of America"],
+        },
+      ],
+    },
+  },
+] as const
+// "usa", "UNITED STATES", "US", "us", "United States of America", etc. all normalize to "US"
+```
+
 ## Optional Props
 
 ### Hooks
