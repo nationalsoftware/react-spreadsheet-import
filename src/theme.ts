@@ -264,14 +264,24 @@ export const themeOverrides = {
           option: (provided, state) => ({
             ...provided,
             color: "textColor",
-            bg: state.isSelected || state.isFocused ? "highlight" : "background",
+            bg: state.isSelected ? "green.100" : state.isFocused ? "green.50" : "background",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "block",
             whiteSpace: "nowrap",
             _hover: {
-              bg: "highlight",
+              bg: "green.50",
             },
+          }),
+          groupHeading: (provided) => ({
+            ...provided,
+            bg: "secondaryBackground",
+            color: "subtitleColor",
+            borderBottomWidth: "1px",
+            borderBottomColor: "border",
+            py: 2,
+            px: 3,
+            mb: 0,
           }),
           placeholder: (provided) => ({
             ...provided,
