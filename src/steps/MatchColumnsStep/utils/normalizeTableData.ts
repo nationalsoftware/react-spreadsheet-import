@@ -33,6 +33,7 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
                   const lower = raw.toLowerCase()
                   return selectFieldType.options.find(
                     (opt) =>
+                      opt.value.toLowerCase() === lower ||
                       opt.label.toLowerCase() === lower ||
                       opt.alternateMatches?.some((alt) => alt.toLowerCase() === lower),
                   )

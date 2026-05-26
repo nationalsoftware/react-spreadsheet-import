@@ -677,6 +677,32 @@ describe("Match Columns select alternateMatches", () => {
     expect(onContinue.mock.calls[0][0]).toEqual(result)
   })
 
+  test("matching is case-insensitive for label, alternateMatches, and value", async () => {
+    const header = ["country"]
+    const data = [["CANADA"], ["united states"], ["ca"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+      { __rownum: 4, country: "CA" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
   test("non-matching value passes through unchanged", async () => {
     const header = ["country"]
     const data = [["Deutschland"]]
