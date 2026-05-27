@@ -617,6 +617,112 @@ describe("Validation step tests", () => {
     })
   })
 
+  describe("Date field type", () => {
+    const dateField = {
+      label: "Start Date",
+      key: "startDate",
+      fieldType: { type: "date" as const },
+    } as const
+    const fields = [dateField] as const
+
+    test("normalizes valid date and stores in default yyyy-MM-dd format", async () => {
+      const result = await addErrorsAndRunHooks([{ startDate: "2024-01-15" }], fields)
+      expect(result[0].startDate).toBe("2024-01-15")
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("normalizes ISO input to a custom non-default format (fallback)", async () => {
+      const customFormatFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, dateFormat: "MM/dd/yyyy" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "2024-01-15" }], customFormatFields)
+      expect(result[0].startDate).toBe("01/15/2024")
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("shows error for invalid date string", async () => {
+      const result = await addErrorsAndRunHooks([{ startDate: "not-a-date" }], fields)
+      expect(result[0].__errors?.startDate?.message).toBe("Value must be a valid date")
+    })
+
+    test("shows error for date before min", async () => {
+      const constrainedFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, min: "2024-01-01" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "2023-12-31" }], constrainedFields)
+      expect(result[0].__errors?.startDate?.message).toBe("Date must be on or after 2024-01-01")
+    })
+
+    test("shows error for date after max", async () => {
+      const constrainedFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, max: "2024-12-31" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "2025-01-01" }], constrainedFields)
+      expect(result[0].__errors?.startDate?.message).toBe("Date must be on or before 2024-12-31")
+    })
+
+    test("accepts date equal to min (inclusive)", async () => {
+      const constrainedFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, min: "2024-01-01" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "2024-01-01" }], constrainedFields)
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("accepts date equal to max (inclusive)", async () => {
+      const constrainedFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, max: "2024-12-31" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "2024-12-31" }], constrainedFields)
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("respects custom dateFormat", async () => {
+      const customFormatFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, dateFormat: "MM/dd/yyyy" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "01/15/2024" }], customFormatFields)
+      expect(result[0].startDate).toBe("01/15/2024")
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("accepts dashes as separators when dateFormat uses slashes", async () => {
+      const customFormatFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, dateFormat: "MM/dd/yyyy" } },
+      ] as const
+      const result = await addErrorsAndRunHooks([{ startDate: "01-29-2001" }], customFormatFields)
+      expect(result[0].startDate).toBe("01/29/2001")
+      expect(result[0].__errors).toBeFalsy()
+    })
+
+    test("displays formatted date in table", async () => {
+      const initialData = await addErrorsAndRunHooks([{ startDate: "2024-01-15" }], fields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof fields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("2024-01-15")).toBeInTheDocument()
+    })
+
+    test("displays dateFormat in table when custom dateFormat is set", async () => {
+      const customFormatFields = [
+        { label: "Start Date", key: "startDate", fieldType: { type: "date" as const, dateFormat: "MM/dd/yyyy" } },
+      ] as const
+      const initialData = await addErrorsAndRunHooks([{ startDate: "2024-01-15" }], customFormatFields)
+      render(
+        <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields: customFormatFields }}>
+          <ModalWrapper isOpen={true} onClose={() => {}}>
+            <ValidationStep<fieldKeys<typeof customFormatFields>> initialData={initialData} file={file} />
+          </ModalWrapper>
+        </Providers>,
+      )
+      expect(await screen.findByText("01/15/2024")).toBeInTheDocument()
+    })
+  })
+
   test("Filters rows with warnings", async () => {
     const WARNED_NAME = "warned"
     const FINE_NAME = "fine"

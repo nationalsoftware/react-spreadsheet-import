@@ -2,6 +2,7 @@ import type { Columns } from "../MatchColumnsStep"
 import { ColumnType } from "../MatchColumnsStep"
 import type { Data, Fields, RawData } from "../../../types"
 import { normalizeCheckboxValue } from "./normalizeCheckboxValue"
+import { parseDate, formatDate } from "../../../utils/parseDate"
 
 export const normalizeTableData = <T extends string>(columns: Columns<T>, data: RawData[], fields: Fields<T>) =>
   data.map((row, rowIndex) => {
@@ -46,6 +47,14 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
                 const matched = resolveOption(value)
                 if (matched) {
                   acc[column.value] = matched.value
+                  return acc
+                }
+              }
+              if (field?.fieldType.type === "date") {
+                const { dateFormat = "yyyy-MM-dd" } = field.fieldType
+                const result = parseDate(value, dateFormat)
+                if (result.valid) {
+                  acc[column.value] = formatDate(result.value, dateFormat)
                   return acc
                 }
               }

@@ -52,6 +52,19 @@ const fields = [
     ],
   },
   {
+    label: "Birthday",
+    key: "birthday",
+    alternateMatches: ["birth day", "bday"],
+    description: "MM/DD/YYYY",
+    fieldType: {
+      type: "date",
+      dateFormat: "MM/dd/yyyy",
+      min: "1920-01-01",
+      max: "2020-12-31",
+    },
+    example: "04/23/2014",
+  },
+  {
     label: "Team",
     key: "team",
     alternateMatches: ["department"],
@@ -747,7 +760,9 @@ export const editableTableInitialData = [
     name: "Hello",
     surname: "Hello",
     age: "123123",
+    birthday: "2015-01-22",
     team: "one",
+    skills: "js",
     is_manager: true,
   },
   {
@@ -756,6 +771,8 @@ export const editableTableInitialData = [
     surname: "Hello",
     age: "12312zsas3",
     team: "two",
+    birthday: undefined,
+    skills: "js,py",
     is_manager: true,
   },
   {
@@ -764,6 +781,8 @@ export const editableTableInitialData = [
     surname: "Hello",
     age: "123123",
     team: undefined,
+    birthday: "01-29-2001",
+    skills: "py",
     is_manager: false,
   },
   {
@@ -772,6 +791,8 @@ export const editableTableInitialData = [
     surname: "Goodbye",
     age: "111",
     team: "two",
+    birthday: "02/28/2008",
+    skills: undefined,
     is_manager: true,
   },
 ]
