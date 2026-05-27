@@ -60,6 +60,7 @@
     "@emotion/styled": "^11.11.0",
     "chakra-react-select": "^5.1.1",
     "chakra-ui-steps": "2.0.4",
+    "date-fns": "^4.3.0",
     "exceljs": "^4.4.0",
     "framer-motion": "^10.16.4",
     "js-levenshtein": "1.1.6",

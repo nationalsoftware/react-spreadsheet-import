@@ -151,6 +151,28 @@ export const generateColumns = <T extends string>(
               }
               break
             }
+            case "date": {
+              const dateFormat = column.fieldType.dateFormat ?? "yyyy-MM-dd"
+              component = (
+                <Input
+                  ref={autoFocusAndSelect}
+                  variant="unstyled"
+                  autoFocus
+                  size="sm"
+                  height="100%"
+                  width="100%"
+                  placeholder={dateFormat.toUpperCase()}
+                  value={(row[column.key as T] as string) ?? ""}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    onRowChange({ ...row, [column.key]: event.target.value || undefined })
+                  }}
+                  onBlur={() => onClose(true)}
+                  paddingLeft="0.5rem"
+                  paddingRight="0.5rem"
+                />
+              )
+              break
+            }
             default:
               component = (
                 <InputGroup size="sm" height="100%">
@@ -242,6 +264,16 @@ export const generateColumns = <T extends string>(
                   </Box>
                 )
               }
+              break
+            }
+            case "date": {
+              component = (
+                <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
+                  <Box flex={1} overflow="hidden" textOverflow="ellipsis" textAlign={column.columnStyle?.textAlign}>
+                    {(row[column.key as T] as string | undefined) ?? null}
+                  </Box>
+                </Box>
+              )
               break
             }
             case "numeric":

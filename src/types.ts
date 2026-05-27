@@ -74,7 +74,7 @@ export type Field<T extends string> = {
   // Validations used for field entries
   validations?: Validation[]
   // Field entry component, default: Input
-  fieldType: Checkbox | Select | Input | Numeric
+  fieldType: Checkbox | Select | Input | Numeric | DateField
   // UI-facing values shown to user as field examples pre-upload phase
   example?: string
   // Display styles applied to the field column in the ValidationStep table
@@ -113,6 +113,17 @@ export type Numeric = {
   decimalPlaces?: number
   min?: number
   max?: number
+}
+
+export type DateField = {
+  type: "date"
+  // date-fns format string for display in the ValidationStep table. Default: "yyyy-MM-dd".
+  // Output data (onSubmit) is always ISO yyyy-MM-dd regardless of this setting.
+  dateFormat?: string
+  // Minimum allowed date. Must be in ISO yyyy-MM-dd format. Inclusive.
+  min?: string
+  // Maximum allowed date. Must be in ISO yyyy-MM-dd format. Inclusive.
+  max?: string
 }
 
 export type ColumnStyle = {

@@ -2,6 +2,8 @@ import type { Data, Fields, Info, RowHook, TableHook } from "../../../types"
 import type { Meta, Error, Errors } from "../types"
 import { ErrorSources } from "../../../types"
 import { parseNumeric, formatNumeric } from "../../../utils/parseNumeric"
+import { isBefore, isAfter } from "date-fns"
+import { parseDate, formatDate } from "../../../utils/parseDate"
 
 export const addErrorsAndRunHooks = async <T extends string>(
   data: (Data<T> & Partial<Meta>)[],
@@ -141,6 +143,37 @@ export const addErrorsAndRunHooks = async <T extends string>(
             addError(ErrorSources.Row, realIndex, field.key as T, {
               level: "error",
               message: `Value cannot exceed ${max}`,
+            })
+          }
+        }
+      })
+    }
+
+    if (field.fieldType.type === "date") {
+      const { dateFormat = "yyyy-MM-dd", min, max } = field.fieldType
+      const minDate = min !== undefined ? parseDate(min, "yyyy-MM-dd") : null
+      const maxDate = max !== undefined ? parseDate(max, "yyyy-MM-dd") : null
+      dataToValidate.forEach((entry, index) => {
+        const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
+        const value = entry[field.key as T]
+        if (value === null || value === undefined || value === "") return
+        const result = parseDate(value as string, dateFormat)
+        if (!result.valid) {
+          addError(ErrorSources.Row, realIndex, field.key as T, {
+            level: "error",
+            message: "Value must be a valid date",
+          })
+        } else {
+          data[realIndex] = { ...data[realIndex], [field.key]: formatDate(result.value, dateFormat) }
+          if (minDate?.valid && isBefore(result.value, minDate.value)) {
+            addError(ErrorSources.Row, realIndex, field.key as T, {
+              level: "error",
+              message: `Date must be on or after ${min}`,
+            })
+          } else if (maxDate?.valid && isAfter(result.value, maxDate.value)) {
+            addError(ErrorSources.Row, realIndex, field.key as T, {
+              level: "error",
+              message: `Date must be on or before ${max}`,
             })
           }
         }

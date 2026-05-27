@@ -73,7 +73,7 @@ const fields = [
     alternateMatches: ["first name", "first"],
     // Used when editing and validating information.
     fieldType: {
-      // There are 4 types - "input" / "numeric" / "checkbox" / "select".
+      // There are 5 types - "input" / "numeric" / "checkbox" / "select" / "date".
       // "select" supports multiSelect: true.
       type: "input",
     },
@@ -124,6 +124,30 @@ const fields = [
 ] as const
 // "usa", "UNITED STATES", "US", "us", "United States of America", etc. all normalize to "US"
 ```
+
+### Date field
+
+Date fields parse and validate date strings using [date-fns format tokens](https://date-fns.org/docs/format).
+
+```tsx
+const fields = [
+  {
+    label: "Birthday",
+    key: "birthday",
+    fieldType: {
+      type: "date",
+      // date-fns format string for display and storage. Default: "yyyy-MM-dd".
+      dateFormat: "MM/dd/yyyy",
+      // Minimum/maximum allowed dates, always in ISO yyyy-MM-dd format. Inclusive.
+      min: "1900-01-01",
+      max: "2100-12-31",
+    },
+    example: "04/23/1990",
+  },
+] as const
+```
+
+Users can type dates with `-`, `/`, or `.` as separators regardless of what `dateFormat` uses — `01-29-2001`, `01/29/2001`, and `01.29.2001` are all accepted when `dateFormat` is `"MM/dd/yyyy"`.
 
 ## Optional Props
 

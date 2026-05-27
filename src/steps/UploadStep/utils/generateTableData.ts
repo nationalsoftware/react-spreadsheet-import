@@ -5,6 +5,7 @@ const titleMap: Record<Field<string>["fieldType"]["type"], string> = {
   select: "Options",
   input: "Text",
   numeric: "Number",
+  date: "Date",
 }
 
 export const generateTableData = <T extends string>(fields: Fields<T>) => {
