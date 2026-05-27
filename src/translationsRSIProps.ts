@@ -34,8 +34,6 @@ export const translations = {
     userTableTitle: "Your data",
     templateTitle: "Matched field",
     selectPlaceholder: "Select column...",
-    subSelectPlaceholder: "Select...",
-    matchDropdownTitle: "Match",
     unmatched: "Unmatched",
     unmatchedGroupLabel: "Unmatched",
     matchedGroupLabel: "Matched",
