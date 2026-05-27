@@ -7,6 +7,7 @@ import { ModalWrapper } from "../../../components/ModalWrapper"
 import userEvent from "@testing-library/user-event"
 import { readFileSync } from "fs"
 import { StepType } from "../../UploadFlow"
+import { shouldAutoSelectHeader } from "../utils/autoSelectHeader"
 
 const MUTATED_HEADER = "mutated header"
 const CONTINUE_BUTTON = "Next"
@@ -223,4 +224,64 @@ describe("Select header step tests", () => {
       )
     },
   )
+})
+
+describe("shouldAutoSelectHeader", () => {
+  const fields = [
+    { key: "name", label: "Name", fieldType: { type: "input" as const } },
+    { key: "age", label: "Age", fieldType: { type: "input" as const } },
+    { key: "email", label: "Email", fieldType: { type: "input" as const } },
+    { key: "team", label: "Team", fieldType: { type: "input" as const } },
+  ]
+
+  it("returns true when matched fields meet threshold", () => {
+    expect(shouldAutoSelectHeader(["name", "age", "email", "extra"], fields, 2, 0.75)).toBe(true)
+  })
+
+  it("returns false when matched fields fall below threshold", () => {
+    expect(shouldAutoSelectHeader(["name", "foo", "bar", "baz"], fields, 2, 0.75)).toBe(false)
+  })
+
+  it("returns false for an empty row", () => {
+    expect(shouldAutoSelectHeader([], fields, 2, 0.75)).toBe(false)
+  })
+
+  it("returns false when fields array is empty", () => {
+    expect(shouldAutoSelectHeader(["name", "age"], [], 2, 0.75)).toBe(false)
+  })
+
+  it("does not count the same field twice from duplicate header cells", () => {
+    expect(shouldAutoSelectHeader(["name", "name", "name", "foo"], fields, 2, 0.75)).toBe(false)
+  })
+})
+
+describe("autoSelectHeaderThreshold integration", () => {
+  it("skips SelectHeaderStep when first row matches schema above threshold", async () => {
+    const csvContent = "name,surname,age,birthday,team,skills,is_manager\nJosh,Smith,25,1990-01-01,one,js,true"
+    const file = new File([csvContent], "test.csv", { type: "text/csv" })
+
+    render(<ReactSpreadsheetImport {...mockRsiValues} autoSelectHeaderThreshold={0.75} />)
+
+    const uploader = screen.getByTestId("rsi-dropzone")
+    fireEvent.drop(uploader, { target: { files: [file] } })
+
+    // MatchColumnsStep shows field-mapping comboboxes; SelectHeaderStep shows radio buttons
+    const comboboxes = await screen.findAllByRole("combobox", undefined, { timeout: 10000 })
+    expect(comboboxes.length).toBeGreaterThan(0)
+    expect(screen.queryAllByRole("radio")).toHaveLength(0)
+  })
+
+  it("does NOT skip SelectHeaderStep when first row does not match schema above threshold", async () => {
+    const csvContent = "foo,bar,baz\n1,2,3"
+    const file = new File([csvContent], "test.csv", { type: "text/csv" })
+
+    render(<ReactSpreadsheetImport {...mockRsiValues} autoSelectHeaderThreshold={0.75} />)
+
+    const uploader = screen.getByTestId("rsi-dropzone")
+    fireEvent.drop(uploader, { target: { files: [file] } })
+
+    // SelectHeaderStep shows radio buttons for row selection
+    const radioButtons = await screen.findAllByRole("radio", undefined, { timeout: 10000 })
+    expect(radioButtons.length).toBeGreaterThan(0)
+  })
 })

@@ -14,7 +14,7 @@ export const Steps = () => {
 
   const initialStep = stepTypeToStepIndex(initialStepState?.type)
 
-  const { nextStep, activeStep, setStep } = useSteps({
+  const { activeStep, setStep } = useSteps({
     initialStep,
   })
 
@@ -39,7 +39,7 @@ export const Steps = () => {
   const onNext = (v: StepState) => {
     history.current.push(state)
     setState(v)
-    if (v.type !== StepType.selectSheet) nextStep()
+    setStep(stepTypeToStepIndex(v.type))
   }
 
   return (
