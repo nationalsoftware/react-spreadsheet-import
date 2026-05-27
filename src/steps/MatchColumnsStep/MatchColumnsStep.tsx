@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useToast } from "@chakra-ui/react"
 import { useRsi } from "../../hooks/useRsi"
 import { FieldRow } from "./components/FieldRow"
@@ -42,11 +42,17 @@ export const MatchColumnsStep = <T extends string>({
   const toast = useToast()
   const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
   const [isLoading, setIsLoading] = useState(false)
-  const [columns, setColumns] = useState<Columns<T>>(
+  const [columns, setColumns] = useState<Columns<T>>(() => {
     // Do not remove spread, it indexes empty array elements, otherwise map() skips over them
-    initialColumns ??
-      ([...headerValues] as string[]).map((value, index) => ({ type: ColumnType.empty, index, header: value ?? "" })),
-  )
+    const emptyColumns = ([...headerValues] as string[]).map((value, index) => ({
+      type: ColumnType.empty as const,
+      index,
+      header: value ?? "",
+    }))
+    if (initialColumns) return initialColumns
+    if (autoMapHeaders) return getMatchedColumns(emptyColumns, fields, autoMapDistance)
+    return emptyColumns
+  })
   const [showUnmatchedFieldsAlert, setShowUnmatchedFieldsAlert] = useState(false)
 
   const firstDataRow = data[0] ?? []
@@ -112,16 +118,6 @@ export const MatchColumnsStep = <T extends string>({
     await onContinue(normalizeTableData(columns, data, fields), data, columns)
     setIsLoading(false)
   }, [onContinue, columns, data, fields])
-
-  useEffect(
-    () => {
-      if (autoMapHeaders && !initialColumns) {
-        setColumns(getMatchedColumns(columns, fields, autoMapDistance))
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  )
 
   return (
     <>
