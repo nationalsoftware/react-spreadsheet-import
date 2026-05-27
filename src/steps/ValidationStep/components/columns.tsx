@@ -26,7 +26,7 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
   allowDiscard = true,
-  numeredRows = false,
+  numberedRows = false,
   rowCount = 0,
 ): Column<Data<T> & Meta>[] => {
   const columns: Column<Data<T> & Meta>[] = []
@@ -65,7 +65,7 @@ export const generateColumns = <T extends string>(
   }
 
   // row number
-  if (numeredRows) {
+  if (numberedRows) {
     const maxRowNum = rowCount + 1 // __rownum starts at 2 (row 1 is the header)
     const numDigits = maxRowNum > 0 ? String(maxRowNum).length : 1
     const rowNumWidth = Math.max(40, numDigits * 10 + 14)
