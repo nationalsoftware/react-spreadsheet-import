@@ -13,6 +13,7 @@ import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
 import { exceedsMaxRecords } from "../utils/exceedsMaxRecords"
 import { useRsi } from "../hooks/useRsi"
 import type { RawData } from "../types"
+import { shouldAutoSelectHeader } from "./SelectHeaderStep/utils/autoSelectHeader"
 
 export enum StepType {
   upload = "upload",
@@ -60,6 +61,8 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     rowHook,
     tableHook,
     ignoredSheetNames,
+    autoSelectHeaderThreshold,
+    autoMapDistance,
   } = useRsi()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [savedMatchState, setSavedMatchState] = useState<
@@ -84,6 +87,26 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     [toast, translations],
   )
 
+  const handleSelectHeader = useCallback(
+    async (data: RawData[]) => {
+      if (
+        autoSelectHeaderThreshold !== undefined &&
+        data.length > 0 &&
+        shouldAutoSelectHeader(data[0], fields, autoMapDistance ?? 2, autoSelectHeaderThreshold)
+      ) {
+        try {
+          const { data: hookData, headerValues } = await selectHeaderStepHook(data[0], data.slice(1))
+          onNext({ type: StepType.matchColumns, data: hookData, headerValues })
+        } catch (e) {
+          errorToast((e as Error).message)
+        }
+      } else {
+        onNext({ type: StepType.selectHeader, data })
+      }
+    },
+    [autoSelectHeaderThreshold, autoMapDistance, fields, selectHeaderStepHook, onNext, errorToast],
+  )
+
   switch (state.type) {
     case StepType.upload:
       return (
@@ -102,10 +125,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
               }
               try {
                 const mappedWorkbook = await uploadStepHook(mapWorkbook(workbook))
-                onNext({
-                  type: StepType.selectHeader,
-                  data: mappedWorkbook,
-                })
+                await handleSelectHeader(mappedWorkbook)
               } catch (e) {
                 errorToast((e as Error).message)
               }
@@ -126,10 +146,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
             }
             try {
               const mappedWorkbook = await uploadStepHook(mapWorkbook(state.workbook, sheetName))
-              onNext({
-                type: StepType.selectHeader,
-                data: mappedWorkbook,
-              })
+              await handleSelectHeader(mappedWorkbook)
             } catch (e) {
               errorToast((e as Error).message)
             }

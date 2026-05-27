@@ -260,6 +260,8 @@ Common date-time formats can be viewed [here](https://docs.sheetjs.com/docs/csf/
   autoMapHeaders?: boolean
   // Headers matching accuracy: 1 for strict and up for more flexible matching. Default: 2
   autoMapDistance?: number
+  // Fraction (0-1) of schema fields that must fuzzy-match row 0 to auto-select the header row
+  autoSelectHeaderThreshold?: number
   // Enable navigation in stepper component and show back button. Default: false
   isNavigationEnabled?: boolean
   // Hide sheets with given name(s) in the SelectSheet step

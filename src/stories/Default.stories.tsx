@@ -14,7 +14,43 @@ export default {
     },
     numberedRows: {
       control: "boolean",
+      defaultValue: false,
+    },
+    allowInvalidSubmit: {
+      control: "boolean",
       defaultValue: true,
+    },
+    isNavigationEnabled: {
+      control: "boolean",
+      defaultValue: false,
+    },
+    autoMapHeaders: {
+      control: "boolean",
+      defaultValue: true,
+    },
+    autoMapDistance: {
+      control: "number",
+      defaultValue: 2,
+    },
+    maxRecords: {
+      control: "number",
+    },
+    maxFileSize: {
+      control: "number",
+    },
+    dateFormat: {
+      control: "text",
+    },
+    parseRaw: {
+      control: "boolean",
+      defaultValue: false,
+    },
+    rtl: {
+      control: "boolean",
+      defaultValue: false,
+    },
+    autoSelectHeaderThreshold: {
+      control: { type: "range", min: 0, max: 1, step: 0.05 },
     },
   },
 }

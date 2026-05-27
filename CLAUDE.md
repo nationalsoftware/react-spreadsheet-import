@@ -48,15 +48,20 @@ Raw file → UploadStep → SelectSheetStep → SelectHeaderStep → MatchColumn
 
 Hooks run at each transition; `rowHook` and `tableHook` run repeatedly in the validation step.
 
+**Stepper:** Displays 3 steps — _Upload File_, _Match Columns_, _Validate Data_. SelectSheetStep and SelectHeaderStep are sub-steps within the Upload phase and do not advance the stepper indicator. Both map to the `"uploadStep"` stepper entry in `src/utils/steps.ts`.
+
+**Auto-skip SelectHeaderStep:** When `autoSelectHeaderThreshold` (0–1) is set on `RsiProps`, the pipeline runs `shouldAutoSelectHeader()` (`src/steps/SelectHeaderStep/utils/autoSelectHeader.ts`) against row 0 before showing SelectHeaderStep. If the fraction of schema fields that fuzzy-match the row meets the threshold, SelectHeaderStep is skipped and the flow goes directly to MatchColumnsStep. The `selectHeaderStepHook` still fires in this path.
+
 ## Key Files
 
-| File                                              | Purpose                                                     |
-| ------------------------------------------------- | ----------------------------------------------------------- |
-| `src/types.ts`                                    | All types — start here when adding new props or field types |
-| `src/theme.ts`                                    | Styling for all steps; extend here for visual changes       |
-| `src/translationsRSIProps.ts`                     | Every user-facing string; add keys here for new UI text     |
-| `src/steps/ValidationStep/utils/dataMutations.ts` | Validation logic applied to rows                            |
-| `src/steps/MatchColumnsStep/utils/findMatch.ts`   | Fuzzy header matching logic                                 |
+| File                                              | Purpose                                                                          |
+| ------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/types.ts`                                    | All types — start here when adding new props or field types                      |
+| `src/theme.ts`                                    | Styling for all steps; extend here for visual changes                            |
+| `src/translationsRSIProps.ts`                     | Every user-facing string; add keys here for new UI text                          |
+| `src/utils/steps.ts`                              | Stepper registry — which steps appear and how `StepType` maps to stepper indices |
+| `src/steps/ValidationStep/utils/dataMutations.ts` | Validation logic applied to rows                                                 |
+| `src/steps/MatchColumnsStep/utils/findMatch.ts`   | Fuzzy header matching logic                                                      |
 
 ## Build
 
@@ -78,7 +83,7 @@ Storybook is the primary dev environment for visual work. Stories live alongside
 
 ### `npm run test:unit` — Vitest
 
-React Testing Library + jsdom. 88 tests across 6 step test files plus one root-level test.
+React Testing Library + jsdom. 96 tests across 6 step test files plus one root-level test.
 
 ```powershell
 npm run test:unit
@@ -86,14 +91,14 @@ npm run test:unit
 
 **Test file locations:**
 
-| File                                                         | What it covers                                                                                                                                                             |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/tests/ReactSpreadsheetImport.test.tsx`                  | Close modal confirmation flow                                                                                                                                              |
-| `src/steps/UploadStep/tests/UploadStep.test.tsx`             | File drop, `uploadStepHook` call and mutation, hook error handling                                                                                                         |
-| `src/steps/SelectSheetStep/tests/SelectSheetStep.test.tsx`   | Multi-sheet vs single-sheet detection, sheet selection, hook error                                                                                                         |
-| `src/steps/SelectHeaderStep/tests/SelectHeaderStep.test.tsx` | Header row selection, `selectHeaderStepHook`, date formatting (`dateFormat` + `parseRaw`)                                                                                  |
-| `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning                           |
-| `src/steps/ValidationStep/tests/ValidationStep.test.tsx`     | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field, date field |
+| File                                                         | What it covers                                                                                                                                                                    |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/tests/ReactSpreadsheetImport.test.tsx`                  | Close modal confirmation flow                                                                                                                                                     |
+| `src/steps/UploadStep/tests/UploadStep.test.tsx`             | File drop, `uploadStepHook` call and mutation, hook error handling                                                                                                                |
+| `src/steps/SelectSheetStep/tests/SelectSheetStep.test.tsx`   | Multi-sheet vs single-sheet detection, sheet selection, hook error                                                                                                                |
+| `src/steps/SelectHeaderStep/tests/SelectHeaderStep.test.tsx` | Header row selection, `selectHeaderStepHook`, date formatting (`dateFormat` + `parseRaw`), `shouldAutoSelectHeader` unit tests, `autoSelectHeaderThreshold` auto-skip integration |
+| `src/steps/MatchColumnsStep/tests/MatchColumnsStep.test.tsx` | Auto-matching (fuzzy/exact/disabled), manual mapping, checkbox normalization, `booleanMatches`, `matchColumnsStepHook`, duplicate-column warning                                  |
+| `src/steps/ValidationStep/tests/ValidationStep.test.tsx`     | `onSubmit` (sync/async/error), required/unique/regex/composite-unique validation, error filtering, inline editing, numeric field formatting, multiselect field, date field        |
 
 **Setup file:** `src/tests/setup.ts` — imports `@testing-library/jest-dom`, mocks ResizeObserver, `matchMedia`, `scrollIntoView`, and `clientWidth`/`clientHeight` (returns 1920×1080 for React Data Grid elements).
 

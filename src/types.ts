@@ -53,6 +53,9 @@ export type RsiProps<T extends string> = {
   rtl?: boolean
   // Optional parameter to skip certain sheets in the SelectSheet step
   ignoredSheetNames?: string[]
+  // Fraction (0–1) of schema fields that must fuzzy-match row 0 to auto-skip the SelectHeader step.
+  // When unset (default), SelectHeaderStep is always shown.
+  autoSelectHeaderThreshold?: number
 }
 
 export type RawData = Array<string | undefined>
