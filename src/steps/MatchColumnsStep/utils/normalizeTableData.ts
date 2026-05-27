@@ -13,11 +13,11 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
         switch (column.type) {
           case ColumnType.matchedCheckbox: {
             const field = fields.find((field) => field.key === column.value)!
-            if ("booleanMatches" in field.fieldType && Object.keys(field.fieldType).length) {
-              const booleanMatchKey = Object.keys(field.fieldType.booleanMatches || []).find(
+            if ("booleanMatches" in field.fieldType && field.fieldType.booleanMatches) {
+              const booleanMatchKey = Object.keys(field.fieldType.booleanMatches).find(
                 (key) => key.toLowerCase() === curr?.toLowerCase(),
-              )!
-              const booleanMatch = field.fieldType.booleanMatches?.[booleanMatchKey]
+              )
+              const booleanMatch = booleanMatchKey ? field.fieldType.booleanMatches[booleanMatchKey] : undefined
               acc[column.value] = booleanMatchKey ? booleanMatch : normalizeCheckboxValue(curr)
             } else {
               acc[column.value] = normalizeCheckboxValue(curr)

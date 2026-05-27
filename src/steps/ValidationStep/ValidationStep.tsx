@@ -49,13 +49,21 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
 
   const updateData = useCallback(
     async (rows: typeof data, indexes?: number[]) => {
-      // Check if hooks are async - if they are we want to apply changes optimistically for better UX
-      if (rowHook?.constructor.name === "AsyncFunction" || tableHook?.constructor.name === "AsyncFunction") {
-        setData(rows)
-      }
-      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes).then((data) => setData(data))
+      setData(rows)
+      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes)
+        .then((data) => setData(data))
+        .catch((err: Error) => {
+          toast({
+            status: "error",
+            variant: "left-accent",
+            position: "bottom-left",
+            title: translations.alerts.toast.error,
+            description: err?.message,
+            isClosable: true,
+          })
+        })
     },
-    [rowHook, tableHook, fields],
+    [rowHook, tableHook, fields, translations],
   )
 
   const deleteSelectedRows = () => {
@@ -89,23 +97,17 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     [fields, allowDiscard, numberedRows, initialData.length],
   )
 
-  const errorCount = useMemo(
-    () => data.filter((row) => row?.__errors && Object.values(row.__errors).some((e) => e.level === "error")).length,
-    [data],
-  )
+  const hasError = (row: Data<T> & Meta) =>
+    !!row.__errors && Object.values(row.__errors).some((e) => e.level === "error")
+  const hasWarning = (row: Data<T> & Meta) =>
+    !!row.__errors && Object.values(row.__errors).some((e) => e.level === "warning")
 
-  const warningCount = useMemo(
-    () => data.filter((row) => row?.__errors && Object.values(row.__errors).some((e) => e.level === "warning")).length,
-    [data],
-  )
+  const errorCount = useMemo(() => data.filter(hasError).length, [data])
+  const warningCount = useMemo(() => data.filter(hasWarning).length, [data])
 
   const tableData = useMemo(() => {
-    if (filter === "errors") {
-      return data.filter((value) => value?.__errors && Object.values(value.__errors).some((e) => e.level === "error"))
-    }
-    if (filter === "warnings") {
-      return data.filter((value) => value?.__errors && Object.values(value.__errors).some((e) => e.level === "warning"))
-    }
+    if (filter === "errors") return data.filter(hasError)
+    if (filter === "warnings") return data.filter(hasWarning)
     return data
   }, [data, filter])
 
@@ -154,12 +156,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     }
   }
   const onContinue = () => {
-    const invalidData = data.find((value) => {
-      if (value?.__errors) {
-        return !!Object.values(value.__errors)?.filter((err) => err.level === "error").length
-      }
-      return false
-    })
+    const invalidData = data.find(hasError)
     if (!invalidData) {
       submitData()
     } else {
