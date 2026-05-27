@@ -27,6 +27,11 @@ import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
 import { downloadAsCsv, downloadAsXlsx } from "../../utils/downloadSpreadsheet"
 
+const hasError = <T extends string>(row: Data<T> & Meta) =>
+  !!row.__errors && Object.values(row.__errors).some((e) => e.level === "error")
+const hasWarning = <T extends string>(row: Data<T> & Meta) =>
+  !!row.__errors && Object.values(row.__errors).some((e) => e.level === "warning")
+
 type Props<T extends string> = {
   initialData: (Data<T> & Meta)[]
   file: File
@@ -63,7 +68,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
           })
         })
     },
-    [rowHook, tableHook, fields, translations],
+    [rowHook, tableHook, fields, translations, toast],
   )
 
   const deleteSelectedRows = () => {
@@ -97,13 +102,15 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     [fields, allowDiscard, numberedRows, initialData.length],
   )
 
-  const hasError = (row: Data<T> & Meta) =>
-    !!row.__errors && Object.values(row.__errors).some((e) => e.level === "error")
-  const hasWarning = (row: Data<T> & Meta) =>
-    !!row.__errors && Object.values(row.__errors).some((e) => e.level === "warning")
-
-  const errorCount = useMemo(() => data.filter(hasError).length, [data])
-  const warningCount = useMemo(() => data.filter(hasWarning).length, [data])
+  const { errorCount, warningCount } = useMemo(() => {
+    let errors = 0
+    let warnings = 0
+    for (const row of data) {
+      if (hasError(row)) errors++
+      if (hasWarning(row)) warnings++
+    }
+    return { errorCount: errors, warningCount: warnings }
+  }, [data])
 
   const tableData = useMemo(() => {
     if (filter === "errors") return data.filter(hasError)
