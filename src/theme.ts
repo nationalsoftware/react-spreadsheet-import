@@ -496,12 +496,14 @@ export const themeOverrides = {
           boxShadow: "inset 0 0 0 1px var(--rdg-selection-color)",
         },
         "&:first-of-type": {
-          boxShadow: "none",
           borderInlineStart: "1px solid var(--rdg-border-color)",
         },
         "&:last-child": {
           borderInlineEnd: "1px solid var(--rdg-border-color)",
         },
+      },
+      ".rdg-cell-frozen": {
+        borderInlineEnd: "none",
       },
       ".rdg-cell-error": {
         backgroundColor: "var(--rdg-error-cell-background-color)",
