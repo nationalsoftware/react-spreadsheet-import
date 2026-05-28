@@ -231,6 +231,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
         <Box flex={1} minH={0} position="relative" display="flex" flexDirection="column">
           <Table
             rowKeyGetter={rowKeyGetter}
+            rowHeight={36}
             rows={tableData}
             onRowsChange={updateRows}
             columns={columns}
