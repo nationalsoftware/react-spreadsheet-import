@@ -27,6 +27,7 @@ export const SelectHeaderTable = ({ data, selectedRows, setSelectedRows }: Props
       onRowClick={(row) => {
         setSelectedRows(new Set([rowIndexMap.get(row)!]))
       }}
+      rowHeight={36}
       headerRowHeight={0}
       className="rdg-static"
     />

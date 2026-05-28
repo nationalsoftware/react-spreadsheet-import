@@ -438,7 +438,6 @@ export const themeOverrides = {
         flex: "1",
 
         // we have to use vars here because chakra does not autotransform unknown props
-        "--rdg-row-height": "35px",
         "--rdg-color": "var(--chakra-colors-textColor)",
         "--rdg-background-color": "var(--chakra-colors-background)",
         "--rdg-header-background-color": "var(--chakra-colors-background)",
