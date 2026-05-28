@@ -92,6 +92,7 @@ export const generateColumns = <T extends string>(
         headerRenderer: () => (
           <Box display="flex" gap={1} alignItems="center" position="relative">
             <Tooltip
+              key="label"
               placement="top"
               label={column.label}
               bg="gray.100"
@@ -107,7 +108,7 @@ export const generateColumns = <T extends string>(
               </Box>
             </Tooltip>
             {column.description && (
-              <Tooltip placement="top" hasArrow label={column.description} whiteSpace="pre-line">
+              <Tooltip key="description" placement="top" hasArrow label={column.description} whiteSpace="pre-line">
                 <Box /* flex={"0 0 auto"} */>
                   <CgInfo size="16px" />
                 </Box>
@@ -282,15 +283,15 @@ export const generateColumns = <T extends string>(
               component = (
                 <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
                   {column.columnStyle?.prefix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} mr={1}>
+                    <Box key="prefix" as="span" color="gray.500" flexShrink={0} mr={1}>
                       {column.columnStyle.prefix}
                     </Box>
                   )}
-                  <Box flex={1} overflow="hidden" textOverflow="ellipsis" textAlign={column.columnStyle?.textAlign}>
+                  <Box key="value" flex={1} overflow="hidden" textOverflow="ellipsis" textAlign={column.columnStyle?.textAlign}>
                     {getDisplayValue(cellValue)}
                   </Box>
                   {column.columnStyle?.suffix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} ml={1}>
+                    <Box key="suffix" as="span" color="gray.500" flexShrink={0} ml={1}>
                       {column.columnStyle.suffix}
                     </Box>
                   )}

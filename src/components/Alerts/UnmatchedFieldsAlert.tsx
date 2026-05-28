@@ -41,11 +41,11 @@ export const UnmatchedFieldsAlert = ({ isOpen, onClose, onConfirm, fields }: Pro
             </Box>
           </AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose} variant="secondary">
+            <Button key="cancel" ref={cancelRef} onClick={onClose} variant="secondary">
               {translations.alerts.unmatchedRequiredFields.cancelButtonTitle}
             </Button>
             {allowInvalidSubmit && (
-              <Button onClick={onConfirm} ml={3}>
+              <Button key="confirm" onClick={onConfirm} ml={3}>
                 {translations.alerts.unmatchedRequiredFields.continueButtonTitle}
               </Button>
             )}
