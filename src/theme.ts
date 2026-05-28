@@ -487,8 +487,7 @@ export const themeOverrides = {
       },
       ".rdg-cell": {
         contain: "size layout style paint",
-        borderRight: "none",
-        borderInlineEnd: "none",
+        borderInlineEnd: "1px solid var(--rdg-border-color)",
         borderBottom: "1px solid var(--rdg-border-color)",
         whiteSpace: "nowrap",
         overflow: "hidden",
