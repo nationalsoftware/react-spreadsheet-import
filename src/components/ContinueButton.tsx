@@ -15,11 +15,12 @@ export const ContinueButton = ({ onContinue, onBack, title, backTitle, isLoading
   return (
     <ModalFooter>
       {onBack && (
-        <Button size="md" sx={styles.backButton} onClick={onBack} isLoading={isLoading} variant="link">
+        <Button key="back" size="md" sx={styles.backButton} onClick={onBack} isLoading={isLoading} variant="link">
           {backTitle}
         </Button>
       )}
       <Button
+        key="continue"
         size="lg"
         w={{ base: nextButtonMobileWidth, md: "21rem" }}
         sx={styles.continueButton}
