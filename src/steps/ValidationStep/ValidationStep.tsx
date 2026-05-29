@@ -123,7 +123,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
   const submitData = async () => {
     const calculatedData = data.reduce(
       (acc, value) => {
-        const { __index, __errors, ...values } = value
+        const { __index, __errors, __selectOptions: _fieldOptions, ...values } = value
         if (__errors) {
           for (const key in __errors) {
             if (__errors[key].level === "error") {
@@ -135,7 +135,11 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
         acc.validData.push(values as unknown as Data<T>)
         return acc
       },
-      { validData: [] as Data<T>[], invalidData: [] as Data<T>[], all: data },
+      {
+        validData: [] as Data<T>[],
+        invalidData: [] as Data<T>[],
+        all: data.map(({ __selectOptions: _fieldOptions, ...rest }) => rest as Data<T> & Meta),
+      },
     )
     setShowSubmitAlert(false)
     setSubmitting(true)

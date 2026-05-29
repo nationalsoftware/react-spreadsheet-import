@@ -176,6 +176,11 @@ export const mock1099NECValues = mockComponentBehaviourForTypes({
   },
   isOpen: true,
   onClose: () => {},
+  rowHook: (row, _addError, _table, setSelectOptions) => {
+    const country = row["IssuerDetail.Address.CountryCd"]
+    setSelectOptions("IssuerDetail.Address.StateCd", country !== "US" ? [] : undefined)
+    return row
+  },
 })
 
 export const editableTableInitialData = [

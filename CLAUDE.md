@@ -152,7 +152,7 @@ export type Numeric = { type: "numeric"; decimalPlaces?: number; min?: number; m
 export type Checkbox = { type: "checkbox"; booleanMatches?: { [key: string]: boolean } }
 export type Select = {
   type: "select"
-  options: SelectOption[] // { label, value, alternateMatches? }
+  options: SelectOption[] // { label, value, alternateMatches? } — default options; rowHook can override per-row
   multiSelect?: boolean // values stored as comma-separated string
 }
 export type DateField = {
@@ -207,7 +207,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 
 **Editor**: switch on `column.fieldType.type`.
 
-- `"select"` → `<TableSelect>` or `<TableMultiSelect>`
+- `"select"` → `<TableSelect>` or `<TableMultiSelect>`. Options are resolved via `resolveOptions(row)` which checks `row.__selectOptions[key]` first (rowHook override), then `fieldType.options` (schema default). If resolved options is empty (`setSelectOptions(key, [])`) the editor falls through to plain `<Input>`.
 - `"checkbox"` → `editable: false`; checkbox is toggled via the formatter's `<Switch>` instead
 - `"date"` → `<Input>` (text); value is stored and displayed in `dateFormat`. On change, stores the raw typed string; `dataMutations` parses and normalizes it to `dateFormat` on the next cycle.
 - all others → `<Input>` (with optional `columnStyle.prefix`/`suffix`)
@@ -215,7 +215,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 **Formatter**: switch on `column.fieldType.type`.
 
 - `"checkbox"` → `<Switch isChecked={...} onChange={...} />`
-- `"select"` → resolves raw value to `option.label`; multiSelect splits/joins
+- `"select"` → resolves options via `resolveOptions(row)` (same override logic as editor); resolves raw value to `option.label`; multiSelect splits/joins. If resolved options is empty, falls through to plain text display.
 - `"date"` → displays the stored `dateFormat` string as-is
 - `"numeric"` → `num.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits })` using `decimalPlaces`
 - `"input"` / default → raw string with optional prefix/suffix
@@ -226,7 +226,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 
 Runs on every cell edit and on initial load. Field-type-specific checks run before the user-defined `validations` array.
 
-- **`"select"`** — checks each value (or each comma-separated part for `multiSelect`) is a member of `options[].value`. Adds an `"error"` if not.
+- **`"select"`** — resolves per-row options: `row.__selectOptions[key]` (rowHook `setSelectOptions` override) takes precedence over `field.fieldType.options` (schema). If resolved options is empty, validation is skipped (field is in plain-input mode for that row). Otherwise checks each value is a member of `options[].value` and adds an `"error"` if not.
 - **`"numeric"`** — parses the string with `parseNumeric()` (strips currency symbols and thousands separators), adds an error if non-numeric, normalizes the stored value to `formatNumeric(value, decimalPlaces)`, and enforces `min`/`max` if set.
 - **`"date"`** — parses the string with `parseDate()` (using `dateFormat`), adds an error if not a valid date, normalizes the stored value to `formatDate(date, dateFormat)`, and enforces `min`/`max` (specified in ISO `yyyy-MM-dd`, inclusive, compared as Date objects via date-fns `isBefore`/`isAfter`).
 - **`"input"` / `"checkbox"`** — no field-type-specific validation; only the universal `required`, `unique`, and `regex` rules from `field.validations` apply.
@@ -278,6 +278,7 @@ Suppose you are adding `"rating"` as a new field type:
 - **Strings**: extend `src/translationsRSIProps.ts` or pass `translations` prop
 - **New field types or validations**: edit `src/types.ts` first, then wire up in `MatchColumnsStep` and `ValidationStep`
 - **Data transforms**: `rowHook` (per-row, fast) or `tableHook` (all rows, expensive)
+- **Per-row select options**: `rowHook` receives a 4th parameter `setSelectOptions(fieldKey, options)` to override dropdown options for a specific field on a specific row. `[]` = render as plain text input; `undefined` = use field's schema options. Internally stored on the row as `__selectOptions` (stripped before `onSubmit`).
 
 ## Windows / PowerShell Notes
 

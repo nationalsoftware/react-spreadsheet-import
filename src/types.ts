@@ -92,7 +92,10 @@ export type Checkbox = {
 
 export type Select = {
   type: "select"
-  // Options displayed in Select component
+  // Default options for the dropdown. rowHook can override per-row via setSelectOptions:
+  //   setSelectOptions(key, [...items]) — use these items for this row
+  //   setSelectOptions(key, [])        — fall back to plain text input for this row
+  //   setSelectOptions(key, undefined) — use this field's schema options for this row
   options: SelectOption[]
   // Allow selecting multiple options. Values stored as comma-separated string.
   multiSelect?: boolean
@@ -164,6 +167,9 @@ export type RowHook<T extends string> = (
   row: Data<T>,
   addError: (fieldKey: T, error: Info) => void,
   table: Data<T>[],
+  // Override the dropdown options for a specific field in this row.
+  // [] = render as plain text input; undefined = use the field's schema options
+  setSelectOptions: (fieldKey: T, options: SelectOption[] | undefined) => void,
 ) => Data<T> | Promise<Data<T>>
 export type TableHook<T extends string> = (
   table: Data<T>[],

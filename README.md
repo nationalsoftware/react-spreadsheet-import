@@ -180,6 +180,45 @@ Example:
 />
 ```
 
+#### Dynamic select options via `setSelectOptions`
+
+`rowHook` receives a fourth parameter, `setSelectOptions`, which overrides the dropdown options shown for a `select` field on a per-row basis:
+
+| Call                                | Effect                                   |
+| ----------------------------------- | ---------------------------------------- |
+| `setSelectOptions(key, [...items])` | Show these options for this row          |
+| `setSelectOptions(key, [])`         | Render as plain text input for this row  |
+| `setSelectOptions(key, undefined)`  | Use the field's schema options (default) |
+
+This is useful when one field's valid choices depend on another field's value in the same row:
+
+```tsx
+// Field definition — define the default options in the schema
+const fields = [
+  {
+    label: "Country",
+    key: "country",
+    fieldType: { type: "select", options: countryOptions },
+  },
+  {
+    label: "State / Province",
+    key: "state",
+    // Default options are US states; rowHook controls per-row behavior
+    fieldType: { type: "select", options: usStateOptions },
+  },
+]
+
+// rowHook — show dropdown for US rows, plain input for all others
+<ReactSpreadsheetImport
+  rowHook={(row, addError, table, setSelectOptions) => {
+    setSelectOptions("state", row.country === "US" ? undefined : [])
+    //                                                ↑ undefined = use schema options
+    //                                                          ↑ [] = plain text input
+    return row
+  }}
+/>
+```
+
 ### Initial state
 
 In rare case when you need to skip the beginning of the flow, you can start the flow from any of the steps.

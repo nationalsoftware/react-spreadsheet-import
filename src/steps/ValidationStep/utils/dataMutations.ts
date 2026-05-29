@@ -1,5 +1,5 @@
-import type { Data, Fields, Info, RowHook, TableHook } from "../../../types"
-import type { Meta, Error, Errors } from "../types"
+import type { Data, Fields, Info, RowHook, SelectOption, TableHook } from "../../../types"
+import type { Meta, Error, Errors, SelectOptionsMap } from "../types"
 import { ErrorSources } from "../../../types"
 import { parseNumeric, formatNumeric } from "../../../utils/parseNumeric"
 import { isBefore, isAfter } from "date-fns"
@@ -33,15 +33,39 @@ export const addErrorsAndRunHooks = async <T extends string>(
   }
 
   if (rowHook) {
+    const selectOptionsMap: { [rowIndex: number]: SelectOptionsMap } = {}
+    const makeSetSelectOptions = (index: number) => (fieldKey: T, options: SelectOption[] | undefined) => {
+      if (options !== undefined) {
+        selectOptionsMap[index] = { ...selectOptionsMap[index], [fieldKey]: options }
+      }
+      // undefined = use fieldType.options from schema (stored once, no per-row copy needed)
+    }
+
     if (changedRowIndexes) {
       for (const index of changedRowIndexes) {
-        data[index] = await rowHook(data[index], (...props) => addError(ErrorSources.Row, index, ...props), data)
+        const result = await rowHook(
+          data[index],
+          (...props) => addError(ErrorSources.Row, index, ...props),
+          data,
+          makeSetSelectOptions(index),
+        )
+        // Always write __selectOptions (even undefined) to clear stale overrides from the previous cycle
+        data[index] = { ...result, __selectOptions: selectOptionsMap[index] }
       }
     } else {
       data = await Promise.all(
-        data.map(async (value, index) =>
-          rowHook(value, (...props) => addError(ErrorSources.Row, index, ...props), data),
-        ),
+        data.map(async (value, index) => {
+          const result = await rowHook(
+            value,
+            (...props) => addError(ErrorSources.Row, index, ...props),
+            data,
+            makeSetSelectOptions(index),
+          )
+          // Initial load: rows start fresh so skip writing when nothing was set (avoids unnecessary property)
+          return selectOptionsMap[index] !== undefined
+            ? { ...result, __selectOptions: selectOptionsMap[index] }
+            : result
+        }),
       )
     }
   }
@@ -96,9 +120,12 @@ export const addErrorsAndRunHooks = async <T extends string>(
 
     if (field.fieldType.type === "select") {
       const selectFieldType = field.fieldType
-      const validValues = new Set(selectFieldType.options.map((opt) => opt.value))
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
+        // __selectOptions from rowHook takes precedence; empty array means input mode — skip validation
+        const options = entry.__selectOptions?.[field.key] ?? selectFieldType.options
+        if (options.length === 0) return
+        const validValues = new Set(options.map((opt) => opt.value))
         const value = entry[field.key as T]
         if (value === null || value === undefined || value === "") return
 
