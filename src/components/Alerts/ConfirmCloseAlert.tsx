@@ -27,10 +27,10 @@ export const ConfirmCloseAlert = ({ isOpen, onClose, onConfirm }: Props) => {
           <AlertDialogHeader>{translations.alerts.confirmClose.headerTitle}</AlertDialogHeader>
           <AlertDialogBody>{translations.alerts.confirmClose.bodyText}</AlertDialogBody>
           <AlertDialogFooter>
-            <Button key="cancel" ref={cancelRef} onClick={onClose} variant="secondary">
+            <Button ref={cancelRef} onClick={onClose} variant="secondary">
               {translations.alerts.confirmClose.cancelButtonTitle}
             </Button>
-            <Button key="confirm" colorScheme="red" onClick={onConfirm} ml={3}>
+            <Button colorScheme="red" onClick={onConfirm} ml={3}>
               {translations.alerts.confirmClose.exitButtonTitle}
             </Button>
           </AlertDialogFooter>
