@@ -9,7 +9,7 @@ import {
   Switch,
   Tooltip,
 } from "@chakra-ui/react"
-import type { Data, Fields } from "../../../types"
+import type { Data, Fields, SelectOption } from "../../../types"
 import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
 import { CgInfo } from "react-icons/cg"
@@ -83,8 +83,12 @@ export const generateColumns = <T extends string>(
   }
 
   columns.push(
-    ...fields.map(
-      (column): Column<Data<T> & Meta> => ({
+    ...fields.map((column): Column<Data<T> & Meta> => {
+      const resolveOptions = (row: Data<T> & Meta): SelectOption[] =>
+        (row.__selectOptions?.[column.key] ??
+          (column.fieldType.type === "select" ? column.fieldType.options : undefined) ??
+          []) as SelectOption[]
+      return {
         key: column.key,
         name: column.label,
         minWidth: 150,
@@ -120,37 +124,6 @@ export const generateColumns = <T extends string>(
           let component
 
           switch (column.fieldType.type) {
-            case "select": {
-              const rawValue = row[column.key as T] as string
-              const fieldType = column.fieldType
-              if (fieldType.multiSelect) {
-                const selectedValues = rawValue ? rawValue.split(",") : []
-                const selectedOptions = selectedValues.map(
-                  (v) => fieldType.options.find((o) => o.value === v) ?? { label: v, value: v },
-                )
-                component = (
-                  <TableMultiSelect
-                    value={selectedOptions}
-                    onChange={(values) => {
-                      onRowChange({ ...row, [column.key]: values.map((v) => v.value).join(",") }, false)
-                    }}
-                    options={fieldType.options}
-                  />
-                )
-              } else {
-                const matchedOption = fieldType.options.find((option) => option.value === rawValue)
-                component = (
-                  <TableSelect
-                    value={matchedOption ?? (rawValue ? { label: rawValue, value: rawValue } : undefined)}
-                    onChange={(value) => {
-                      onRowChange({ ...row, [column.key]: value?.value }, true)
-                    }}
-                    options={fieldType.options}
-                  />
-                )
-              }
-              break
-            }
             case "date": {
               const dateFormat = column.fieldType.dateFormat ?? "yyyy-MM-dd"
               component = (
@@ -173,6 +146,42 @@ export const generateColumns = <T extends string>(
               )
               break
             }
+            case "select": {
+              const rawValue = row[column.key as T] as string
+              const fieldType = column.fieldType
+              const options = resolveOptions(row)
+              if (options.length > 0) {
+                if (fieldType.multiSelect) {
+                  const selectedValues = rawValue ? rawValue.split(",") : []
+                  const selectedOptions = selectedValues.map(
+                    (v) => options.find((o) => o.value === v) ?? { label: v, value: v },
+                  )
+                  component = (
+                    <TableMultiSelect
+                      value={selectedOptions}
+                      onChange={(values) => {
+                        onRowChange({ ...row, [column.key]: values.map((v) => v.value).join(",") }, false)
+                      }}
+                      options={options}
+                    />
+                  )
+                } else {
+                  const matchedOption = options.find((option) => option.value === rawValue)
+                  component = (
+                    <TableSelect
+                      value={matchedOption ?? (rawValue ? { label: rawValue, value: rawValue } : undefined)}
+                      onChange={(value) => {
+                        onRowChange({ ...row, [column.key]: value?.value }, true)
+                      }}
+                      options={options}
+                    />
+                  )
+                }
+                return component
+              }
+              // empty options (setSelectOptions override) — fall through to plain text input
+            }
+            // falls through
             default:
               component = (
                 <InputGroup size="sm" height="100%">
@@ -242,30 +251,6 @@ export const generateColumns = <T extends string>(
                 </Box>
               )
               break
-            case "select": {
-              const fieldType = column.fieldType
-              const rawValue = row[column.key as T] as string
-              if (fieldType.multiSelect) {
-                const labels = rawValue
-                  ? rawValue
-                      .split(",")
-                      .map((v) => fieldType.options.find((o) => o.value === v)?.label ?? v)
-                      .join(", ")
-                  : null
-                component = (
-                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                    {labels}
-                  </Box>
-                )
-              } else {
-                component = (
-                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                    {fieldType.options.find((option) => option.value === rawValue)?.label || rawValue || null}
-                  </Box>
-                )
-              }
-              break
-            }
             case "date": {
               component = (
                 <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
@@ -276,6 +261,30 @@ export const generateColumns = <T extends string>(
               )
               break
             }
+            case "select": {
+              const fieldType = column.fieldType
+              const rawValue = row[column.key as T] as string
+              const options = resolveOptions(row)
+              if (options.length > 0) {
+                component = fieldType.multiSelect ? (
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
+                    {rawValue
+                      ? rawValue
+                          .split(",")
+                          .map((v) => options.find((o) => o.value === v)?.label ?? v)
+                          .join(", ")
+                      : null}
+                  </Box>
+                ) : (
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
+                    {options.find((option) => option.value === rawValue)?.label || rawValue || null}
+                  </Box>
+                )
+                break
+              }
+              // empty options (setSelectOptions override) — fall through to plain text display
+            }
+            // falls through
             case "numeric":
             default: {
               const cellValue = row[column.key as T]
@@ -327,8 +336,8 @@ export const generateColumns = <T extends string>(
               return ""
           }
         },
-      }),
-    ),
+      }
+    }),
   )
 
   return columns

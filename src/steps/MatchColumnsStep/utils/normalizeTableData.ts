@@ -28,18 +28,20 @@ export const normalizeTableData = <T extends string>(columns: Columns<T>, data: 
             const value = curr === "" ? undefined : curr
             if (value !== undefined) {
               const field = fields.find((f) => f.key === column.value)
-              if (field?.fieldType.type === "select") {
+              if (field?.fieldType.type === "select" && field.fieldType.options.length) {
                 const selectFieldType = field.fieldType
+                const options = selectFieldType.options
+                const { multiSelect } = selectFieldType
                 const resolveOption = (raw: string) => {
                   const lower = raw.toLowerCase()
-                  return selectFieldType.options.find(
+                  return options.find(
                     (opt) =>
                       opt.value.toLowerCase() === lower ||
                       opt.label.toLowerCase() === lower ||
                       opt.alternateMatches?.some((alt) => alt.toLowerCase() === lower),
                   )
                 }
-                if (field.fieldType.multiSelect) {
+                if (multiSelect) {
                   const parts = value.split(",").map((p) => p.trim())
                   acc[column.value] = parts.map((part) => resolveOption(part)?.value ?? part).join(",")
                   return acc
