@@ -55,11 +55,10 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.1",
+    "@chakra-ui/react": "2.10.9",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "chakra-react-select": "^5.1.1",
-    "chakra-ui-steps": "2.0.4",
     "date-fns": "^4.3.0",
     "exceljs": "^4.4.0",
     "framer-motion": "^10.16.4",

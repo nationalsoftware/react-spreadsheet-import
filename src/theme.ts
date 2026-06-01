@@ -1,43 +1,6 @@
-import { StepsTheme } from "chakra-ui-steps"
 import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
-
-const StepsComponent: typeof StepsTheme = {
-  ...StepsTheme,
-  baseStyle: (props: any) => {
-    const navigationEnabled = !!props.onClickStep
-    return {
-      ...StepsTheme.baseStyle(props),
-      stepContainer: {
-        ...StepsTheme.baseStyle(props).stepContainer,
-        cursor: navigationEnabled ? "pointer" : "initial",
-      },
-      label: {
-        ...StepsTheme.baseStyle(props).label,
-        color: "textColor",
-      },
-    }
-  },
-  variants: {
-    circles: (props: any) => ({
-      ...StepsTheme.variants.circles(props),
-      step: {
-        ...StepsTheme.variants.circles(props).step,
-        "&:not(:last-child):after": {
-          ...StepsTheme.variants.circles(props).step["&:not(:last-child):after"],
-          backgroundColor: "background",
-        },
-      },
-      stepIconContainer: {
-        ...StepsTheme.variants.circles(props).stepIconContainer,
-        flex: "0 0 auto",
-        bg: "background",
-        borderColor: "background",
-      },
-    }),
-  },
-}
 
 const MatchIconTheme: any = {
   baseStyle: (props: any) => {
@@ -349,7 +312,6 @@ export const themeOverrides = {
       },
     },
     MatchIcon: MatchIconTheme,
-    Steps: StepsComponent,
     Modal: {
       baseStyle: {
         dialog: {

@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react"
 import ReactDOM from "react-dom"
 import { Box, useTheme } from "@chakra-ui/react"
-import { usePopper } from "@chakra-ui/popper"
+import { usePopper } from "@chakra-ui/react"
 import { rootId } from "../Providers"
 import { useRsi } from "../../hooks/useRsi"
 
