@@ -149,6 +149,30 @@ const fields = [
 
 Users can type dates with `-`, `/`, or `.` as separators regardless of what `dateFormat` uses — `01-29-2001`, `01/29/2001`, and `01.29.2001` are all accepted when `dateFormat` is `"MM/dd/yyyy"`.
 
+### Column styles
+
+The optional `columnStyle` property controls how a field's column appears in the Validation Step table.
+
+```tsx
+const fields = [
+  {
+    label: "Price",
+    key: "price",
+    fieldType: { type: "numeric", decimalPlaces: 2 },
+    columnStyle: {
+      // Text alignment within the cell. One of "left" | "center" | "right".
+      textAlign: "right",
+      // String prepended to the value in the cell (e.g. a currency symbol).
+      prefix: "$",
+      // String appended to the value in the cell (e.g. a unit).
+      suffix: "USD",
+    },
+  },
+] as const
+```
+
+`prefix` and `suffix` are purely visual — they are rendered alongside the value in the table but are never included in the submitted data. They appear in both edit mode (as `InputLeftElement` / `InputRightElement` adornments) and read-only mode (as inline spans). `columnStyle` applies to `input`, `numeric`, and `date` fields; `checkbox` and `select` fields ignore it.
+
 ## Optional Props
 
 ### Hooks
