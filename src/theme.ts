@@ -538,11 +538,15 @@ export const themeOverrides = {
         display: "flex",
         alignItems: "center",
       },
+      ".rdg-cell-numeric": {
+        fontVariantNumeric: "tabular-nums",
+      },
       ".rdg-cell-rownum": {
         backgroundColor: "var(--rdg-header-background-color)",
         color: "textColor",
         fontSize: "xs",
         fontWeight: "bold",
+        fontVariantNumeric: "tabular-nums",
         textAlign: "end",
       },
     },

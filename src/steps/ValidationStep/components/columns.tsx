@@ -325,16 +325,11 @@ export const generateColumns = <T extends string>(
           return component
         },
         cellClass: (row: Meta) => {
-          switch (row.__errors?.[column.key]?.level) {
-            case "error":
-              return "rdg-cell-error"
-            case "warning":
-              return "rdg-cell-warning"
-            case "info":
-              return "rdg-cell-info"
-            default:
-              return ""
-          }
+          const classes: string[] = []
+          if (column.fieldType.type === "numeric") classes.push("rdg-cell-numeric")
+          const errorLevel = row.__errors?.[column.key]?.level
+          if (errorLevel) classes.push(`rdg-cell-${errorLevel}`)
+          return classes.join(" ")
         },
       }
     }),
