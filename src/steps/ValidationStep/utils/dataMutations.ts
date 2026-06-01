@@ -11,6 +11,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
   rowHook?: RowHook<T>,
   tableHook?: TableHook<T>,
   changedRowIndexes?: number[],
+  changedFieldKey?: string,
 ): Promise<(Data<T> & Meta)[]> => {
   const errors: Errors = {}
 
@@ -73,46 +74,68 @@ export const addErrorsAndRunHooks = async <T extends string>(
   // Unique validations run first (table-scoped) so they can expand changedRowIndexes
   // before any row-level validations execute — prevents row errors being incorrectly
   // cleared on rows that become non-duplicate as a side-effect of another row's edit.
-  fields.forEach((field) => {
-    field.validations?.forEach((validation) => {
-      if (validation.rule !== "unique") return
-      const values = data.map((entry) => ({
-        key: validation.keys?.length
-          ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
-          : entry[field.key as T],
-        rownum: entry.__rownum!,
-      }))
+  //
+  // Skip entirely when the edited field isn't part of any unique constraint — the scan
+  // is irrelevant and would be O(n) for nothing.
+  const fieldHasUniqueConstraintFor = (fieldKey: string) =>
+    fields.some((f) =>
+      f.validations?.some((v) => {
+        if (v.rule !== "unique") return false
+        return v.keys?.length ? v.keys.includes(fieldKey) : f.key === fieldKey
+      }),
+    )
 
-      const keyToRownums = new Map<unknown, number[]>()
-      values.forEach(({ key, rownum }) => {
-        if (validation.allowEmpty && !key) return
-        const existing = keyToRownums.get(key)
-        if (existing) {
-          existing.push(rownum)
-        } else {
-          keyToRownums.set(key, [rownum])
-        }
-      })
+  if (!changedFieldKey || fieldHasUniqueConstraintFor(changedFieldKey)) {
+    fields.forEach((field) => {
+      field.validations?.forEach((validation) => {
+        if (validation.rule !== "unique") return
 
-      values.forEach(({ key }, index) => {
-        if (validation.allowEmpty && !key) return
-        const rownums = keyToRownums.get(key)!
-        if (rownums.length > 1) {
-          addError(ErrorSources.Unique, index, field.key as T, {
-            level: validation.level || "error",
-            message: `${validation.errorMessage || "Field must be unique"} (rows ${rownums.join(", ")})`,
-          })
-        } else {
-          // If this row *previously* had a unique error but now its value is no longer a duplicate,
-          // mark it as changed so the unique error can be cleared on both/all affected rows.
-          const rowErrors = (data[index].__errors ?? {}) as Error
-          const hasUniqueError = Object.values(rowErrors).some((error) => error.source === ErrorSources.Unique)
+        // Cap stored row numbers to avoid OOM when thousands of rows share the same key.
+        // count tracks the true total; rownums holds only the first MAX for the message.
+        const rowKeys = data.map((entry) =>
+          validation.keys?.length
+            ? JSON.stringify(validation.keys.map((k) => entry[k as T] ?? ""))
+            : (entry[field.key as T] as unknown),
+        )
 
-          if (hasUniqueError) changedRowIndexes?.push(index)
-        }
+        const MAX_ROWNUMS_IN_MESSAGE = 3
+        const keyToEntry = new Map<unknown, { count: number; rownums: number[] }>()
+        data.forEach((entry, index) => {
+          const key = rowKeys[index]
+          if (validation.allowEmpty && !key) return
+          const existing = keyToEntry.get(key)
+          if (existing) {
+            existing.count++
+            if (existing.rownums.length < MAX_ROWNUMS_IN_MESSAGE) {
+              existing.rownums.push(entry.__rownum!)
+            }
+          } else {
+            keyToEntry.set(key, { count: 1, rownums: [entry.__rownum!] })
+          }
+        })
+
+        data.forEach((_entry, index) => {
+          const key = rowKeys[index]
+          if (validation.allowEmpty && !key) return
+          const { count, rownums } = keyToEntry.get(key)!
+          if (count > 1) {
+            const overflow = count - rownums.length
+            const rowList = overflow > 0 ? `${rownums.join(", ")} (+${overflow} more)` : rownums.join(", ")
+            addError(ErrorSources.Unique, index, field.key as T, {
+              level: validation.level || "error",
+              message: `${validation.errorMessage || "Field must be unique"}\n\nRelated rows: ${rowList}`,
+            })
+          } else {
+            // If this row *previously* had a unique error but now its value is no longer a duplicate,
+            // mark it as changed so the unique error can be cleared on both/all affected rows.
+            const rowErrors = (data[index].__errors ?? {}) as Error
+            const hasUniqueError = Object.values(rowErrors).some((error) => error.source === ErrorSources.Unique)
+            if (hasUniqueError) changedRowIndexes?.push(index)
+          }
+        })
       })
     })
-  })
+  }
 
   // Row-level validations run after unique so changedRowIndexes is fully expanded.
   fields.forEach((field) => {
