@@ -64,7 +64,7 @@ export const ColumnGrid = <T extends string>({
             <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
           </Box>
           <Box w="300px" pl={4}>
-            <Text sx={styles.title}>Sample</Text>
+            <Text sx={styles.title}>{translations.matchColumnsStep.userTableSampleTitle}</Text>
           </Box>
         </Flex>
         {fields.map((field) => (
