@@ -53,9 +53,9 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
   const [isSubmitting, setSubmitting] = useState(false)
 
   const updateData = useCallback(
-    async (rows: typeof data, indexes?: number[]) => {
+    async (rows: typeof data, indexes?: number[], changedFieldKey?: string) => {
       setData(rows)
-      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes)
+      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes, changedFieldKey)
         .then((data) => setData(data))
         .catch((err: Error) => {
           toast({
@@ -92,7 +92,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
       )
       const realIndexes = changes && Object.keys(changes).map((index) => Number(index))
       const newData = Object.assign([], data, changes)
-      updateData(newData, realIndexes)
+      updateData(newData, realIndexes, changedData?.column?.key)
     },
     [data, updateData],
   )

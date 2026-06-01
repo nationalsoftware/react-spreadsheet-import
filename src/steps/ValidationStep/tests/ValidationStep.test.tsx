@@ -349,8 +349,8 @@ describe("Validation step tests", () => {
     expect(result[1].__errors).toBeTruthy()
     expect(result[2].__errors).toBeFalsy()
     expect(result[3].__errors).toBeFalsy()
-    expect(result[0].__errors!["firstName"].message).toBe("Full name must be unique (rows 2, 3)")
-    expect(result[1].__errors!["firstName"].message).toBe("Full name must be unique (rows 2, 3)")
+    expect(result[0].__errors!["firstName"].message).toBe("Full name must be unique\n\nRelated rows: 2, 3")
+    expect(result[1].__errors!["firstName"].message).toBe("Full name must be unique\n\nRelated rows: 2, 3")
   })
   test("Unique error message includes duplicate row numbers", async () => {
     const fields = [
@@ -369,8 +369,8 @@ describe("Validation step tests", () => {
       ] as any,
       fields,
     )
-    expect(result[0].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
-    expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+    expect(result[0].__errors!["name"].message).toBe("Name must be unique\n\nRelated rows: 2, 4")
+    expect(result[2].__errors!["name"].message).toBe("Name must be unique\n\nRelated rows: 2, 4")
     expect(result[1].__errors).toBeFalsy()
   })
   test("auto-assigns __rownum when data has none (initialStepState bypass)", async () => {
@@ -387,8 +387,8 @@ describe("Validation step tests", () => {
     expect(result[0].__rownum).toBe(2)
     expect(result[1].__rownum).toBe(3)
     expect(result[2].__rownum).toBe(4)
-    expect(result[0].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
-    expect(result[2].__errors!["name"].message).toBe("Name must be unique (rows 2, 4)")
+    expect(result[0].__errors!["name"].message).toBe("Name must be unique\n\nRelated rows: 2, 4")
+    expect(result[2].__errors!["name"].message).toBe("Name must be unique\n\nRelated rows: 2, 4")
   })
 
   test("Required errors on bystander rows survive when unique constraint resolves", async () => {
