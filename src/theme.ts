@@ -207,8 +207,6 @@ export const themeOverrides = {
             lineHeight: 5,
             fontWeight: "medium",
             color: "textColor",
-            px: 6,
-            py: 4,
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",

@@ -56,7 +56,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
   const sampleValue = matchedColumn !== undefined ? firstDataRow[matchedColumn.index] : undefined
 
   return (
-    <Flex minH={14} w="100%" alignItems="center">
+    <Flex minH={14} w="100%" alignItems="center" gap={8}>
       <Flex flex={1} alignItems="center" overflow="hidden" gap={1}>
         <MatchIcon isChecked={isMatched} />
         <Text sx={styles.userTable.header} noOfLines={1} flex={1}>
@@ -68,7 +68,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
           )}
         </Text>
       </Flex>
-      <Box w="300px">
+      <Box flex={1}>
         <MatchColumnSelect
           placeholder={translations.matchColumnsStep.selectPlaceholder}
           value={selectedOption}
@@ -77,7 +77,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
           name={field.label}
         />
       </Box>
-      <Box w="300px" pl={4}>
+      <Box flex={1}>
         {sampleValue !== undefined && (
           <Text sx={styles.userTable.cell} noOfLines={1}>
             {sampleValue}
