@@ -1,22 +1,17 @@
 import { StepState, StepType, UploadFlow } from "./UploadFlow"
 import { ModalHeader } from "@chakra-ui/react"
-import { useSteps, Step, Steps as Stepper } from "chakra-ui-steps"
-import { CgCheck } from "react-icons/cg"
+import { Stepper } from "../components/Stepper"
 
 import { useRsi } from "../hooks/useRsi"
 import { useRef, useState } from "react"
 import { steps, stepTypeToStepIndex, stepIndexToStepType } from "../utils/steps"
-
-const CheckIcon = ({ color }: { color: string }) => <CgCheck size="36px" color={color} />
 
 export const Steps = () => {
   const { initialStepState, translations, isNavigationEnabled } = useRsi()
 
   const initialStep = stepTypeToStepIndex(initialStepState?.type)
 
-  const { activeStep, setStep } = useSteps({
-    initialStep,
-  })
+  const [activeStep, setActiveStep] = useState(initialStep)
 
   const [state, setState] = useState<StepState>(initialStepState || { type: StepType.upload })
 
@@ -29,7 +24,7 @@ export const Steps = () => {
     const nextHistory = history.current.slice(0, historyIdx + 1)
     history.current = nextHistory
     setState(nextHistory[nextHistory.length - 1])
-    setStep(stepIndex)
+    setActiveStep(stepIndex)
   }
 
   const onBack = () => {
@@ -39,7 +34,7 @@ export const Steps = () => {
   const onNext = (v: StepState) => {
     history.current.push(state)
     setState(v)
-    setStep(stepTypeToStepIndex(v.type))
+    setActiveStep(stepTypeToStepIndex(v.type))
   }
 
   return (
@@ -47,14 +42,9 @@ export const Steps = () => {
       <ModalHeader display={["none", "none", "block"]}>
         <Stepper
           activeStep={activeStep}
-          checkIcon={CheckIcon}
+          labels={steps.map((key) => translations[key].title)}
           onClickStep={isNavigationEnabled ? onClickStep : undefined}
-          responsive={false}
-        >
-          {steps.map((key) => (
-            <Step label={translations[key].title} key={key} />
-          ))}
-        </Stepper>
+        />
       </ModalHeader>
       <UploadFlow state={state} onNext={onNext} onBack={isNavigationEnabled ? onBack : undefined} />
     </>

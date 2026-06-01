@@ -1,5 +1,4 @@
 import { chakra, useStyleConfig, Flex } from "@chakra-ui/react"
-import { dataAttr } from "@chakra-ui/utils"
 import { motion } from "framer-motion"
 import { CgCheck } from "react-icons/cg"
 
@@ -29,7 +28,7 @@ export const MatchIcon = (props: MatchIconProps) => {
       h={6}
       ml="0.875rem"
       mr={3}
-      data-highlighted={dataAttr(props.isChecked)}
+      data-highlighted={props.isChecked ? "" : undefined}
       data-testid="column-checkmark"
     >
       {props.isChecked && (
