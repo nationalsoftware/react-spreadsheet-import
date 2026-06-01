@@ -32,6 +32,7 @@ export const translations = {
     nextButtonTitle: "Next",
     backButtonTitle: "Back",
     userTableTitle: "Your data",
+    userTableSampleTitle: "Sample",
     templateTitle: "Matched field",
     selectPlaceholder: "Select column...",
     unmatched: "Unmatched",
