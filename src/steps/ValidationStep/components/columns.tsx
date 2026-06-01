@@ -201,7 +201,7 @@ export const generateColumns = <T extends string>(
                     onBlur={() => onClose(true)}
                     textAlign={column.columnStyle?.textAlign}
                     paddingLeft={column.columnStyle?.prefix ? "2rem" : "0.5rem"}
-                    paddingRight={column.columnStyle?.suffix ? "2rem" : undefined}
+                    paddingRight={column.columnStyle?.suffix ? "2rem" : "0.5rem"}
                   />
                   {column.columnStyle?.suffix && (
                     <InputRightElement pointerEvents="none" color="gray.500" height="100%">
