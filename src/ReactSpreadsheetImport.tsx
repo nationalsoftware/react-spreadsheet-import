@@ -1,4 +1,5 @@
 import merge from "lodash/merge"
+import "react-data-grid/lib/styles.css"
 
 import { Steps } from "./steps/Steps"
 import { rtlThemeSupport, themeOverrides } from "./theme"

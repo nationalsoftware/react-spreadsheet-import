@@ -23,6 +23,24 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
   input?.select()
 }
 
+function DiscardRowCheckbox({ row }: { row: unknown }) {
+  const { isRowSelected, onRowSelectionChange } = useRowSelection()
+  return (
+    <Checkbox
+      bg="white"
+      aria-label="Select"
+      isChecked={isRowSelected}
+      onChange={(event) => {
+        onRowSelectionChange({
+          row,
+          checked: Boolean(event.target.checked),
+          isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
+        })
+      }}
+    />
+  )
+}
+
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
   allowDiscard = true,
@@ -43,24 +61,7 @@ export const generateColumns = <T extends string>(
       sortable: false,
       frozen: true,
       cellClass: "rdg-checkbox",
-      formatter: (props) => {
-        // eslint-disable-next-line  react-hooks/rules-of-hooks
-        const [isRowSelected, onRowSelectionChange] = useRowSelection()
-        return (
-          <Checkbox
-            bg="white"
-            aria-label="Select"
-            isChecked={isRowSelected}
-            onChange={(event) => {
-              onRowSelectionChange({
-                row: props.row,
-                checked: Boolean(event.target.checked),
-                isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
-              })
-            }}
-          />
-        )
-      },
+      renderCell: ({ row }) => <DiscardRowCheckbox row={row} />,
     })
   }
 
@@ -93,7 +94,7 @@ export const generateColumns = <T extends string>(
         name: column.label,
         minWidth: 150,
         resizable: true,
-        headerRenderer: () => (
+        renderHeaderCell: () => (
           <Box display="flex" gap={1} alignItems="center" position="relative">
             <Tooltip
               placement="top"
@@ -120,7 +121,7 @@ export const generateColumns = <T extends string>(
           </Box>
         ),
         editable: column.fieldType.type !== "checkbox",
-        editor: ({ row, onRowChange, onClose }) => {
+        renderEditCell: ({ row, onRowChange, onClose }) => {
           let component
 
           switch (column.fieldType.type) {
@@ -214,10 +215,7 @@ export const generateColumns = <T extends string>(
 
           return component
         },
-        editorOptions: {
-          editOnClick: true,
-        },
-        formatter: ({ row, onRowChange }) => {
+        renderCell: ({ row, onRowChange }) => {
           let component
 
           const getDisplayValue = (value: string | boolean | undefined) => {
@@ -267,17 +265,21 @@ export const generateColumns = <T extends string>(
               const options = resolveOptions(row)
               if (options.length > 0) {
                 component = fieldType.multiSelect ? (
-                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                    {rawValue
-                      ? rawValue
-                          .split(",")
-                          .map((v) => options.find((o) => o.value === v)?.label ?? v)
-                          .join(", ")
-                      : null}
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
+                    <Box flex={1} overflow="hidden" textOverflow="ellipsis">
+                      {rawValue
+                        ? rawValue
+                            .split(",")
+                            .map((v) => options.find((o) => o.value === v)?.label ?? v)
+                            .join(", ")
+                        : null}
+                    </Box>
                   </Box>
                 ) : (
-                  <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-                    {options.find((option) => option.value === rawValue)?.label || rawValue || null}
+                  <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
+                    <Box flex={1} overflow="hidden" textOverflow="ellipsis">
+                      {options.find((option) => option.value === rawValue)?.label || rawValue || null}
+                    </Box>
                   </Box>
                 )
                 break

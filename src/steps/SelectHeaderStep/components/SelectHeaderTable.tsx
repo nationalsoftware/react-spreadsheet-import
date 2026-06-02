@@ -24,7 +24,7 @@ export const SelectHeaderTable = ({ data, selectedRows, setSelectedRows }: Props
         const next = Array.from(newRows).find((v) => !selectedRows.has(v as number))
         if (next !== undefined) setSelectedRows(new Set([next as number]))
       }}
-      onRowClick={(row) => {
+      onCellClick={({ row }) => {
         setSelectedRows(new Set([rowIndexMap.get(row)!]))
       }}
       rowHeight={36}

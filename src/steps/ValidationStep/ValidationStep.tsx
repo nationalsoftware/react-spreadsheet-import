@@ -241,6 +241,12 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
             columns={columns}
             selectedRows={selectedRows}
             onSelectedRowsChange={(rows) => setSelectedRows(rows as ReadonlySet<string | number>)}
+            onCellClick={({ selectCell }, event) => {
+              selectCell(true)
+              // Without this, Cell.handleClick calls selectCellWrapper() after our handler,
+              // queuing mode:'SELECT' in the same React batch and overwriting mode:'EDIT'.
+              event.preventGridDefault()
+            }}
           />
           {tableData.length === 0 && (
             <Box
