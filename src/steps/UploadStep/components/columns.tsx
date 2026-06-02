@@ -7,17 +7,17 @@ export const generateColumns = (): Column<any>[] => [
     key: "label",
     name: "Field Name",
     minWidth: 150,
-    headerRenderer: (props) => (
+    renderHeaderCell: (props) => (
       <Box display="flex" gap={1} alignItems="center">
-        <Box flex="0 0 auto" width="16px" height="16px" display="flex" alignItems="center" justifyContent="center" />
-        <Box flex={1} overflow="hidden" textOverflow="ellipsis">
+        <Box width="16px" height="16px" />
+        <Box overflow="hidden" textOverflow="ellipsis" alignItems="center">
           {props.column.name}
         </Box>
       </Box>
     ),
-    formatter: ({ row }) => (
+    renderCell: ({ row }) => (
       <Box display="flex" gap={1} alignItems="center">
-        <Box flex="0 0 auto" width="16px" height="16px" display="flex" alignItems="center" justifyContent="center">
+        <Box width="16px" height="16px">
           {row.description ? (
             <Tooltip placement="top-end" hasArrow label={row.description} whiteSpace="pre-line">
               <Box>
@@ -26,7 +26,7 @@ export const generateColumns = (): Column<any>[] => [
             </Tooltip>
           ) : null}
         </Box>
-        <Box flex={1} overflow="hidden" textOverflow="ellipsis">
+        <Box overflow="hidden" textOverflow="ellipsis" alignItems="center">
           {row.label}
         </Box>
       </Box>
@@ -36,8 +36,8 @@ export const generateColumns = (): Column<any>[] => [
     key: "value",
     name: "Example Value",
     minWidth: 200,
-    formatter: ({ row }) => (
-      <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
+    renderCell: ({ row }) => (
+      <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis" alignContent="center">
         {row.value}
       </Box>
     ),

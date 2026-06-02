@@ -891,7 +891,7 @@ describe("Validation step tests", () => {
 
     await userEvent.click(nameCell)
 
-    screen.getByRole<HTMLInputElement>("textbox")
+    await screen.findByRole<HTMLInputElement>("textbox")
     await userEvent.keyboard(THIRD_CHANGED + "{enter}")
 
     const validRow = screen.getByText(THIRD_CHANGED)
@@ -960,7 +960,7 @@ describe("Validation step tests", () => {
 
     await userEvent.click(nameCell)
 
-    const input: HTMLInputElement | null = screen.getByRole<HTMLInputElement>("textbox")
+    const input: HTMLInputElement | null = await screen.findByRole<HTMLInputElement>("textbox")
 
     expect(input).toHaveValue(NAME)
     expect(input).toHaveFocus()
@@ -981,7 +981,7 @@ describe("Validation step tests", () => {
     })
     await userEvent.click(lastNameCell)
 
-    const newOption = screen.getByRole("option", {
+    const newOption = await screen.findByRole("option", {
       name: OPTIONS[1].label,
     })
     await userEvent.click(newOption)
@@ -1207,7 +1207,7 @@ describe("Validation step tests", () => {
     expect(nameCell).toBeInTheDocument()
 
     await userEvent.click(nameCell)
-    screen.getByRole<HTMLInputElement>("textbox")
+    await screen.findByRole<HTMLInputElement>("textbox")
 
     await userEvent.keyboard(RIGHT_NAME + "{enter}")
 
@@ -1341,7 +1341,7 @@ describe("Validation step tests", () => {
     })[0]
 
     await userEvent.click(nameCell)
-    screen.getByRole<HTMLInputElement>("textbox")
+    await screen.findByRole<HTMLInputElement>("textbox")
 
     await userEvent.keyboard(RIGHT_NAME + "{enter}")
 
