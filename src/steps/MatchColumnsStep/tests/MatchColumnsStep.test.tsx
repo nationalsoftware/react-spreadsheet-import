@@ -6,12 +6,13 @@ import { mockRsiValues } from "../../../stories/mockRsiValues"
 import { Providers } from "../../../components/Providers"
 import { ModalWrapper } from "../../../components/ModalWrapper"
 import userEvent from "@testing-library/user-event"
-import type { Fields } from "../../../types"
+import type { Fields, FlatFields } from "../../../types"
+import { flattenFields } from "../../../utils/flattenFields"
 import { translations } from "../../../translationsRSIProps"
 import { SELECT_DROPDOWN_ID } from "../../../components/Selects/MenuPortal"
 import { StepType } from "../../UploadFlow"
 
-const fields: Fields<any> = [
+const fields: FlatFields<any> = [
   {
     label: "Name",
     key: "name",
@@ -506,7 +507,7 @@ describe("Match Columns general tests", () => {
     const matchColumnsStepHook = vi.fn(async (values) => values)
     const mockValues = {
       ...mockRsiValues,
-      fields: mockRsiValues.fields.filter((field) => field.key === "name" || field.key === "age"),
+      fields: flattenFields(mockRsiValues.fields).filter((field) => field.key === "name" || field.key === "age"),
     }
     render(
       <ReactSpreadsheetImport
@@ -538,7 +539,7 @@ describe("Match Columns general tests", () => {
     })
     const mockValues = {
       ...mockRsiValues,
-      fields: mockRsiValues.fields.filter((field) => field.key === "name" || field.key === "age"),
+      fields: flattenFields(mockRsiValues.fields).filter((field) => field.key === "name" || field.key === "age"),
     }
     render(
       <ReactSpreadsheetImport
@@ -571,7 +572,7 @@ describe("Match Columns general tests", () => {
 
     const mockValues = {
       ...mockRsiValues,
-      fields: mockRsiValues.fields.filter((field) => field.key === "name" || field.key === "age"),
+      fields: flattenFields(mockRsiValues.fields).filter((field) => field.key === "name" || field.key === "age"),
     }
 
     render(
@@ -825,5 +826,99 @@ describe("Match Columns initialColumns prop", () => {
       expect(onContinue).toHaveBeenCalled()
     })
     expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+})
+
+describe("Match Columns with grouped fields", () => {
+  const groupedFields: Fields<any> = [
+    {
+      groupName: "Personal Info",
+      groupColor: "blue",
+      fields: [
+        { label: "Name", key: "name", fieldType: { type: "input" as const } },
+        { label: "Mobile Phone", key: "mobile", fieldType: { type: "input" as const } },
+      ],
+    },
+    {
+      label: "Is cool",
+      key: "is_cool",
+      fieldType: { type: "checkbox" as const },
+    },
+  ]
+
+  test("renders group name as a section header", () => {
+    const header = ["name", "mobile", "is_cool"]
+    const data = [["John", "123", "true"]]
+
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: groupedFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={vi.fn()} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    expect(screen.getByText("Personal Info")).toBeInTheDocument()
+  })
+
+  test("auto-matches fields inside groups and produces correct output", async () => {
+    const header = ["name", "mobile", "is_cool"]
+    const data = [
+      ["John", "123", "true"],
+      ["Dane", "456", "false"],
+    ]
+    const expected = [
+      { __rownum: 2, name: "John", mobile: "123", is_cool: true },
+      { __rownum: 3, name: "Dane", mobile: "456", is_cool: false },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: groupedFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(expected)
+  })
+
+  test("required validation fires on grouped field when not mapped", async () => {
+    const requiredGroupedFields: Fields<any> = [
+      {
+        groupName: "Identity",
+        fields: [
+          {
+            label: "Name",
+            key: "name",
+            fieldType: { type: "input" as const },
+            validations: [{ rule: "required" as const }],
+          },
+        ],
+      },
+    ]
+
+    const header = ["phone"]
+    const data = [["123"]]
+
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: requiredGroupedFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={vi.fn()} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(screen.queryByText(translations.alerts.unmatchedRequiredFields.bodyText)).toBeInTheDocument()
+    })
   })
 })

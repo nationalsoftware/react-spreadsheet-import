@@ -1,5 +1,5 @@
 import lavenstein from "js-levenshtein"
-import type { Fields } from "../../../types"
+import type { FlatFields } from "../../../types"
 
 type AutoMatchAccumulator<T> = {
   distance: number
@@ -8,7 +8,7 @@ type AutoMatchAccumulator<T> = {
 
 export const findMatch = <T extends string>(
   header: string,
-  fields: Fields<T>,
+  fields: FlatFields<T>,
   autoMapDistance: number,
 ): T | undefined => {
   const smallestValue = fields.reduce<AutoMatchAccumulator<T>>((acc, field) => {

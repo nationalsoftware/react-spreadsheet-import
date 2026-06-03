@@ -1,6 +1,7 @@
 import type { Data, Fields, Info, RowHook, SelectOption, TableHook } from "../../../types"
 import type { Meta, Error, Errors, SelectOptionsMap } from "../types"
 import { ErrorSources } from "../../../types"
+import { flattenFields } from "../../../utils/flattenFields"
 import { parseNumeric, formatNumeric } from "../../../utils/parseNumeric"
 import { isBefore, isAfter } from "date-fns"
 import { parseDate, formatDate } from "../../../utils/parseDate"
@@ -13,6 +14,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
   changedRowIndexes?: number[],
   changedFieldKey?: string,
 ): Promise<(Data<T> & Meta)[]> => {
+  const flatFields = flattenFields(fields)
   const errors: Errors = {}
 
   const addError = (source: ErrorSources, rowIndex: number, fieldKey: T, error: Info) => {
@@ -78,7 +80,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
   // Skip entirely when the edited field isn't part of any unique constraint — the scan
   // is irrelevant and would be O(n) for nothing.
   const fieldHasUniqueConstraintFor = (fieldKey: string) =>
-    fields.some((f) =>
+    flatFields.some((f) =>
       f.validations?.some((v) => {
         if (v.rule !== "unique") return false
         return v.keys?.length ? v.keys.includes(fieldKey) : f.key === fieldKey
@@ -86,7 +88,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
     )
 
   if (!changedFieldKey || fieldHasUniqueConstraintFor(changedFieldKey)) {
-    fields.forEach((field) => {
+    flatFields.forEach((field) => {
       field.validations?.forEach((validation) => {
         if (validation.rule !== "unique") return
 
@@ -138,7 +140,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
   }
 
   // Row-level validations run after unique so changedRowIndexes is fully expanded.
-  fields.forEach((field) => {
+  flatFields.forEach((field) => {
     const dataToValidate = changedRowIndexes ? changedRowIndexes.map((index) => data[index]) : data
 
     if (field.fieldType.type === "select") {

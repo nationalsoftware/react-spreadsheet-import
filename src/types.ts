@@ -62,8 +62,21 @@ export type RawData = Array<string | undefined>
 
 export type Data<T extends string> = { [key in T]: string | boolean | undefined }
 
-// Data model RSI uses for spreadsheet imports
-export type Fields<T extends string> = DeepReadonly<Field<T>[]>
+export type FieldGroup<T extends string> = {
+  groupName: string
+  groupColor?: string
+  fields: Field<T>[]
+}
+
+export const isFieldGroup = <T extends string>(
+  item: DeepReadonly<Field<T> | FieldGroup<T>>,
+): item is DeepReadonly<FieldGroup<T>> => "groupName" in item
+
+// Flat alias — used as the parameter type for low-level utilities that require a pre-flattened array
+export type FlatFields<T extends string> = DeepReadonly<Field<T>[]>
+
+// Data model RSI uses for spreadsheet imports; entries may be individual fields or named groups
+export type Fields<T extends string> = DeepReadonly<(Field<T> | FieldGroup<T>)[]>
 
 export type Field<T extends string> = {
   // UI-facing field label

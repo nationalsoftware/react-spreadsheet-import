@@ -5,10 +5,11 @@ import { ColumnType } from "../MatchColumnsStep"
 import { MatchIcon } from "./MatchIcon"
 import { MatchColumnSelect } from "../../../components/Selects/MatchColumnSelect"
 import type { Styles } from "./ColumnGrid"
-import type { Fields, RawData } from "../../../types"
+import type { Field, RawData } from "../../../types"
+import type { DeepReadonly } from "ts-essentials"
 
 type FieldRowProps<T extends string> = {
-  field: Fields<T>[number]
+  field: DeepReadonly<Field<T>>
   columns: Columns<T>
   headerValues: RawData
   firstDataRow: RawData

@@ -1,4 +1,5 @@
 import type { Field, Fields } from "../../../types"
+import { flattenFields } from "../../../utils/flattenFields"
 
 const titleMap: Record<Field<string>["fieldType"]["type"], string> = {
   checkbox: "Boolean",
@@ -9,7 +10,8 @@ const titleMap: Record<Field<string>["fieldType"]["type"], string> = {
 }
 
 export const generateTableData = <T extends string>(fields: Fields<T>) => {
-  const row = fields.reduce<Record<T, string>>(
+  const flatFields = flattenFields(fields)
+  const row = flatFields.reduce<Record<T, string>>(
     (acc, field) => {
       acc[field.key as T] = field.example || titleMap[field.fieldType.type]
       return acc
@@ -17,7 +19,7 @@ export const generateTableData = <T extends string>(fields: Fields<T>) => {
     {} as Record<T, string>,
   )
 
-  return fields.map((field) => ({
+  return flatFields.map((field) => ({
     label: field.label,
     description: field.description,
     value: row[field.key as T],

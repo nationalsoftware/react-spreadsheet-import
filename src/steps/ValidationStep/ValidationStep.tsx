@@ -23,6 +23,7 @@ import { generateColumns } from "./components/columns"
 import { Table } from "../../components/Table"
 import { SubmitDataAlert } from "../../components/Alerts/SubmitDataAlert"
 import type { Data } from "../../types"
+import { flattenFields } from "../../utils/flattenFields"
 import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
 import { downloadAsCsv, downloadAsXlsx } from "../../utils/downloadSpreadsheet"
@@ -96,6 +97,8 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     },
     [data, updateData],
   )
+
+  const flatFields = useMemo(() => flattenFields(fields), [fields])
 
   const columns = useMemo(
     () => generateColumns(fields, allowDiscard, numberedRows, initialData.length),
@@ -206,7 +209,10 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
                 {translations.validationStep.exportButtonTitle}
               </MenuButton>
               <MenuList>
-                <MenuItem icon={<FaFileCsv size="32px" color="#2B73B6" />} onClick={() => downloadAsCsv(data, fields)}>
+                <MenuItem
+                  icon={<FaFileCsv size="32px" color="#2B73B6" />}
+                  onClick={() => downloadAsCsv(data, flatFields)}
+                >
                   <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
                   <Text sx={styles.exportMenuItemDescription}>
                     {translations.validationStep.exportCsvButtonDescription}
@@ -215,7 +221,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
                 <MenuDivider />
                 <MenuItem
                   icon={<FaFileExcel size="32px" color="#217346" />}
-                  onClick={() => downloadAsXlsx(data, fields)}
+                  onClick={() => downloadAsXlsx(data, flatFields)}
                 >
                   <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportXlsxButtonTitle}</Text>
                   <Text sx={styles.exportMenuItemDescription}>

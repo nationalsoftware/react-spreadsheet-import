@@ -8,7 +8,7 @@ import { translations } from "../../../translationsRSIProps"
 import { addErrorsAndRunHooks } from "../utils/dataMutations"
 import { Fields, RowHook, TableHook } from "../../../types"
 
-type fieldKeys<T extends Fields<string>> = T[number]["key"]
+type fieldKeys<T extends Fields<string>> = Extract<T[number], { key: string }>["key"]
 
 const mockValues = {
   ...defaultRSIProps,
@@ -1425,5 +1425,57 @@ describe("Validation step tests", () => {
       const rows = await screen.findAllByRole("row")
       expect(rows).toHaveLength(2) // header + 1 error row
     })
+  })
+})
+
+describe("Validation step with grouped fields", () => {
+  const groupedFields = [
+    {
+      groupName: "Personal Info",
+      groupColor: "teal",
+      fields: [
+        {
+          label: "Name",
+          key: "name",
+          fieldType: { type: "input" as const },
+          validations: [{ rule: "required" as const, errorMessage: "Name is required" }],
+        },
+        {
+          label: "Age",
+          key: "age",
+          fieldType: { type: "numeric" as const, decimalPlaces: 0 },
+        },
+      ],
+    },
+  ] as const
+
+  test("required validation fires on field inside a group", async () => {
+    const initialData = await addErrorsAndRunHooks([{ name: "", age: "25" }], groupedFields)
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields: groupedFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <ValidationStep initialData={initialData} file={file} />
+        </ModalWrapper>
+      </Providers>,
+    )
+    await userEvent.click(getErrorsButton())
+    const errorRows = await screen.findAllByRole("row")
+    // Column groups add an extra header row, so: group header row + field header row + 1 error data row
+    expect(errorRows).toHaveLength(3)
+  })
+
+  test("valid data in grouped fields passes validation", async () => {
+    const initialData = await addErrorsAndRunHooks([{ name: "Alice", age: "30" }], groupedFields)
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockValues, fields: groupedFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <ValidationStep initialData={initialData} file={file} />
+        </ModalWrapper>
+      </Providers>,
+    )
+    await userEvent.click(getErrorsButton())
+    const errorRows = await screen.findAllByRole("row")
+    // Column groups add an extra header row: group header + field header, no data rows
+    expect(errorRows).toHaveLength(2)
   })
 })

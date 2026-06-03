@@ -3,7 +3,7 @@ import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
 
 const MatchIconTheme: any = {
-  baseStyle: (props: any) => {
+  baseStyle: (_props: any) => {
     return {
       display: "flex",
       alignItems: "center",
@@ -392,6 +392,7 @@ export const themeOverrides = {
       ".rdg": {
         contain: "size layout style paint",
         borderRadius: "lg",
+        clipPath: "inset(0 round var(--chakra-radii-lg))",
         border: "none",
         borderTop: "1px solid var(--rdg-border-color)",
         blockSize: "100%",

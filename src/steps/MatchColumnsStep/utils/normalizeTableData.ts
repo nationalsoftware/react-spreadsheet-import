@@ -1,10 +1,10 @@
 import type { Columns } from "../MatchColumnsStep"
 import { ColumnType } from "../MatchColumnsStep"
-import type { Data, Fields, RawData } from "../../../types"
+import type { Data, FlatFields, RawData } from "../../../types"
 import { normalizeCheckboxValue } from "./normalizeCheckboxValue"
 import { parseDate, formatDate } from "../../../utils/parseDate"
 
-export const normalizeTableData = <T extends string>(columns: Columns<T>, data: RawData[], fields: Fields<T>) =>
+export const normalizeTableData = <T extends string>(columns: Columns<T>, data: RawData[], fields: FlatFields<T>) =>
   data.map((row, rowIndex) => {
     return {
       __rownum: rowIndex + 2,

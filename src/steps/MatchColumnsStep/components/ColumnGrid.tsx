@@ -1,5 +1,7 @@
 import type React from "react"
-import type { Fields } from "../../../types"
+import type { Field, Fields } from "../../../types"
+import { isFieldGroup } from "../../../types"
+import type { DeepReadonly } from "ts-essentials"
 import { Box, Flex, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
 import { CgCheckO, CgInfo } from "react-icons/cg"
 import { ContinueButton } from "../../../components/ContinueButton"
@@ -9,7 +11,7 @@ import type { themeOverrides } from "../../../theme"
 type ColumnGridProps<T extends string> = {
   fields: Fields<T>
   unmatchedRequiredFields: string[]
-  fieldRow: (field: Fields<T>[number]) => React.ReactNode
+  fieldRow: (field: DeepReadonly<Field<T>>) => React.ReactNode
   onContinue: () => void
   onBack?: () => void
   isLoading: boolean
@@ -67,9 +69,22 @@ export const ColumnGrid = <T extends string>({
             <Text sx={styles.title}>{translations.matchColumnsStep.userTableSampleTitle}</Text>
           </Box>
         </Flex>
-        {fields.map((field) => (
-          <Box key={field.key}>{fieldRow(field)}</Box>
-        ))}
+        {fields.map((item, i) =>
+          isFieldGroup(item) ? (
+            <Box key={`${item.groupName}-${i}`}>
+              <Flex alignItems="center" mt={4} mb={2} px={2} py={0.5} bg={item.groupColor} borderRadius="md" w="full">
+                <Text fontWeight="semibold" fontSize="sm">
+                  {item.groupName}
+                </Text>
+              </Flex>
+              {item.fields.map((field) => (
+                <Box key={field.key}>{fieldRow(field)}</Box>
+              ))}
+            </Box>
+          ) : (
+            <Box key={item.key}>{fieldRow(item)}</Box>
+          ),
+        )}
       </ModalBody>
       <ContinueButton
         isLoading={isLoading}

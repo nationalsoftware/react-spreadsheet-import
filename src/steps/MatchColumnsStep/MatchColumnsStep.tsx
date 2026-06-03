@@ -6,6 +6,7 @@ import { ColumnGrid } from "./components/ColumnGrid"
 import { setColumn } from "./utils/setColumn"
 import { normalizeTableData } from "./utils/normalizeTableData"
 import type { Field, RawData } from "../../types"
+import { flattenFields } from "../../utils/flattenFields"
 import { getMatchedColumns } from "./utils/getMatchedColumns"
 import { UnmatchedFieldsAlert } from "../../components/Alerts/UnmatchedFieldsAlert"
 import { findUnmatchedRequiredFields } from "./utils/findUnmatchedRequiredFields"
@@ -41,7 +42,10 @@ export const MatchColumnsStep = <T extends string>({
 }: MatchColumnsProps<T>) => {
   const toast = useToast()
   const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
+  const flatFields = useMemo(() => flattenFields(fields), [fields])
   const [isLoading, setIsLoading] = useState(false)
+  // The lazy initializer captures flatFields from the first render only — auto-matching
+  // is intentionally a one-shot operation at mount, not re-run when fields change.
   const [columns, setColumns] = useState<Columns<T>>(() => {
     // Do not remove spread, it indexes empty array elements, otherwise map() skips over them
     const emptyColumns = ([...headerValues] as string[]).map((value, index) => ({
@@ -50,7 +54,7 @@ export const MatchColumnsStep = <T extends string>({
       header: value ?? "",
     }))
     if (initialColumns) return initialColumns
-    if (autoMapHeaders) return getMatchedColumns(emptyColumns, fields, autoMapDistance)
+    if (autoMapHeaders) return getMatchedColumns(emptyColumns, flatFields, autoMapDistance)
     return emptyColumns
   })
   const [showUnmatchedFieldsAlert, setShowUnmatchedFieldsAlert] = useState(false)
@@ -59,7 +63,7 @@ export const MatchColumnsStep = <T extends string>({
 
   const onFieldMap = useCallback(
     (fieldKey: T, csvColumnIndex: number | null) => {
-      const field = fields.find((f) => f.key === fieldKey) as unknown as Field<T>
+      const field = flatFields.find((f) => f.key === fieldKey) as Field<T> | undefined
       const previousColumnIndex = columns.findIndex((c) => "value" in c && c.value === fieldKey)
 
       const targetColumn = csvColumnIndex !== null ? columns[csvColumnIndex] : null
@@ -91,14 +95,14 @@ export const MatchColumnsStep = <T extends string>({
     },
     [
       columns,
-      fields,
+      flatFields,
       toast,
       translations.matchColumnsStep.duplicateColumnWarningDescription,
       translations.matchColumnsStep.duplicateColumnWarningTitle,
     ],
   )
 
-  const unmatchedRequiredFields = useMemo(() => findUnmatchedRequiredFields(fields, columns), [fields, columns])
+  const unmatchedRequiredFields = useMemo(() => findUnmatchedRequiredFields(flatFields, columns), [flatFields, columns])
 
   const handleOnContinue = useCallback(async () => {
     if (unmatchedRequiredFields.length > 0) {
@@ -106,18 +110,18 @@ export const MatchColumnsStep = <T extends string>({
     } else {
       setIsLoading(true)
       await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
-      await onContinue(normalizeTableData(columns, data, fields), data, columns)
+      await onContinue(normalizeTableData(columns, data, flatFields), data, columns)
       setIsLoading(false)
     }
-  }, [unmatchedRequiredFields.length, onContinue, columns, data, fields])
+  }, [unmatchedRequiredFields.length, onContinue, columns, data, flatFields])
 
   const handleAlertOnContinue = useCallback(async () => {
     setShowUnmatchedFieldsAlert(false)
     setIsLoading(true)
     await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
-    await onContinue(normalizeTableData(columns, data, fields), data, columns)
+    await onContinue(normalizeTableData(columns, data, flatFields), data, columns)
     setIsLoading(false)
-  }, [onContinue, columns, data, fields])
+  }, [onContinue, columns, data, flatFields])
 
   return (
     <>
