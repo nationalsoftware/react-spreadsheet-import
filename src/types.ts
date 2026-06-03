@@ -117,6 +117,7 @@ export type Input = {
 export type Numeric = {
   type: "numeric"
   decimalPlaces?: number
+  thousandsSeparator?: boolean
   min?: number
   max?: number
 }
