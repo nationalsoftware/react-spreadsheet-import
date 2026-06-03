@@ -226,6 +226,7 @@ export const generateColumns = <T extends string>(
               : num.toLocaleString("en-US", {
                   minimumFractionDigits: column.fieldType.decimalPlaces ?? 2,
                   maximumFractionDigits: column.fieldType.decimalPlaces ?? 2,
+                  useGrouping: column.fieldType.thousandsSeparator ?? true,
                 })
           }
 
