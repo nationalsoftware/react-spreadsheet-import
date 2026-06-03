@@ -224,8 +224,8 @@ export const generateColumns = <T extends string>(
             return isNaN(num)
               ? value
               : num.toLocaleString("en-US", {
-                  minimumFractionDigits: column.fieldType.decimalPlaces ?? 2,
-                  maximumFractionDigits: column.fieldType.decimalPlaces ?? 2,
+                  minimumFractionDigits: column.fieldType.decimalPlaces ?? 0,
+                  maximumFractionDigits: column.fieldType.decimalPlaces ?? 0,
                   useGrouping: column.fieldType.thousandsSeparator ?? true,
                 })
           }

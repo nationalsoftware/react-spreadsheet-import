@@ -171,7 +171,7 @@ export const addErrorsAndRunHooks = async <T extends string>(
     }
 
     if (field.fieldType.type === "numeric") {
-      const { decimalPlaces = 2, min, max } = field.fieldType
+      const { decimalPlaces = 0, min, max } = field.fieldType
       dataToValidate.forEach((entry, index) => {
         const realIndex = changedRowIndexes ? changedRowIndexes[index] : index
         const value = entry[field.key as T]
