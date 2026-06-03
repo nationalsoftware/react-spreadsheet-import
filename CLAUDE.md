@@ -17,8 +17,8 @@ Avoid using `any` wherever possible. Prefer specific types, `unknown` with narro
 - **React Data Grid 7** for the validation/editing table
 - **ExcelJS / SheetJS** for file parsing
 - **date-fns 4** for date parsing and formatting (`src/utils/parseDate.ts`)
-- **Vite** for building (dual ESM + CommonJS output)
-- **Vitest + jsdom** for unit tests
+- **Vite 6** for building (dual ESM + CommonJS output)
+- **Vitest 4** + jsdom for unit tests
 - **Storybook 8** for component dev and visual testing
 
 ## Project Structure
@@ -148,7 +148,13 @@ There is one additional minor touch point: `src/steps/UploadStep/utils/generateT
 
 ```typescript
 export type Input = { type: "input" }
-export type Numeric = { type: "numeric"; decimalPlaces?: number; min?: number; max?: number }
+export type Numeric = {
+  type: "numeric"
+  decimalPlaces?: number
+  thousandsSeparator?: boolean
+  min?: number
+  max?: number
+}
 export type Checkbox = { type: "checkbox"; booleanMatches?: { [key: string]: boolean } }
 export type Select = {
   type: "select"
@@ -217,7 +223,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 - `"checkbox"` → `<Switch isChecked={...} onChange={...} />`
 - `"select"` → resolves options via `resolveOptions(row)` (same override logic as editor); resolves raw value to `option.label`; multiSelect splits/joins. If resolved options is empty, falls through to plain text display.
 - `"date"` → displays the stored `dateFormat` string as-is
-- `"numeric"` → `num.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits })` using `decimalPlaces`
+- `"numeric"` → `num.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits, useGrouping })` using `decimalPlaces` and `thousandsSeparator` (default `true`)
 - `"input"` / default → raw string with optional prefix/suffix
 
 ---

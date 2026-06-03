@@ -158,7 +158,7 @@ const fields = [
   {
     label: "Price",
     key: "price",
-    fieldType: { type: "numeric", decimalPlaces: 2 },
+    fieldType: { type: "numeric", decimalPlaces: 2, thousandsSeparator: false },
     columnStyle: {
       // Text alignment within the cell. One of "left" | "center" | "right".
       textAlign: "right",
@@ -170,6 +170,8 @@ const fields = [
   },
 ] as const
 ```
+
+Numeric fields accept `decimalPlaces` (default `2`), `thousandsSeparator` (default `true`), and optional `min`/`max` bounds. `thousandsSeparator` controls whether a thousands separator is shown in the validation table (e.g. `1000` displays as `1,000` when `true`, `1000` when `false`); it does not affect the submitted value.
 
 `prefix` and `suffix` are purely visual — they are rendered alongside the value in the table but are never included in the submitted data. They appear in both edit mode (as `InputLeftElement` / `InputRightElement` adornments) and read-only mode (as inline spans). `columnStyle` applies to `input`, `numeric`, and `date` fields; `checkbox` and `select` fields ignore it.
 
