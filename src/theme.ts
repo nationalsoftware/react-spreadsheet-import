@@ -452,7 +452,11 @@ export const themeOverrides = {
         overflow: "hidden",
         textOverflow: "ellipsis",
         "&[aria-selected='true']": {
-          boxShadow: "inset 0 0 0 1px var(--rdg-selection-color)",
+          outline: "none",
+        },
+        "&[aria-selected='true']:focus-within": {
+          outline: "2px solid var(--rdg-selection-color)",
+          outlineOffset: "-2px",
         },
         "&:first-of-type": {
           borderInlineStart: "1px solid var(--rdg-border-color)",
