@@ -4,10 +4,19 @@ import * as XLSX from "xlsx-ugnis"
 type Fields = readonly { label: string; key: string }[]
 
 function getKeysAndLabels(data: Record<string, any>[], fields?: Fields) {
-  const { __index, __rownum, __errors, ...firstRest } = data[0]
-  const keys = Object.keys(firstRest)
   const labelByKey = fields ? Object.fromEntries(fields.map((f) => [f.key, f.label])) : {}
-  return { keys, labelByKey }
+  if (fields) {
+    return { keys: fields.map((f) => f.key), labelByKey }
+  }
+  const { __index, __rownum, __errors, __selectOptions, ...firstRest } = data[0]
+  return { keys: Object.keys(firstRest), labelByKey }
+}
+
+function prepareRows(data: Record<string, any>[], keys: string[]) {
+  return data.map((row) => {
+    const { __index, __rownum, __errors: errors, __selectOptions, ...rowData } = row
+    return { values: keys.map((k) => rowData[k]), errors }
+  })
 }
 
 function triggerDownload(blob: Blob, filename: string) {
@@ -21,15 +30,14 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
-export const downloadAsCsv = (data: Record<string, any>[], fields?: Fields, filename = "spreadsheet_data.csv") => {
+export const downloadAsCsv = (data: Record<string, any>[], fields?: Fields, filename = "export.csv") => {
   if (!data || data.length === 0) return
 
   const { keys, labelByKey } = getKeysAndLabels(data, fields)
 
-  const cleaned = data.map((row) => {
-    const { __index, __rownum, __errors, ...rowData } = row
-    return Object.fromEntries(keys.map((k) => [labelByKey[k] ?? k, rowData[k]]))
-  })
+  const cleaned = prepareRows(data, keys).map(({ values }) =>
+    Object.fromEntries(keys.map((k, i) => [labelByKey[k] ?? k, values[i]])),
+  )
 
   const worksheet = XLSX.utils.json_to_sheet(cleaned)
   const csv = XLSX.utils.sheet_to_csv(worksheet)
@@ -40,7 +48,7 @@ export const downloadAsCsv = (data: Record<string, any>[], fields?: Fields, file
 export const downloadAsXlsx = async (
   data: Record<string, any>[],
   fields?: Fields,
-  filename = "spreadsheet_data.xlsx",
+  filename = "export.xlsx",
 ) => {
   if (!data || data.length === 0) return
 
@@ -53,9 +61,8 @@ export const downloadAsXlsx = async (
   sheet.columns = keys.map(() => ({ width: 25 }))
   sheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }]
 
-  for (const row of data) {
-    const { __index: _i, __rownum: _r, __errors: errors, ...rowData } = row
-    const excelRow = sheet.addRow(keys.map((k) => rowData[k]))
+  for (const { values, errors } of prepareRows(data, keys)) {
+    const excelRow = sheet.addRow(values)
 
     if (errors) {
       keys.forEach((key, idx) => {
