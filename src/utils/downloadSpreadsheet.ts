@@ -45,11 +45,7 @@ export const downloadAsCsv = (data: Record<string, any>[], fields?: Fields, file
   triggerDownload(new Blob([csv], { type: "text/csv;charset=utf-8;" }), filename)
 }
 
-export const downloadAsXlsx = async (
-  data: Record<string, any>[],
-  fields?: Fields,
-  filename = "export.xlsx",
-) => {
+export const downloadAsXlsx = async (data: Record<string, any>[], fields?: Fields, filename = "export.xlsx") => {
   if (!data || data.length === 0) return
 
   const { keys, labelByKey } = getKeysAndLabels(data, fields)
