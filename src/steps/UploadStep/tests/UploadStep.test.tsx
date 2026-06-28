@@ -67,6 +67,27 @@ test("uploadStepHook should be able to mutate raw upload data", async () => {
   expect(el).toBeInTheDocument()
 })
 
+test("Should call maxRecordsExceeded with (maxRecords, count) when a sheet exceeds the limit", async () => {
+  // 4 lines -> worksheet ref A1:A4 -> count = lastRow - firstRow = 3
+  const file = new File(["name\nAlice\nBob\nCarol"], "test.csv", { type: "text/csv" })
+  const maxRecordsExceeded = vi.fn((maxRecords: number, _count: number) => `Too many: ${maxRecords}`)
+  render(
+    <ReactSpreadsheetImport {...mockRsiValues} maxRecords={1} translations={{ uploadStep: { maxRecordsExceeded } }} />,
+  )
+
+  const uploader = screen.getByTestId("rsi-dropzone")
+  fireEvent.drop(uploader, {
+    target: { files: [file] },
+  })
+
+  await waitFor(
+    () => {
+      expect(maxRecordsExceeded).toBeCalledWith(1, 3)
+    },
+    { timeout: 5000 },
+  )
+})
+
 test("Should show error toast if error is thrown in uploadStepHook", async () => {
   const file = new File(["Hello, Hello, Hello, Hello"], "test.csv", { type: "text/csv" })
   const uploadStepHook = vi.fn(async () => {

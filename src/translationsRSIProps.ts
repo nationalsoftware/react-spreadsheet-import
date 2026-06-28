@@ -5,7 +5,8 @@ export const translations = {
     title: "Upload file",
     instructions: "You will have a chance to rename or remove columns in next steps",
     manifestTitle: "Data that we expect:",
-    maxRecordsExceeded: (maxRecords: string) => `Too many records. Up to ${maxRecords} allowed`,
+    maxRecordsExceeded: (maxRecords: number, count: number) =>
+      `Too many records: the file has ${count}, but only ${maxRecords} are allowed.`,
     dropzone: {
       title: "Upload .xlsx, .xls or .csv file",
       errorToastDescription: "upload rejected",
