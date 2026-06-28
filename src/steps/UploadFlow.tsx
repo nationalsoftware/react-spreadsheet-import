@@ -10,7 +10,7 @@ import { ValidationStep } from "./ValidationStep/ValidationStep"
 import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
 import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
-import { exceedsMaxRecords } from "../utils/exceedsMaxRecords"
+import { getRecordCount } from "../utils/getRecordCount"
 import { useRsi } from "../hooks/useRsi"
 import type { RawData } from "../types"
 import { shouldAutoSelectHeader } from "./SelectHeaderStep/utils/autoSelectHeader"
@@ -119,8 +119,9 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
 
             const isSingleSheet = workbook.SheetNames.length === 1
             if (isSingleSheet) {
-              if (maxRecords && exceedsMaxRecords(workbook.Sheets[workbook.SheetNames[0]], maxRecords)) {
-                errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords.toString()))
+              const count = getRecordCount(workbook.Sheets[workbook.SheetNames[0]])
+              if (maxRecords && count > maxRecords) {
+                errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
                 return
               }
               try {
@@ -140,8 +141,9 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
         <SelectSheetStep
           sheetNames={state.workbook.SheetNames}
           onContinue={async (sheetName) => {
-            if (maxRecords && exceedsMaxRecords(state.workbook.Sheets[sheetName], maxRecords)) {
-              errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords.toString()))
+            const count = getRecordCount(state.workbook.Sheets[sheetName])
+            if (maxRecords && count > maxRecords) {
+              errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
               return
             }
             try {
