@@ -10,7 +10,6 @@ import { ValidationStep } from "./ValidationStep/ValidationStep"
 import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
 import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
-import { getRecordCount } from "../utils/getRecordCount"
 import { useRsi } from "../hooks/useRsi"
 import type { RawData } from "../types"
 import { shouldAutoSelectHeader } from "./SelectHeaderStep/utils/autoSelectHeader"
@@ -119,13 +118,14 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
 
             const isSingleSheet = workbook.SheetNames.length === 1
             if (isSingleSheet) {
-              const count = getRecordCount(workbook.Sheets[workbook.SheetNames[0]])
+              const mapped = mapWorkbook(workbook)
+              const count = Math.max(mapped.length - 1, 0) // exclude header row; empty rows already dropped by mapWorkbook
               if (maxRecords && count > maxRecords) {
                 errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
                 return
               }
               try {
-                const mappedWorkbook = await uploadStepHook(mapWorkbook(workbook))
+                const mappedWorkbook = await uploadStepHook(mapped)
                 await handleSelectHeader(mappedWorkbook)
               } catch (e) {
                 errorToast((e as Error).message)
@@ -141,13 +141,14 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
         <SelectSheetStep
           sheetNames={state.workbook.SheetNames}
           onContinue={async (sheetName) => {
-            const count = getRecordCount(state.workbook.Sheets[sheetName])
+            const mapped = mapWorkbook(state.workbook, sheetName)
+            const count = Math.max(mapped.length - 1, 0) // exclude header row; empty rows already dropped by mapWorkbook
             if (maxRecords && count > maxRecords) {
               errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
               return
             }
             try {
-              const mappedWorkbook = await uploadStepHook(mapWorkbook(state.workbook, sheetName))
+              const mappedWorkbook = await uploadStepHook(mapped)
               await handleSelectHeader(mappedWorkbook)
             } catch (e) {
               errorToast((e as Error).message)
