@@ -1,13 +1,12 @@
-import "@testing-library/jest-dom"
-import { render, waitFor, screen } from "@testing-library/react"
-import { MatchColumnsStep } from "../MatchColumnsStep"
+import { act, render, waitFor, screen, within, fireEvent } from "@testing-library/react"
+import { MatchColumnsStep, ColumnType } from "../MatchColumnsStep"
+import type { Columns } from "../MatchColumnsStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
 import { mockRsiValues } from "../../../stories/mockRsiValues"
 import { Providers } from "../../../components/Providers"
 import { ModalWrapper } from "../../../components/ModalWrapper"
 import userEvent from "@testing-library/user-event"
 import type { Fields } from "../../../types"
-import selectEvent from "react-select-event"
 import { translations } from "../../../translationsRSIProps"
 import { SELECT_DROPDOWN_ID } from "../../../components/Selects/MenuPortal"
 import { StepType } from "../../UploadFlow"
@@ -52,9 +51,13 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -83,9 +86,9 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{}, {}, {}]
+    const result = [{ __rownum: 2 }, { __rownum: 3 }, { __rownum: 4 }]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapHeaders: false }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -114,9 +117,13 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapDistance: 1 }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -145,7 +152,11 @@ describe("Match Columns automatic matching", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
     // finds only names with automatic matching
-    const result = [{ name: data[0][1] }, { name: data[1][1] }, { name: data[2][1] }]
+    const result = [
+      { __rownum: 2, name: data[0][1] },
+      { __rownum: 3, name: data[1][1] },
+      { __rownum: 4, name: data[2][1] },
+    ]
 
     const alternativeFields = [
       {
@@ -159,7 +170,7 @@ describe("Match Columns automatic matching", () => {
       },
     ] as const
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: alternativeFields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -167,192 +178,6 @@ describe("Match Columns automatic matching", () => {
         </ModalWrapper>
       </Providers>,
     )
-
-    const nextButton = screen.getByRole("button", {
-      name: "Next",
-    })
-
-    await userEvent.click(nextButton)
-
-    await waitFor(() => {
-      expect(onContinue).toBeCalled()
-    })
-    expect(onContinue.mock.calls[0][0]).toEqual(result)
-  })
-
-  test("AutoMatches select values on mount", async () => {
-    const header = ["first name", "count", "Email"]
-    const OPTION_RESULT_ONE = "John"
-    const OPTION_RESULT_ONE_VALUE = "1"
-    const OPTION_RESULT_TWO = "Dane"
-    const OPTION_RESULT_TWO_VALUE = "2"
-    const OPTION_RESULT_THREE = "Kane"
-    const data = [
-      // match by option label
-      [OPTION_RESULT_ONE, "123", "j@j.com"],
-      // match by option value
-      [OPTION_RESULT_TWO_VALUE, "333", "dane@bane.com"],
-      // do not match
-      [OPTION_RESULT_THREE, "534", "kane@linch.com"],
-    ]
-    const options = [
-      { label: OPTION_RESULT_ONE, value: OPTION_RESULT_ONE_VALUE },
-      { label: OPTION_RESULT_TWO, value: OPTION_RESULT_TWO_VALUE },
-    ]
-    // finds only names with automatic matching
-    const result = [{ name: OPTION_RESULT_ONE_VALUE }, { name: OPTION_RESULT_TWO_VALUE }, { name: undefined }]
-
-    const alternativeFields = [
-      {
-        label: "Name",
-        key: "name",
-        alternateMatches: ["first name"],
-        fieldType: {
-          type: "select",
-          options,
-        },
-        example: "Stephanie",
-      },
-    ] as const
-
-    const onContinue = jest.fn()
-    render(
-      <Providers
-        theme={defaultTheme}
-        rsiValues={{ ...mockRsiValues, fields: alternativeFields, autoMapSelectValues: true }}
-      >
-        <ModalWrapper isOpen={true} onClose={() => {}}>
-          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
-        </ModalWrapper>
-      </Providers>,
-    )
-
-    expect(screen.getByText(/1 Unmatched/)).toBeInTheDocument()
-
-    const nextButton = screen.getByRole("button", {
-      name: "Next",
-    })
-
-    await userEvent.click(nextButton)
-
-    await waitFor(() => {
-      expect(onContinue).toBeCalled()
-    })
-    expect(onContinue.mock.calls[0][0]).toEqual(result)
-  })
-
-  test("Does not auto match select values when autoMapSelectValues:false", async () => {
-    const header = ["first name", "count", "Email"]
-    const OPTION_RESULT_ONE = "John"
-    const OPTION_RESULT_ONE_VALUE = "1"
-    const OPTION_RESULT_TWO = "Dane"
-    const OPTION_RESULT_TWO_VALUE = "2"
-    const OPTION_RESULT_THREE = "Kane"
-    const data = [
-      // match by option label
-      [OPTION_RESULT_ONE, "123", "j@j.com"],
-      // match by option value
-      [OPTION_RESULT_TWO_VALUE, "333", "dane@bane.com"],
-      // do not match
-      [OPTION_RESULT_THREE, "534", "kane@linch.com"],
-    ]
-    const options = [
-      { label: OPTION_RESULT_ONE, value: OPTION_RESULT_ONE_VALUE },
-      { label: OPTION_RESULT_TWO, value: OPTION_RESULT_TWO_VALUE },
-    ]
-    const result = [{ name: undefined }, { name: undefined }, { name: undefined }]
-
-    const alternativeFields = [
-      {
-        label: "Name",
-        key: "name",
-        alternateMatches: ["first name"],
-        fieldType: {
-          type: "select",
-          options,
-        },
-        example: "Stephanie",
-      },
-    ] as const
-
-    const onContinue = jest.fn()
-    render(
-      <Providers
-        theme={defaultTheme}
-        rsiValues={{ ...mockRsiValues, fields: alternativeFields, autoMapSelectValues: false }}
-      >
-        <ModalWrapper isOpen={true} onClose={() => {}}>
-          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
-        </ModalWrapper>
-      </Providers>,
-    )
-
-    expect(screen.getByText(/3 Unmatched/)).toBeInTheDocument()
-
-    const nextButton = screen.getByRole("button", {
-      name: "Next",
-    })
-
-    await userEvent.click(nextButton)
-
-    await waitFor(() => {
-      expect(onContinue).toBeCalled()
-    })
-    expect(onContinue.mock.calls[0][0]).toEqual(result)
-  })
-
-  test("AutoMatches select values on select", async () => {
-    const header = ["first name", "count", "Email"]
-    const OPTION_RESULT_ONE = "John"
-    const OPTION_RESULT_ONE_VALUE = "1"
-    const OPTION_RESULT_TWO = "Dane"
-    const OPTION_RESULT_TWO_VALUE = "2"
-    const OPTION_RESULT_THREE = "Kane"
-    const data = [
-      // match by option label
-      [OPTION_RESULT_ONE, "123", "j@j.com"],
-      // match by option value
-      [OPTION_RESULT_TWO_VALUE, "333", "dane@bane.com"],
-      // do not match
-      [OPTION_RESULT_THREE, "534", "kane@linch.com"],
-    ]
-    const options = [
-      { label: OPTION_RESULT_ONE, value: OPTION_RESULT_ONE_VALUE },
-      { label: OPTION_RESULT_TWO, value: OPTION_RESULT_TWO_VALUE },
-    ]
-    // finds only names with automatic matching
-    const result = [{ name: OPTION_RESULT_ONE_VALUE }, { name: OPTION_RESULT_TWO_VALUE }, { name: undefined }]
-
-    const alternativeFields = [
-      {
-        label: "Name",
-        key: "name",
-        fieldType: {
-          type: "select",
-          options,
-        },
-        example: "Stephanie",
-      },
-    ] as const
-
-    const onContinue = jest.fn()
-    render(
-      <Providers
-        theme={defaultTheme}
-        rsiValues={{ ...mockRsiValues, fields: alternativeFields, autoMapSelectValues: true }}
-      >
-        <ModalWrapper isOpen={true} onClose={() => {}}>
-          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
-          <div id={SELECT_DROPDOWN_ID} />
-        </ModalWrapper>
-      </Providers>,
-    )
-
-    await selectEvent.select(screen.getByLabelText(header[0]), alternativeFields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
-
-    expect(screen.getByText(/1 Unmatched/)).toBeInTheDocument()
 
     const nextButton = screen.getByRole("button", {
       name: "Next",
@@ -377,14 +202,14 @@ describe("Match Columns automatic matching", () => {
     ]
 
     const result = [
-      { name: data[0][0], is_cool: true },
-      { name: data[1][0], is_cool: true },
-      { name: data[2][0], is_cool: false },
-      { name: data[3][0], is_cool: false },
-      { name: data[4][0], is_cool: false },
+      { __rownum: 2, name: data[0][0], is_cool: true },
+      { __rownum: 3, name: data[1][0], is_cool: true },
+      { __rownum: 4, name: data[2][0], is_cool: false },
+      { __rownum: 5, name: data[3][0], is_cool: false },
+      { __rownum: 6, name: data[4][0], is_cool: false },
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -422,9 +247,13 @@ describe("Match Columns automatic matching", () => {
       },
     ] as const
 
-    const result = [{ is_cool: true }, { is_cool: false }, { is_cool: true }]
+    const result = [
+      { __rownum: 2, is_cool: true },
+      { __rownum: 3, is_cool: false },
+      { __rownum: 4, is_cool: true },
+    ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -447,7 +276,7 @@ describe("Match Columns automatic matching", () => {
 })
 
 describe("Match Columns general tests", () => {
-  test("Displays all user header columns", async () => {
+  test("Displays all schema field labels", async () => {
     const header = ["namezz", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -455,7 +284,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -464,20 +293,21 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    expect(screen.getByText(header[0])).toBeInTheDocument()
-    expect(screen.getByText(header[1])).toBeInTheDocument()
-    expect(screen.getByText(header[2])).toBeInTheDocument()
+    fields.forEach((field) => {
+      expect(screen.getByText(field.label)).toBeInTheDocument()
+    })
   })
 
-  test("Displays two rows of example data", async () => {
-    const header = ["namezz", "Phone", "Email"]
+  test("Displays sample data from first row for matched columns", async () => {
+    // Use exact field keys as headers so all three auto-match
+    const header = ["name", "mobile", "is_cool"]
     const data = [
       ["John", "123", "j@j.com"],
       ["Dane", "333", "dane@bane.com"],
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -486,19 +316,16 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    // only displays two rows
+    // First row sample data shown for matched columns
     expect(screen.queryByText(data[0][0])).toBeInTheDocument()
     expect(screen.queryByText(data[0][1])).toBeInTheDocument()
     expect(screen.queryByText(data[0][2])).toBeInTheDocument()
-    expect(screen.queryByText(data[1][0])).toBeInTheDocument()
-    expect(screen.queryByText(data[1][1])).toBeInTheDocument()
-    expect(screen.queryByText(data[1][2])).toBeInTheDocument()
+    // Second and third rows are not shown
+    expect(screen.queryByText(data[1][0])).not.toBeInTheDocument()
     expect(screen.queryByText(data[2][0])).not.toBeInTheDocument()
-    expect(screen.queryByText(data[2][1])).not.toBeInTheDocument()
-    expect(screen.queryByText(data[2][2])).not.toBeInTheDocument()
   })
 
-  test("Displays all fields in selects dropdown", async () => {
+  test("Displays all csv columns in field select dropdown", async () => {
     const header = ["Something random", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -506,7 +333,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -515,12 +342,13 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    const firstSelect = screen.getByLabelText(header[0])
+    // Open dropdown for the first schema field
+    const firstFieldSelect = screen.getByLabelText(fields[0].label)
+    await userEvent.click(firstFieldSelect)
 
-    await userEvent.click(firstSelect)
-
-    fields.forEach((field) => {
-      expect(screen.queryByText(field.label)).toBeInTheDocument()
+    // All CSV column headers should be listed as options
+    header.forEach((h) => {
+      expect(screen.queryByText(h)).toBeInTheDocument()
     })
   })
 
@@ -531,9 +359,13 @@ describe("Match Columns general tests", () => {
       ["Dane", "333", "dane@bane.com"],
       ["Kane", "534", "kane@linch.com"],
     ]
-    const result = [{ name: data[0][0] }, { name: data[1][0] }, { name: data[2][0] }]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -543,9 +375,9 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
+    // Select csv column "Something random" for schema field "Name"
+    await userEvent.click(screen.getByLabelText(fields[0].label))
+    act(() => fireEvent.click(within(document.getElementById(SELECT_DROPDOWN_ID)!).getByText(header[0])))
 
     const nextButton = screen.getByRole("button", {
       name: "Next",
@@ -567,7 +399,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -578,115 +410,13 @@ describe("Match Columns general tests", () => {
     )
 
     const checkmark = screen.getAllByTestId("column-checkmark")[0]
-    // kinda dumb way to check if it has checkmark or not
     expect(checkmark).toBeEmptyDOMElement()
 
-    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
+    // Select a csv column for the first schema field
+    await userEvent.click(screen.getByLabelText(fields[0].label))
+    act(() => fireEvent.click(within(document.getElementById(SELECT_DROPDOWN_ID)!).getByText(header[0])))
 
     expect(checkmark).not.toBeEmptyDOMElement()
-  })
-
-  test("Selecting select field adds more selects", async () => {
-    const OPTION_ONE = "one"
-    const OPTION_TWO = "two"
-    const OPTION_RESULT_ONE = "uno"
-    const OPTION_RESULT_TWO = "dos"
-    const options = [
-      { label: "One", value: OPTION_RESULT_ONE },
-      { label: "Two", value: OPTION_RESULT_TWO },
-    ]
-    const header = ["Something random"]
-    const data = [[OPTION_ONE], [OPTION_TWO], [OPTION_ONE]]
-
-    const result = [
-      {
-        team: OPTION_RESULT_ONE,
-      },
-      {
-        team: OPTION_RESULT_TWO,
-      },
-      {
-        team: OPTION_RESULT_ONE,
-      },
-    ]
-
-    const enumFields = [
-      {
-        label: "Team",
-        key: "team",
-        fieldType: {
-          type: "select",
-          options: options,
-        },
-      },
-    ] as const
-
-    const onContinue = jest.fn()
-    render(
-      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: enumFields }}>
-        <ModalWrapper isOpen={true} onClose={() => {}}>
-          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
-          <div id={SELECT_DROPDOWN_ID} />
-        </ModalWrapper>
-      </Providers>,
-    )
-
-    expect(screen.queryByTestId("accordion-button")).not.toBeInTheDocument()
-
-    await selectEvent.select(screen.getByLabelText(header[0]), enumFields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
-
-    expect(screen.queryByTestId("accordion-button")).toBeInTheDocument()
-
-    await userEvent.click(screen.getByTestId("accordion-button"))
-
-    await selectEvent.select(screen.getByLabelText(data[0][0]), options[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
-
-    await selectEvent.select(screen.getByLabelText(data[1][0]), options[1].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
-
-    const nextButton = screen.getByRole("button", {
-      name: "Next",
-    })
-
-    await userEvent.click(nextButton)
-
-    await waitFor(() => {
-      expect(onContinue).toBeCalled()
-    })
-    expect(onContinue.mock.calls[0][0]).toEqual(result)
-  })
-
-  test("Can ignore columns", async () => {
-    const header = ["Something random", "Phone", "Email"]
-    const data = [
-      ["John", "123", "j@j.com"],
-      ["Dane", "333", "dane@bane.com"],
-      ["Kane", "534", "kane@linch.com"],
-    ]
-
-    const onContinue = jest.fn()
-    render(
-      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
-        <ModalWrapper isOpen={true} onClose={() => {}}>
-          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
-        </ModalWrapper>
-      </Providers>,
-    )
-
-    const ignoreButton = screen.getAllByLabelText("Ignore column")[0]
-
-    expect(screen.queryByText(translations.matchColumnsStep.ignoredColumnText)).not.toBeInTheDocument()
-
-    await userEvent.click(ignoreButton)
-
-    expect(screen.queryByText(translations.matchColumnsStep.ignoredColumnText)).toBeInTheDocument()
   })
 
   test("Required unselected fields show warning alert on submit", async () => {
@@ -714,7 +444,7 @@ describe("Match Columns general tests", () => {
       },
     ] as const
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: requiredFields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -743,7 +473,7 @@ describe("Match Columns general tests", () => {
     })
   })
 
-  test("Selecting the same field twice shows toast", async () => {
+  test("Selecting the same csv column for two fields shows toast", async () => {
     const header = ["Something random", "Phone", "Email"]
     const data = [
       ["John", "123", "j@j.com"],
@@ -751,7 +481,7 @@ describe("Match Columns general tests", () => {
       ["Kane", "534", "kane@linch.com"],
     ]
 
-    const onContinue = jest.fn()
+    const onContinue = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -761,12 +491,11 @@ describe("Match Columns general tests", () => {
       </Providers>,
     )
 
-    await selectEvent.select(screen.getByLabelText(header[0]), fields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
-    await selectEvent.select(screen.getByLabelText(header[1]), fields[0].label, {
-      container: document.getElementById(SELECT_DROPDOWN_ID)!,
-    })
+    // Map "Something random" to "Name", then map "Something random" to "Mobile Phone" — duplicate triggers toast
+    await userEvent.click(screen.getByLabelText(fields[0].label))
+    act(() => fireEvent.click(within(document.getElementById(SELECT_DROPDOWN_ID)!).getByText(header[0])))
+    await userEvent.click(screen.getByLabelText(fields[1].label))
+    act(() => fireEvent.click(within(document.getElementById(SELECT_DROPDOWN_ID)!).getByText(header[0])))
 
     const toasts = await screen.queryAllByText(translations.matchColumnsStep.duplicateColumnWarningDescription)
 
@@ -774,7 +503,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("matchColumnsStepHook should be called after columns are matched", async () => {
-    const matchColumnsStepHook = jest.fn(async (values) => values)
+    const matchColumnsStepHook = vi.fn(async (values) => values)
     const mockValues = {
       ...mockRsiValues,
       fields: mockRsiValues.fields.filter((field) => field.key === "name" || field.key === "age"),
@@ -804,7 +533,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("matchColumnsStepHook mutations to rawData should show up in ValidationStep", async () => {
-    const matchColumnsStepHook = jest.fn(async ([firstEntry, ...values]) => {
+    const matchColumnsStepHook = vi.fn(async ([firstEntry, ...values]) => {
       return [{ ...firstEntry, name: MUTATED_ENTRY }, ...values]
     })
     const mockValues = {
@@ -835,7 +564,7 @@ describe("Match Columns general tests", () => {
   })
 
   test("Should show error toast if error is thrown in matchColumnsStepHook", async () => {
-    const matchColumnsStepHook = jest.fn(async () => {
+    const matchColumnsStepHook = vi.fn(async () => {
       throw new Error(ERROR_MESSAGE)
       return undefined as any
     })
@@ -866,5 +595,235 @@ describe("Match Columns general tests", () => {
 
     const errorToast = await screen.findAllByText(ERROR_MESSAGE, undefined, { timeout: 5000 })
     expect(errorToast?.[0]).toBeInTheDocument()
+  })
+})
+
+describe("Match Columns select alternateMatches", () => {
+  const selectOptions = [
+    { value: "CA", label: "(CA) Canada", alternateMatches: ["Canada"] },
+    { value: "US", label: "(US) United States", alternateMatches: ["United States", "United States of America"] },
+  ] as const
+
+  const selectFields = [
+    {
+      label: "Country",
+      key: "country",
+      fieldType: {
+        type: "select" as const,
+        options: selectOptions,
+      },
+    },
+  ] as const
+
+  const multiSelectFields = [
+    {
+      label: "Countries",
+      key: "countries",
+      fieldType: {
+        type: "select" as const,
+        multiSelect: true,
+        options: selectOptions,
+      },
+    },
+  ] as const
+
+  test("alternateMatches entry is converted to canonical value", async () => {
+    const header = ["country"]
+    const data = [["Canada"], ["United States of America"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("option label is implicitly treated as an alternate match", async () => {
+    const header = ["country"]
+    const data = [["(CA) Canada"], ["(US) United States"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("matching is case-insensitive for label, alternateMatches, and value", async () => {
+    const header = ["country"]
+    const data = [["CANADA"], ["united states"], ["ca"]]
+    const result = [
+      { __rownum: 2, country: "CA" },
+      { __rownum: 3, country: "US" },
+      { __rownum: 4, country: "CA" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("non-matching value passes through unchanged", async () => {
+    const header = ["country"]
+    const data = [["Deutschland"]]
+    const result = [{ __rownum: 2, country: "Deutschland" }]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: selectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("multiSelect: each comma-separated part is normalized via alternateMatches", async () => {
+    const header = ["countries"]
+    const data = [["Canada, United States"], ["(CA) Canada,(US) United States"]]
+    const result = [
+      { __rownum: 2, countries: "CA,US" },
+      { __rownum: 3, countries: "CA,US" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields: multiSelectFields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+})
+
+describe("Match Columns initialColumns prop", () => {
+  test("uses initialColumns as initial state without requiring manual mapping", async () => {
+    const header = ["Something random", "Phone", "Email"]
+    const data = [
+      ["John", "123", "j@j.com"],
+      ["Dane", "333", "dane@bane.com"],
+      ["Kane", "534", "kane@linch.com"],
+    ]
+    const result = [
+      { __rownum: 2, name: data[0][0] },
+      { __rownum: 3, name: data[1][0] },
+      { __rownum: 4, name: data[2][0] },
+    ]
+
+    const initialColumns: Columns<string> = [
+      { type: ColumnType.matched, index: 0, header: "Something random", value: "name" },
+      { type: ColumnType.empty, index: 1, header: "Phone" },
+      { type: ColumnType.empty, index: 2, header: "Email" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields, autoMapHeaders: false }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} initialColumns={initialColumns} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
+  })
+
+  test("skips auto-matching when initialColumns is provided", async () => {
+    // "Name" header would normally auto-match to the "name" field,
+    // but initialColumns maps "Phone" → "name" instead
+    const header = ["Name", "Phone", "Email"]
+    const data = [
+      ["John", "123", "j@j.com"],
+      ["Dane", "333", "dane@bane.com"],
+      ["Kane", "534", "kane@linch.com"],
+    ]
+    // Expect Phone column values (index 1), not Name column values (index 0)
+    const result = [
+      { __rownum: 2, name: data[0][1] },
+      { __rownum: 3, name: data[1][1] },
+      { __rownum: 4, name: data[2][1] },
+    ]
+
+    const initialColumns: Columns<string> = [
+      { type: ColumnType.empty, index: 0, header: "Name" },
+      { type: ColumnType.matched, index: 1, header: "Phone", value: "name" },
+      { type: ColumnType.empty, index: 2, header: "Email" },
+    ]
+
+    const onContinue = vi.fn()
+    render(
+      <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, fields }}>
+        <ModalWrapper isOpen={true} onClose={() => {}}>
+          <MatchColumnsStep headerValues={header} data={data} initialColumns={initialColumns} onContinue={onContinue} />
+        </ModalWrapper>
+      </Providers>,
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }))
+
+    await waitFor(() => {
+      expect(onContinue).toHaveBeenCalled()
+    })
+    expect(onContinue.mock.calls[0][0]).toEqual(result)
   })
 })

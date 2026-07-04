@@ -1,32 +1,45 @@
 import type { Column } from "react-data-grid"
 import { Box, Tooltip } from "@chakra-ui/react"
-import type { Fields } from "../../../types"
 import { CgInfo } from "react-icons/cg"
 
-export const generateColumns = <T extends string>(fields: Fields<T>) =>
-  fields.map(
-    (column): Column<any> => ({
-      key: column.key,
-      name: column.label,
-      minWidth: 150,
-      headerRenderer: () => (
-        <Box display="flex" gap={1} alignItems="center" position="relative">
-          <Box flex={1} overflow="hidden" textOverflow="ellipsis">
-            {column.label}
-          </Box>
-          {column.description && (
-            <Tooltip placement="top" hasArrow label={column.description}>
-              <Box flex={"0 0 auto"}>
+export const generateColumns = (): Column<any>[] => [
+  {
+    key: "label",
+    name: "Field Name",
+    minWidth: 150,
+    renderHeaderCell: (props) => (
+      <Box display="flex" gap={1} alignItems="center">
+        <Box width="16px" height="16px" />
+        <Box overflow="hidden" textOverflow="ellipsis" alignItems="center">
+          {props.column.name}
+        </Box>
+      </Box>
+    ),
+    renderCell: ({ row }) => (
+      <Box display="flex" gap={1} alignItems="center">
+        <Box width="16px" height="16px">
+          {row.description ? (
+            <Tooltip placement="top-end" hasArrow label={row.description} whiteSpace="pre-line">
+              <Box>
                 <CgInfo size="16px" />
               </Box>
             </Tooltip>
-          )}
+          ) : null}
         </Box>
-      ),
-      formatter: ({ row }) => (
-        <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis">
-          {row[column.key]}
+        <Box overflow="hidden" textOverflow="ellipsis" alignItems="center">
+          {row.label}
         </Box>
-      ),
-    }),
-  )
+      </Box>
+    ),
+  },
+  {
+    key: "value",
+    name: "Example Value",
+    minWidth: 200,
+    renderCell: ({ row }) => (
+      <Box minWidth="100%" minHeight="100%" overflow="hidden" textOverflow="ellipsis" alignContent="center">
+        {row.value}
+      </Box>
+    ),
+  },
+]

@@ -11,25 +11,23 @@ interface Props {
 
 export const SelectHeaderTable = ({ data, selectedRows, setSelectedRows }: Props) => {
   const columns = useMemo(() => generateSelectionColumns(data), [data])
+  const rowIndexMap = useMemo(() => new Map(data.map((row, i) => [row, i])), [data])
 
   return (
     <Table
-      rowKeyGetter={(row) => data.indexOf(row)}
+      rowKeyGetter={(row) => rowIndexMap.get(row)!}
       rows={data}
       columns={columns}
       selectedRows={selectedRows}
       onSelectedRowsChange={(newRows) => {
         // allow selecting only one row
-        newRows.forEach((value) => {
-          if (!selectedRows.has(value as number)) {
-            setSelectedRows(new Set([value as number]))
-            return
-          }
-        })
+        const next = Array.from(newRows).find((v) => !selectedRows.has(v as number))
+        if (next !== undefined) setSelectedRows(new Set([next as number]))
       }}
-      onRowClick={(row) => {
-        setSelectedRows(new Set([data.indexOf(row)]))
+      onCellClick={({ row }) => {
+        setSelectedRows(new Set([rowIndexMap.get(row)!]))
       }}
+      rowHeight={36}
       headerRowHeight={0}
       className="rdg-static"
     />

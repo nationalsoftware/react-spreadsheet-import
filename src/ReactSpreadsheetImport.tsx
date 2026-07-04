@@ -1,4 +1,5 @@
 import merge from "lodash/merge"
+import "react-data-grid/lib/styles.css"
 
 import { Steps } from "./steps/Steps"
 import { rtlThemeSupport, themeOverrides } from "./theme"
@@ -11,7 +12,8 @@ export const defaultTheme = themeOverrides
 
 export const defaultRSIProps: Partial<RsiProps<any>> = {
   autoMapHeaders: true,
-  autoMapSelectValues: false,
+  allowDiscard: true,
+  numberedRows: false,
   allowInvalidSubmit: true,
   autoMapDistance: 2,
   isNavigationEnabled: false,
@@ -19,8 +21,9 @@ export const defaultRSIProps: Partial<RsiProps<any>> = {
   uploadStepHook: async (value) => value,
   selectHeaderStepHook: async (headerValues, data) => ({ headerValues, data }),
   matchColumnsStepHook: async (table) => table,
-  dateFormat: "yyyy-mm-dd", // ISO 8601,
+  dateFormat: "yyyy-MM-dd",
   parseRaw: true,
+  ignoredSheetNames: [] as string[],
 } as const
 
 export const ReactSpreadsheetImport = <T extends string>(propsWithoutDefaults: RsiProps<T>) => {

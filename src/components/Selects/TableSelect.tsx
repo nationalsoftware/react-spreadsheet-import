@@ -17,14 +17,14 @@ export const TableSelect = ({ onChange, value, options }: Props) => {
   return (
     <Select<SelectOption, false>
       autoFocus
-      useBasicStyles
+      isClearable
       size="sm"
       value={value}
       onChange={onChange}
       placeholder=" "
       closeMenuOnScroll
       menuPosition="fixed"
-      menuIsOpen
+      defaultMenuIsOpen
       menuPortalTarget={document.getElementById(rootId)}
       options={options}
       chakraStyles={styles.select}

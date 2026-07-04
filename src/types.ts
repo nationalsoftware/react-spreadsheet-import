@@ -23,6 +23,10 @@ export type RsiProps<T extends string> = {
   tableHook?: TableHook<T>
   // Function called after user finishes the flow. You can return a promise that will be awaited.
   onSubmit: (data: Result<T>, file: File) => void | Promise<any>
+  // Allows discarding rows in the validation step. Default: true
+  allowDiscard?: boolean
+  // Numbers the rows in the validation step. Default: false
+  numberedRows?: boolean
   // Allows submitting with errors. Default: true
   allowInvalidSubmit?: boolean
   // Enable navigation in stepper component and show back button. Default: false
@@ -37,8 +41,6 @@ export type RsiProps<T extends string> = {
   maxFileSize?: number
   // Automatically map imported headers to specified fields if possible. Default: true
   autoMapHeaders?: boolean
-  // When field type is "select", automatically match values if possible. Default: false
-  autoMapSelectValues?: boolean
   // Headers matching accuracy: 1 for strict and up for more flexible matching
   autoMapDistance?: number
   // Initial Step state to be rendered on load
@@ -49,6 +51,11 @@ export type RsiProps<T extends string> = {
   parseRaw?: boolean
   // Use for right-to-left (RTL) support
   rtl?: boolean
+  // Optional parameter to skip certain sheets in the SelectSheet step
+  ignoredSheetNames?: string[]
+  // Fraction (0–1) of schema fields that must fuzzy-match row 0 to auto-skip the SelectHeader step.
+  // When unset (default), SelectHeaderStep is always shown.
+  autoSelectHeaderThreshold?: number
 }
 
 export type RawData = Array<string | undefined>
@@ -70,9 +77,11 @@ export type Field<T extends string> = {
   // Validations used for field entries
   validations?: Validation[]
   // Field entry component, default: Input
-  fieldType: Checkbox | Select | Input
+  fieldType: Checkbox | Select | Input | Numeric | DateField
   // UI-facing values shown to user as field examples pre-upload phase
   example?: string
+  // Display styles applied to the field column in the ValidationStep table
+  columnStyle?: ColumnStyle
 }
 
 export type Checkbox = {
@@ -83,8 +92,13 @@ export type Checkbox = {
 
 export type Select = {
   type: "select"
-  // Options displayed in Select component
+  // Default options for the dropdown. rowHook can override per-row via setSelectOptions:
+  //   setSelectOptions(key, [...items]) — use these items for this row
+  //   setSelectOptions(key, [])        — fall back to plain text input for this row
+  //   setSelectOptions(key, undefined) — use this field's schema options for this row
   options: SelectOption[]
+  // Allow selecting multiple options. Values stored as comma-separated string.
+  multiSelect?: boolean
 }
 
 export type SelectOption = {
@@ -92,10 +106,37 @@ export type SelectOption = {
   label: string
   // Field entry matching criteria as well as select output
   value: string
+  // Alternate raw values that are automatically converted to this option's value (case-insensitive, exact match)
+  alternateMatches?: readonly string[]
 }
 
 export type Input = {
   type: "input"
+}
+
+export type Numeric = {
+  type: "numeric"
+  decimalPlaces?: number
+  thousandsSeparator?: boolean
+  min?: number
+  max?: number
+}
+
+export type DateField = {
+  type: "date"
+  // date-fns format string for display in the ValidationStep table. Default: "yyyy-MM-dd".
+  // Output data (onSubmit) is always ISO yyyy-MM-dd regardless of this setting.
+  dateFormat?: string
+  // Minimum allowed date. Must be in ISO yyyy-MM-dd format. Inclusive.
+  min?: string
+  // Maximum allowed date. Must be in ISO yyyy-MM-dd format. Inclusive.
+  max?: string
+}
+
+export type ColumnStyle = {
+  textAlign?: "left" | "right" | "center"
+  prefix?: string
+  suffix?: string
 }
 
 export type Validation = RequiredValidation | UniqueValidation | RegexValidation
@@ -111,6 +152,8 @@ export type UniqueValidation = {
   allowEmpty?: boolean
   errorMessage?: string
   level?: ErrorLevel
+  // If provided, uniqueness is checked on the composite of these field keys rather than the declaring field alone
+  keys?: string[]
 }
 
 export type RegexValidation = {
@@ -125,6 +168,9 @@ export type RowHook<T extends string> = (
   row: Data<T>,
   addError: (fieldKey: T, error: Info) => void,
   table: Data<T>[],
+  // Override the dropdown options for a specific field in this row.
+  // [] = render as plain text input; undefined = use the field's schema options
+  setSelectOptions: (fieldKey: T, options: SelectOption[] | undefined) => void,
 ) => Data<T> | Promise<Data<T>>
 export type TableHook<T extends string> = (
   table: Data<T>[],
@@ -139,6 +185,7 @@ export type Info = {
 }
 
 export enum ErrorSources {
+  Unique = "unique",
   Table = "table",
   Row = "row",
 }
