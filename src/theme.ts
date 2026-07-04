@@ -1,44 +1,6 @@
-import { StepsTheme } from "chakra-ui-steps"
-import type { CSSObject } from "@chakra-ui/react"
 import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
-
-const StepsComponent: typeof StepsTheme = {
-  ...StepsTheme,
-  baseStyle: (props: any) => {
-    const navigationEnabled = !!props.onClickStep
-    return {
-      ...StepsTheme.baseStyle(props),
-      stepContainer: {
-        ...StepsTheme.baseStyle(props).stepContainer,
-        cursor: navigationEnabled ? "pointer" : "initial",
-      },
-      label: {
-        ...StepsTheme.baseStyle(props).label,
-        color: "textColor",
-      },
-    }
-  },
-  variants: {
-    circles: (props: any) => ({
-      ...StepsTheme.variants.circles(props),
-      step: {
-        ...StepsTheme.variants.circles(props).step,
-        "&:not(:last-child):after": {
-          ...StepsTheme.variants.circles(props).step["&:not(:last-child):after"],
-          backgroundColor: "background",
-        },
-      },
-      stepIconContainer: {
-        ...StepsTheme.variants.circles(props).stepIconContainer,
-        flex: "0 0 auto",
-        bg: "background",
-        borderColor: "background",
-      },
-    }),
-  },
-}
 
 const MatchIconTheme: any = {
   baseStyle: (props: any) => {
@@ -67,7 +29,7 @@ const MatchIconTheme: any = {
 export const themeOverrides = {
   colors: {
     textColor: "#2D3748",
-    subtitleColor: "#718096",
+    subtitleColor: "#525C6C",
     inactiveColor: "#A0AEC0",
     border: "#E2E8F0",
     background: "white",
@@ -96,24 +58,36 @@ export const themeOverrides = {
         heading: {
           fontSize: "3xl",
           color: "textColor",
-          mb: "2rem",
+          mb: "1rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
         title: {
           fontSize: "2xl",
           lineHeight: 8,
           fontWeight: "semibold",
           color: "textColor",
-        },
-        subtitle: {
-          fontSize: "md",
-          lineHeight: 6,
-          color: "subtitleColor",
           mb: "1rem",
         },
+        contentWrapper: {
+          overflow: "hidden",
+          alignItems: "normal",
+          gap: "1rem",
+          width: "100%",
+          flex: 1,
+        },
         tableWrapper: {
-          mb: "0.5rem",
-          position: "relative",
-          h: "72px",
+          overflow: "hidden",
+          width: "50%",
+        },
+        dropzoneWrapper: {
+          display: "flex",
+          minWidth: "300px",
+          flex: 1,
         },
         dropzoneText: {
           size: "lg",
@@ -131,8 +105,14 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: 8,
+          mb: "1rem",
           fontSize: "3xl",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "2rem",
         },
         radio: {},
         radioLabel: {
@@ -144,57 +124,55 @@ export const themeOverrides = {
       baseStyle: {
         heading: {
           color: "textColor",
-          mb: 8,
+          mb: "1rem",
           fontSize: "3xl",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
       },
     },
     MatchColumnsStep: {
       baseStyle: {
         heading: {
-          color: "textColor",
-          mb: 8,
           fontSize: "3xl",
+          color: "textColor",
+          mb: "1rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
         },
         title: {
-          color: "textColor",
           fontSize: "2xl",
           lineHeight: 8,
           fontWeight: "semibold",
-          mb: 4,
+          color: "textColor",
         },
         userTable: {
           header: {
             fontSize: "xs",
-            lineHeight: 4,
+            lineHeight: 5,
             fontWeight: "bold",
             letterSpacing: "wider",
             color: "textColor",
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
-            ["&[data-ignored]"]: {
-              color: "inactiveColor",
-            },
           },
           cell: {
             fontSize: "sm",
             lineHeight: 5,
             fontWeight: "medium",
             color: "textColor",
-            px: 6,
-            py: 4,
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
-            ["&[data-ignored]"]: {
-              color: "inactiveColor",
-            },
-          },
-          ignoreButton: {
-            size: "xs",
-            colorScheme: "gray",
-            color: "textColor",
           },
         },
         selectColumn: {
@@ -245,14 +223,24 @@ export const themeOverrides = {
           option: (provided, state) => ({
             ...provided,
             color: "textColor",
-            bg: state.isSelected || state.isFocused ? "highlight" : "background",
+            bg: state.isSelected ? "green.100" : state.isFocused ? "green.50" : "background",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "block",
             whiteSpace: "nowrap",
             _hover: {
-              bg: "highlight",
+              bg: "green.50",
             },
+          }),
+          groupHeading: (provided) => ({
+            ...provided,
+            bg: "secondaryBackground",
+            color: "subtitleColor",
+            borderBottomWidth: "1px",
+            borderBottomColor: "border",
+            py: 2,
+            px: 3,
+            mb: 0,
           }),
           placeholder: (provided) => ({
             ...provided,
@@ -268,8 +256,24 @@ export const themeOverrides = {
     ValidationStep: {
       baseStyle: {
         heading: {
-          color: "textColor",
           fontSize: "3xl",
+          color: "textColor",
+          mb: "1rem",
+        },
+        instructions: {
+          fontSize: "md",
+          lineHeight: 6,
+          color: "subtitleColor",
+          mb: "1rem",
+        },
+        exportMenuItemTitle: {
+          fontSize: "md",
+          fontWeight: "medium",
+          color: "textColor",
+        },
+        exportMenuItemDescription: {
+          fontSize: "md",
+          color: "subtitleColor",
         },
         select: {
           valueContainer: (provided) => ({
@@ -284,11 +288,12 @@ export const themeOverrides = {
             ...provided,
             p: 0,
             mt: 0,
+            boxShadow: "md",
           }),
           menuList: (provided) => ({
             ...provided,
-            bg: "background",
-            borderColor: "border",
+            bg: "secondaryBackground",
+            borderColor: "inactiveColor",
           }),
           option: (provided, state) => ({
             ...provided,
@@ -307,7 +312,6 @@ export const themeOverrides = {
       },
     },
     MatchIcon: MatchIconTheme,
-    Steps: StepsComponent,
     Modal: {
       baseStyle: {
         dialog: {
@@ -394,7 +398,6 @@ export const themeOverrides = {
         flex: "1",
 
         // we have to use vars here because chakra does not autotransform unknown props
-        "--rdg-row-height": "35px",
         "--rdg-color": "var(--chakra-colors-textColor)",
         "--rdg-background-color": "var(--chakra-colors-background)",
         "--rdg-header-background-color": "var(--chakra-colors-background)",
@@ -416,6 +419,8 @@ export const themeOverrides = {
         fontWeight: "bold",
         letterSpacing: "wider",
         textTransform: "uppercase",
+        "--rdg-selection-color": "none",
+        backgroundColor: "var(--rdg-header-background-color)",
         "&:first-of-type": {
           borderTopLeftRadius: "lg",
         },
@@ -441,22 +446,27 @@ export const themeOverrides = {
       },
       ".rdg-cell": {
         contain: "size layout style paint",
-        borderRight: "none",
-        borderInlineEnd: "none",
+        borderInlineEnd: "1px solid var(--rdg-border-color)",
         borderBottom: "1px solid var(--rdg-border-color)",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
         "&[aria-selected='true']": {
-          boxShadow: "inset 0 0 0 1px var(--rdg-selection-color)",
+          outline: "none",
+        },
+        "&[aria-selected='true']:focus-within": {
+          outline: "2px solid var(--rdg-selection-color)",
+          outlineOffset: "-2px",
         },
         "&:first-of-type": {
-          boxShadow: "none",
           borderInlineStart: "1px solid var(--rdg-border-color)",
         },
         "&:last-child": {
           borderInlineEnd: "1px solid var(--rdg-border-color)",
         },
+      },
+      ".rdg-cell-frozen": {
+        borderInlineEnd: "none",
       },
       ".rdg-cell-error": {
         backgroundColor: "var(--rdg-error-cell-background-color)",
@@ -476,19 +486,32 @@ export const themeOverrides = {
       ".rdg-static .rdg-cell": {
         "--rdg-selection-color": "none",
       },
+      ".rdg-example": {
+        overflowY: "auto",
+      },
       ".rdg-example .rdg-cell": {
         "--rdg-selection-color": "none",
-        borderBottom: "none",
       },
-
       ".rdg-radio": {
         display: "flex",
         alignItems: "center",
       },
       ".rdg-checkbox": {
         "--rdg-selection-color": "none",
+        backgroundColor: "var(--rdg-header-background-color)",
         display: "flex",
         alignItems: "center",
+      },
+      ".rdg-cell-numeric": {
+        fontVariantNumeric: "tabular-nums",
+      },
+      ".rdg-cell-rownum": {
+        backgroundColor: "var(--rdg-header-background-color)",
+        color: "textColor",
+        fontSize: "xs",
+        fontWeight: "bold",
+        fontVariantNumeric: "tabular-nums",
+        textAlign: "end",
       },
     },
   },

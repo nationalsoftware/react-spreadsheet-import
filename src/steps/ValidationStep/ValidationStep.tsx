@@ -1,5 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
-import { Box, Button, Heading, ModalBody, Switch, useStyleConfig, useToast } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Badge,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuList,
+  MenuItem,
+  ModalBody,
+  Text,
+  useStyleConfig,
+  useToast,
+} from "@chakra-ui/react"
+import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6"
 import { ContinueButton } from "../../components/ContinueButton"
 import { useRsi } from "../../hooks/useRsi"
 import type { Meta } from "./types"
@@ -10,6 +25,12 @@ import { SubmitDataAlert } from "../../components/Alerts/SubmitDataAlert"
 import type { Data } from "../../types"
 import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
+import { downloadAsCsv, downloadAsXlsx } from "../../utils/downloadSpreadsheet"
+
+const hasError = <T extends string>(row: Data<T> & Meta) =>
+  !!row.__errors && Object.values(row.__errors).some((e) => e.level === "error")
+const hasWarning = <T extends string>(row: Data<T> & Meta) =>
+  !!row.__errors && Object.values(row.__errors).some((e) => e.level === "warning")
 
 type Props<T extends string> = {
   initialData: (Data<T> & Meta)[]
@@ -18,7 +39,7 @@ type Props<T extends string> = {
 }
 
 export const ValidationStep = <T extends string>({ initialData, file, onBack }: Props<T>) => {
-  const { translations, fields, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
+  const { translations, fields, allowDiscard, numberedRows, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
   const styles = useStyleConfig(
     "ValidationStep",
   ) as (typeof themeOverrides)["components"]["ValidationStep"]["baseStyle"]
@@ -27,19 +48,27 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
   const [data, setData] = useState<(Data<T> & Meta)[]>(initialData)
 
   const [selectedRows, setSelectedRows] = useState<ReadonlySet<number | string>>(new Set())
-  const [filterByErrors, setFilterByErrors] = useState(false)
+  const [filter, setFilter] = useState<"all" | "errors" | "warnings">("all")
   const [showSubmitAlert, setShowSubmitAlert] = useState(false)
   const [isSubmitting, setSubmitting] = useState(false)
 
   const updateData = useCallback(
-    async (rows: typeof data, indexes?: number[]) => {
-      // Check if hooks are async - if they are we want to apply changes optimistically for better UX
-      if (rowHook?.constructor.name === "AsyncFunction" || tableHook?.constructor.name === "AsyncFunction") {
-        setData(rows)
-      }
-      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes).then((data) => setData(data))
+    async (rows: typeof data, indexes?: number[], changedFieldKey?: string) => {
+      setData(rows)
+      addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes, changedFieldKey)
+        .then((data) => setData(data))
+        .catch((err: Error) => {
+          toast({
+            status: "error",
+            variant: "left-accent",
+            position: "bottom-left",
+            title: translations.alerts.toast.error,
+            description: err?.message,
+            isClosable: true,
+          })
+        })
     },
-    [rowHook, tableHook, fields],
+    [rowHook, tableHook, fields, translations, toast],
   )
 
   const deleteSelectedRows = () => {
@@ -52,39 +81,49 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
 
   const updateRows = useCallback(
     (rows: typeof data, changedData?: RowsChangeData<(typeof data)[number]>) => {
-      const changes = changedData?.indexes.reduce((acc, index) => {
-        // when data is filtered val !== actual index in data
-        const realIndex = data.findIndex((value) => value.__index === rows[index].__index)
-        acc[realIndex] = rows[index]
-        return acc
-      }, {} as Record<number, (typeof data)[number]>)
+      const changes = changedData?.indexes.reduce(
+        (acc, index) => {
+          // when data is filtered val !== actual index in data
+          const realIndex = data.findIndex((value) => value.__index === rows[index].__index)
+          acc[realIndex] = rows[index]
+          return acc
+        },
+        {} as Record<number, (typeof data)[number]>,
+      )
       const realIndexes = changes && Object.keys(changes).map((index) => Number(index))
       const newData = Object.assign([], data, changes)
-      updateData(newData, realIndexes)
+      updateData(newData, realIndexes, changedData?.column?.key)
     },
     [data, updateData],
   )
 
-  const columns = useMemo(() => generateColumns(fields), [fields])
+  const columns = useMemo(
+    () => generateColumns(fields, allowDiscard, numberedRows, initialData.length),
+    [fields, allowDiscard, numberedRows, initialData.length],
+  )
+
+  const { errorCount, warningCount } = useMemo(() => {
+    let errors = 0
+    let warnings = 0
+    for (const row of data) {
+      if (hasError(row)) errors++
+      if (hasWarning(row)) warnings++
+    }
+    return { errorCount: errors, warningCount: warnings }
+  }, [data])
 
   const tableData = useMemo(() => {
-    if (filterByErrors) {
-      return data.filter((value) => {
-        if (value?.__errors) {
-          return Object.values(value.__errors)?.filter((err) => err.level === "error").length
-        }
-        return false
-      })
-    }
+    if (filter === "errors") return data.filter(hasError)
+    if (filter === "warnings") return data.filter(hasWarning)
     return data
-  }, [data, filterByErrors])
+  }, [data, filter])
 
   const rowKeyGetter = useCallback((row: Data<T> & Meta) => row.__index, [])
 
   const submitData = async () => {
     const calculatedData = data.reduce(
       (acc, value) => {
-        const { __index, __errors, ...values } = value
+        const { __index, __errors, __selectOptions: _fieldOptions, ...values } = value
         if (__errors) {
           for (const key in __errors) {
             if (__errors[key].level === "error") {
@@ -96,7 +135,11 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
         acc.validData.push(values as unknown as Data<T>)
         return acc
       },
-      { validData: [] as Data<T>[], invalidData: [] as Data<T>[], all: data },
+      {
+        validData: [] as Data<T>[],
+        invalidData: [] as Data<T>[],
+        all: data.map(({ __selectOptions: _fieldOptions, ...rest }) => rest as Data<T> & Meta),
+      },
     )
     setShowSubmitAlert(false)
     setSubmitting(true)
@@ -124,12 +167,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     }
   }
   const onContinue = () => {
-    const invalidData = data.find((value) => {
-      if (value?.__errors) {
-        return !!Object.values(value.__errors)?.filter((err) => err.level === "error").length
-      }
-      return false
-    })
+    const invalidData = data.find(hasError)
     if (!invalidData) {
       submitData()
     } else {
@@ -141,39 +179,95 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     <>
       <SubmitDataAlert isOpen={showSubmitAlert} onClose={() => setShowSubmitAlert(false)} onConfirm={submitData} />
       <ModalBody pb={0}>
+        <Heading sx={styles.heading}>{translations.validationStep.title}</Heading>
+        <Text sx={styles.instructions}>{translations.validationStep.instructions}</Text>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb="2rem" flexWrap="wrap" gap="8px">
-          <Heading sx={styles.heading}>{translations.validationStep.title}</Heading>
-          <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
-            <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
-              {translations.validationStep.discardButtonTitle}
+          <Box display="flex" gap="8px" alignItems="center" flexWrap="wrap">
+            <Button variant="ghost" size="sm" isActive={filter === "all"} onClick={() => setFilter("all")}>
+              {translations.validationStep.allRowsCountTitle}
+              <Badge ml="3">{data.length}</Badge>
             </Button>
-            <Switch
-              display="flex"
-              alignItems="center"
-              isChecked={filterByErrors}
-              onChange={() => setFilterByErrors(!filterByErrors)}
-            >
-              {translations.validationStep.filterSwitchTitle}
-            </Switch>
+            <Button variant="ghost" size="sm" isActive={filter === "warnings"} onClick={() => setFilter("warnings")}>
+              {translations.validationStep.warningRowsCountTitle}
+              <Badge ml="3" colorScheme="orange">
+                {warningCount}
+              </Badge>
+            </Button>
+            <Button variant="ghost" size="sm" isActive={filter === "errors"} onClick={() => setFilter("errors")}>
+              {translations.validationStep.errorRowsCountTitle}
+              <Badge ml="3" colorScheme="red">
+                {errorCount}
+              </Badge>
+            </Button>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
+            <Menu>
+              <MenuButton as={Button} variant="outline" size="sm" rightIcon={<FaChevronDown />}>
+                {translations.validationStep.exportButtonTitle}
+              </MenuButton>
+              <MenuList>
+                <MenuItem icon={<FaFileCsv size="32px" color="#2B73B6" />} onClick={() => downloadAsCsv(data, fields)}>
+                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>
+                    {translations.validationStep.exportCsvButtonDescription}
+                  </Text>
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  icon={<FaFileExcel size="32px" color="#217346" />}
+                  onClick={() => downloadAsXlsx(data, fields)}
+                >
+                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportXlsxButtonTitle}</Text>
+                  <Text sx={styles.exportMenuItemDescription}>
+                    {translations.validationStep.exportXlsxButtonDescription}
+                  </Text>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+
+            {allowDiscard && (
+              <Button variant="outline" size="sm" onClick={deleteSelectedRows}>
+                {translations.validationStep.discardButtonTitle}
+              </Button>
+            )}
           </Box>
         </Box>
-        <Table
-          rowKeyGetter={rowKeyGetter}
-          rows={tableData}
-          onRowsChange={updateRows}
-          columns={columns}
-          selectedRows={selectedRows}
-          onSelectedRowsChange={setSelectedRows}
-          components={{
-            noRowsFallback: (
-              <Box display="flex" justifyContent="center" gridColumn="1/-1" mt="32px">
-                {filterByErrors
-                  ? translations.validationStep.noRowsMessageWhenFiltered
+        <Box flex={1} minH={0} position="relative" display="flex" flexDirection="column">
+          <Table
+            rowKeyGetter={rowKeyGetter}
+            rowHeight={36}
+            rows={tableData}
+            onRowsChange={updateRows}
+            columns={columns}
+            selectedRows={selectedRows}
+            onSelectedRowsChange={(rows) => setSelectedRows(rows as ReadonlySet<string | number>)}
+            onCellClick={({ selectCell }, event) => {
+              selectCell(true)
+              // Without this, Cell.handleClick calls selectCellWrapper() after our handler,
+              // queuing mode:'SELECT' in the same React batch and overwriting mode:'EDIT'.
+              event.preventGridDefault()
+            }}
+          />
+          {tableData.length === 0 && (
+            <Box
+              position="absolute"
+              top="35px"
+              left={0}
+              right={0}
+              bottom={0}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              pointerEvents="none"
+            >
+              {filter === "errors"
+                ? translations.validationStep.noRowsMessageWhenFilteredByErrors
+                : filter === "warnings"
+                  ? translations.validationStep.noRowsMessageWhenFilteredByWarnings
                   : translations.validationStep.noRowsMessage}
-              </Box>
-            ),
-          }}
-        />
+            </Box>
+          )}
+        </Box>
       </ModalBody>
       <ContinueButton
         isLoading={isSubmitting}

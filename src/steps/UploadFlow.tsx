@@ -5,12 +5,14 @@ import { UploadStep } from "./UploadStep/UploadStep"
 import { SelectHeaderStep } from "./SelectHeaderStep/SelectHeaderStep"
 import { SelectSheetStep } from "./SelectSheetStep/SelectSheetStep"
 import { mapWorkbook } from "../utils/mapWorkbook"
+import { deleteSheet } from "../utils/deleteSheet"
 import { ValidationStep } from "./ValidationStep/ValidationStep"
 import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
-import { exceedsMaxRecords } from "../utils/exceedsMaxRecords"
+import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
 import { useRsi } from "../hooks/useRsi"
 import type { RawData } from "../types"
+import { shouldAutoSelectHeader } from "./SelectHeaderStep/utils/autoSelectHeader"
 
 export enum StepType {
   upload = "upload",
@@ -57,8 +59,18 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     fields,
     rowHook,
     tableHook,
+    ignoredSheetNames,
+    autoSelectHeaderThreshold,
+    autoMapDistance,
   } = useRsi()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [savedMatchState, setSavedMatchState] = useState<
+    | {
+        columns: Columns<string>
+        headerValues: RawData
+      }
+    | undefined
+  >(undefined)
   const toast = useToast()
   const errorToast = useCallback(
     (description: string) => {
@@ -74,24 +86,47 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     [toast, translations],
   )
 
+  const handleSelectHeader = useCallback(
+    async (data: RawData[]) => {
+      if (
+        autoSelectHeaderThreshold !== undefined &&
+        data.length > 0 &&
+        shouldAutoSelectHeader(data[0], fields, autoMapDistance ?? 2, autoSelectHeaderThreshold)
+      ) {
+        try {
+          const { data: hookData, headerValues } = await selectHeaderStepHook(data[0], data.slice(1))
+          onNext({ type: StepType.matchColumns, data: hookData, headerValues })
+        } catch (e) {
+          errorToast((e as Error).message)
+        }
+      } else {
+        onNext({ type: StepType.selectHeader, data })
+      }
+    },
+    [autoSelectHeaderThreshold, autoMapDistance, fields, selectHeaderStepHook, onNext, errorToast],
+  )
+
   switch (state.type) {
     case StepType.upload:
       return (
         <UploadStep
           onContinue={async (workbook, file) => {
             setUploadedFile(file)
+
+            // Remove ignored sheets from the workbook
+            ignoredSheetNames.forEach((sheetName) => deleteSheet(workbook, sheetName))
+
             const isSingleSheet = workbook.SheetNames.length === 1
             if (isSingleSheet) {
-              if (maxRecords && exceedsMaxRecords(workbook.Sheets[workbook.SheetNames[0]], maxRecords)) {
-                errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords.toString()))
+              const mapped = mapWorkbook(workbook)
+              const count = Math.max(mapped.length - 1, 0) // exclude header row; empty rows already dropped by mapWorkbook
+              if (maxRecords && count > maxRecords) {
+                errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
                 return
               }
               try {
-                const mappedWorkbook = await uploadStepHook(mapWorkbook(workbook))
-                onNext({
-                  type: StepType.selectHeader,
-                  data: mappedWorkbook,
-                })
+                const mappedWorkbook = await uploadStepHook(mapped)
+                await handleSelectHeader(mappedWorkbook)
               } catch (e) {
                 errorToast((e as Error).message)
               }
@@ -106,16 +141,15 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
         <SelectSheetStep
           sheetNames={state.workbook.SheetNames}
           onContinue={async (sheetName) => {
-            if (maxRecords && exceedsMaxRecords(state.workbook.Sheets[sheetName], maxRecords)) {
-              errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords.toString()))
+            const mapped = mapWorkbook(state.workbook, sheetName)
+            const count = Math.max(mapped.length - 1, 0) // exclude header row; empty rows already dropped by mapWorkbook
+            if (maxRecords && count > maxRecords) {
+              errorToast(translations.uploadStep.maxRecordsExceeded(maxRecords, count))
               return
             }
             try {
-              const mappedWorkbook = await uploadStepHook(mapWorkbook(state.workbook, sheetName))
-              onNext({
-                type: StepType.selectHeader,
-                data: mappedWorkbook,
-              })
+              const mappedWorkbook = await uploadStepHook(mapped)
+              await handleSelectHeader(mappedWorkbook)
             } catch (e) {
               errorToast((e as Error).message)
             }
@@ -142,12 +176,20 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
           onBack={onBack}
         />
       )
-    case StepType.matchColumns:
+    case StepType.matchColumns: {
+      const initialColumns =
+        savedMatchState &&
+        savedMatchState.headerValues.length === state.headerValues.length &&
+        savedMatchState.headerValues.every((v, i) => v === state.headerValues[i])
+          ? savedMatchState.columns
+          : undefined
       return (
         <MatchColumnsStep
           data={state.data}
           headerValues={state.headerValues}
+          initialColumns={initialColumns}
           onContinue={async (values, rawData, columns) => {
+            setSavedMatchState({ columns, headerValues: state.headerValues })
             try {
               const data = await matchColumnsStepHook(values, rawData, columns)
               const dataWithMeta = await addErrorsAndRunHooks(data, fields, rowHook, tableHook)
@@ -162,6 +204,7 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
           onBack={onBack}
         />
       )
+    }
     case StepType.validateData:
       return <ValidationStep initialData={state.data} file={uploadedFile!} onBack={onBack} />
     default:

@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useToast } from "@chakra-ui/react"
-import { UserTableColumn } from "./components/UserTableColumn"
 import { useRsi } from "../../hooks/useRsi"
-import { TemplateColumn } from "./components/TemplateColumn"
+import { FieldRow } from "./components/FieldRow"
 import { ColumnGrid } from "./components/ColumnGrid"
 import { setColumn } from "./utils/setColumn"
-import { setIgnoreColumn } from "./utils/setIgnoreColumn"
-import { setSubColumn } from "./utils/setSubColumn"
 import { normalizeTableData } from "./utils/normalizeTableData"
 import type { Field, RawData } from "../../types"
 import { getMatchedColumns } from "./utils/getMatchedColumns"
@@ -16,87 +13,75 @@ import { findUnmatchedRequiredFields } from "./utils/findUnmatchedRequiredFields
 export type MatchColumnsProps<T extends string> = {
   data: RawData[]
   headerValues: RawData
+  initialColumns?: Columns<T>
   onContinue: (data: any[], rawData: RawData[], columns: Columns<T>) => void
   onBack?: () => void
 }
 
 export enum ColumnType {
   empty,
-  ignored,
   matched,
   matchedCheckbox,
-  matchedSelect,
-  matchedSelectOptions,
-}
-
-export type MatchedOptions<T> = {
-  entry: string
-  value: T
 }
 
 type EmptyColumn = { type: ColumnType.empty; index: number; header: string }
-type IgnoredColumn = { type: ColumnType.ignored; index: number; header: string }
 type MatchedColumn<T> = { type: ColumnType.matched; index: number; header: string; value: T }
 type MatchedSwitchColumn<T> = { type: ColumnType.matchedCheckbox; index: number; header: string; value: T }
-export type MatchedSelectColumn<T> = {
-  type: ColumnType.matchedSelect
-  index: number
-  header: string
-  value: T
-  matchedOptions: Partial<MatchedOptions<T>>[]
-}
-export type MatchedSelectOptionsColumn<T> = {
-  type: ColumnType.matchedSelectOptions
-  index: number
-  header: string
-  value: T
-  matchedOptions: MatchedOptions<T>[]
-}
 
-export type Column<T extends string> =
-  | EmptyColumn
-  | IgnoredColumn
-  | MatchedColumn<T>
-  | MatchedSwitchColumn<T>
-  | MatchedSelectColumn<T>
-  | MatchedSelectOptionsColumn<T>
+export type Column<T extends string> = EmptyColumn | MatchedColumn<T> | MatchedSwitchColumn<T>
 
 export type Columns<T extends string> = Column<T>[]
 
 export const MatchColumnsStep = <T extends string>({
   data,
   headerValues,
+  initialColumns,
   onContinue,
   onBack,
 }: MatchColumnsProps<T>) => {
   const toast = useToast()
-  const dataExample = data.slice(0, 2)
-  const { fields, autoMapHeaders, autoMapSelectValues, autoMapDistance, translations } = useRsi<T>()
+  const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
   const [isLoading, setIsLoading] = useState(false)
-  const [columns, setColumns] = useState<Columns<T>>(
+  const [columns, setColumns] = useState<Columns<T>>(() => {
     // Do not remove spread, it indexes empty array elements, otherwise map() skips over them
-    ([...headerValues] as string[]).map((value, index) => ({ type: ColumnType.empty, index, header: value ?? "" })),
-  )
+    const emptyColumns = ([...headerValues] as string[]).map((value, index) => ({
+      type: ColumnType.empty as const,
+      index,
+      header: value ?? "",
+    }))
+    if (initialColumns) return initialColumns
+    if (autoMapHeaders) return getMatchedColumns(emptyColumns, fields, autoMapDistance)
+    return emptyColumns
+  })
   const [showUnmatchedFieldsAlert, setShowUnmatchedFieldsAlert] = useState(false)
 
-  const onChange = useCallback(
-    (value: T, columnIndex: number) => {
-      const field = fields.find((field) => field.key === value) as unknown as Field<T>
-      const existingFieldIndex = columns.findIndex((column) => "value" in column && column.value === field.key)
+  const firstDataRow = data[0] ?? []
+
+  const onFieldMap = useCallback(
+    (fieldKey: T, csvColumnIndex: number | null) => {
+      const field = fields.find((f) => f.key === fieldKey) as unknown as Field<T>
+      const previousColumnIndex = columns.findIndex((c) => "value" in c && c.value === fieldKey)
+
+      const targetColumn = csvColumnIndex !== null ? columns[csvColumnIndex] : null
+      const isDisplacingAnotherField =
+        targetColumn !== null && "value" in targetColumn && targetColumn.value !== fieldKey
+
+      if (isDisplacingAnotherField) {
+        toast({
+          status: "warning",
+          variant: "left-accent",
+          position: "bottom-left",
+          title: translations.matchColumnsStep.duplicateColumnWarningTitle,
+          description: translations.matchColumnsStep.duplicateColumnWarningDescription,
+          isClosable: true,
+        })
+      }
+
       setColumns(
         columns.map<Column<T>>((column, index) => {
-          columnIndex === index ? setColumn(column, field, data) : column
-          if (columnIndex === index) {
-            return setColumn(column, field, data, autoMapSelectValues)
-          } else if (index === existingFieldIndex) {
-            toast({
-              status: "warning",
-              variant: "left-accent",
-              position: "bottom-left",
-              title: translations.matchColumnsStep.duplicateColumnWarningTitle,
-              description: translations.matchColumnsStep.duplicateColumnWarningDescription,
-              isClosable: true,
-            })
+          if (csvColumnIndex !== null && index === csvColumnIndex) {
+            return setColumn(column, field)
+          } else if (index === previousColumnIndex) {
             return setColumn(column)
           } else {
             return column
@@ -105,9 +90,7 @@ export const MatchColumnsStep = <T extends string>({
       )
     },
     [
-      autoMapSelectValues,
       columns,
-      data,
       fields,
       toast,
       translations.matchColumnsStep.duplicateColumnWarningDescription,
@@ -115,30 +98,6 @@ export const MatchColumnsStep = <T extends string>({
     ],
   )
 
-  const onIgnore = useCallback(
-    (columnIndex: number) => {
-      setColumns(columns.map((column, index) => (columnIndex === index ? setIgnoreColumn<T>(column) : column)))
-    },
-    [columns, setColumns],
-  )
-
-  const onRevertIgnore = useCallback(
-    (columnIndex: number) => {
-      setColumns(columns.map((column, index) => (columnIndex === index ? setColumn(column) : column)))
-    },
-    [columns, setColumns],
-  )
-
-  const onSubChange = useCallback(
-    (value: string, columnIndex: number, entry: string) => {
-      setColumns(
-        columns.map((column, index) =>
-          columnIndex === index && "matchedOptions" in column ? setSubColumn(column, entry, value) : column,
-        ),
-      )
-    },
-    [columns, setColumns],
-  )
   const unmatchedRequiredFields = useMemo(() => findUnmatchedRequiredFields(fields, columns), [fields, columns])
 
   const handleOnContinue = useCallback(async () => {
@@ -146,6 +105,7 @@ export const MatchColumnsStep = <T extends string>({
       setShowUnmatchedFieldsAlert(true)
     } else {
       setIsLoading(true)
+      await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
       await onContinue(normalizeTableData(columns, data, fields), data, columns)
       setIsLoading(false)
     }
@@ -154,19 +114,10 @@ export const MatchColumnsStep = <T extends string>({
   const handleAlertOnContinue = useCallback(async () => {
     setShowUnmatchedFieldsAlert(false)
     setIsLoading(true)
+    await new Promise((resolve) => setTimeout(resolve, 0)) // show loading on Confirm
     await onContinue(normalizeTableData(columns, data, fields), data, columns)
     setIsLoading(false)
   }, [onContinue, columns, data, fields])
-
-  useEffect(
-    () => {
-      if (autoMapHeaders) {
-        setColumns(getMatchedColumns(columns, fields, data, autoMapDistance, autoMapSelectValues))
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  )
 
   return (
     <>
@@ -177,19 +128,20 @@ export const MatchColumnsStep = <T extends string>({
         onConfirm={handleAlertOnContinue}
       />
       <ColumnGrid
-        columns={columns}
+        fields={fields}
+        unmatchedRequiredFields={unmatchedRequiredFields}
         onContinue={handleOnContinue}
         onBack={onBack}
         isLoading={isLoading}
-        userColumn={(column) => (
-          <UserTableColumn
-            column={column}
-            onIgnore={onIgnore}
-            onRevertIgnore={onRevertIgnore}
-            entries={dataExample.map((row) => row[column.index])}
+        fieldRow={(field) => (
+          <FieldRow
+            field={field}
+            columns={columns}
+            headerValues={headerValues}
+            firstDataRow={firstDataRow}
+            onMap={onFieldMap}
           />
         )}
-        templateColumn={(column) => <TemplateColumn column={column} onChange={onChange} onSubChange={onSubChange} />}
       />
     </>
   )

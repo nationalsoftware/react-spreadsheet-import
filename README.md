@@ -43,9 +43,8 @@ npm i react-spreadsheet-import
 Using the component: (it's up to you when the flow is open and what you do on submit with the imported data)
 
 ```tsx
-import { ReactSpreadsheetImport } from "react-spreadsheet-import";
-
-<ReactSpreadsheetImport isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} fields={fields} />
+import { ReactSpreadsheetImport } from "react-spreadsheet-import"
+;<ReactSpreadsheetImport isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} fields={fields} />
 ```
 
 ## Required Props
@@ -55,7 +54,7 @@ import { ReactSpreadsheetImport } from "react-spreadsheet-import";
   isOpen: Boolean
   // Called when flow is closed without reaching submit.
   onClose: () => void
-  // Called after user completes the flow. Provides data array, where data keys matches your field keys. 
+  // Called after user completes the flow. Provides data array, where data keys matches your field keys.
   onSubmit: (data, file) => void | Promise<any>
 ```
 
@@ -74,7 +73,8 @@ const fields = [
     alternateMatches: ["first name", "first"],
     // Used when editing and validating information.
     fieldType: {
-      // There are 3 types - "input" / "checkbox" / "select".
+      // There are 5 types - "input" / "numeric" / "checkbox" / "select" / "date".
+      // "select" supports multiSelect: true.
       type: "input",
     },
     // Used in the first step to provide an example of what data is expected in this field. Optional.
@@ -88,10 +88,92 @@ const fields = [
         // There can be "info" / "warning" / "error" levels. Optional. Default "error".
         level: "error",
       },
+      {
+        rule: "unique",
+        errorMessage: "Account number must be unique",
+        // Error message is appended with conflicting row numbers, e.g. "(rows 2, 5)".
+        level: "warning",
+        // Optional: check uniqueness across a composite of field keys rather than this field alone.
+        keys: ["accountNumber", "recipientTIN"],
+      },
     ],
   },
 ] as const
 ```
+
+### Select field options
+
+Select fields support an `alternateMatches` array on each option. When a raw spreadsheet value matches an option's `value`, `label`, or any `alternateMatches` entry (all case-insensitive), it is automatically normalized to the canonical `value` before hooks run. For `multiSelect` fields, each comma-separated part is normalized individually.
+
+```tsx
+const fields = [
+  {
+    label: "Country",
+    key: "countryCd",
+    fieldType: {
+      type: "select",
+      options: [
+        {
+          value: "US",
+          label: "United States",
+          alternateMatches: ["USA", "United States of America"],
+        },
+      ],
+    },
+  },
+] as const
+// "usa", "UNITED STATES", "US", "us", "United States of America", etc. all normalize to "US"
+```
+
+### Date field
+
+Date fields parse and validate date strings using [date-fns format tokens](https://date-fns.org/docs/format).
+
+```tsx
+const fields = [
+  {
+    label: "Birthday",
+    key: "birthday",
+    fieldType: {
+      type: "date",
+      // date-fns format string for display and storage. Default: "yyyy-MM-dd".
+      dateFormat: "MM/dd/yyyy",
+      // Minimum/maximum allowed dates, always in ISO yyyy-MM-dd format. Inclusive.
+      min: "1900-01-01",
+      max: "2100-12-31",
+    },
+    example: "04/23/1990",
+  },
+] as const
+```
+
+Users can type dates with `-`, `/`, or `.` as separators regardless of what `dateFormat` uses — `01-29-2001`, `01/29/2001`, and `01.29.2001` are all accepted when `dateFormat` is `"MM/dd/yyyy"`.
+
+### Column styles
+
+The optional `columnStyle` property controls how a field's column appears in the Validation Step table.
+
+```tsx
+const fields = [
+  {
+    label: "Price",
+    key: "price",
+    fieldType: { type: "numeric", decimalPlaces: 2, thousandsSeparator: false },
+    columnStyle: {
+      // Text alignment within the cell. One of "left" | "center" | "right".
+      textAlign: "right",
+      // String prepended to the value in the cell (e.g. a currency symbol).
+      prefix: "$",
+      // String appended to the value in the cell (e.g. a unit).
+      suffix: "USD",
+    },
+  },
+] as const
+```
+
+Numeric fields accept `decimalPlaces` (default `2`), `thousandsSeparator` (default `true`), and optional `min`/`max` bounds. `thousandsSeparator` controls whether a thousands separator is shown in the validation table (e.g. `1000` displays as `1,000` when `true`, `1000` when `false`); it does not affect the submitted value.
+
+`prefix` and `suffix` are purely visual — they are rendered alongside the value in the table but are never included in the submitted data. They appear in both edit mode (as `InputLeftElement` / `InputRightElement` adornments) and read-only mode (as inline spans). `columnStyle` applies to `input`, `numeric`, and `date` fields; `checkbox` and `select` fields ignore it.
 
 ## Optional Props
 
@@ -124,15 +206,54 @@ Example:
 />
 ```
 
+#### Dynamic select options via `setSelectOptions`
+
+`rowHook` receives a fourth parameter, `setSelectOptions`, which overrides the dropdown options shown for a `select` field on a per-row basis:
+
+| Call                                | Effect                                   |
+| ----------------------------------- | ---------------------------------------- |
+| `setSelectOptions(key, [...items])` | Show these options for this row          |
+| `setSelectOptions(key, [])`         | Render as plain text input for this row  |
+| `setSelectOptions(key, undefined)`  | Use the field's schema options (default) |
+
+This is useful when one field's valid choices depend on another field's value in the same row:
+
+```tsx
+// Field definition — define the default options in the schema
+const fields = [
+  {
+    label: "Country",
+    key: "country",
+    fieldType: { type: "select", options: countryOptions },
+  },
+  {
+    label: "State / Province",
+    key: "state",
+    // Default options are US states; rowHook controls per-row behavior
+    fieldType: { type: "select", options: usStateOptions },
+  },
+]
+
+// rowHook — show dropdown for US rows, plain input for all others
+<ReactSpreadsheetImport
+  rowHook={(row, addError, table, setSelectOptions) => {
+    setSelectOptions("state", row.country === "US" ? undefined : [])
+    //                                                ↑ undefined = use schema options
+    //                                                          ↑ [] = plain text input
+    return row
+  }}
+/>
+```
+
 ### Initial state
 
 In rare case when you need to skip the beginning of the flow, you can start the flow from any of the steps.
 
-- **initialStepState** - initial state of component that will be rendered on load. 
+- **initialStepState** - initial state of component that will be rendered on load.
 
 ```tsx
   initialStepState?: StepState
-  
+
   type StepState =
     | {
         type: StepType.upload
@@ -163,9 +284,8 @@ In rare case when you need to skip the beginning of the flow, you can start the 
 Example:
 
 ```tsx
-import { ReactSpreadsheetImport, StepType } from "react-spreadsheet-import";
-
-<ReactSpreadsheetImport
+import { ReactSpreadsheetImport, StepType } from "react-spreadsheet-import"
+;<ReactSpreadsheetImport
   initialStepState={{
     type: StepType.matchColumns,
     data: [
@@ -203,12 +323,14 @@ Common date-time formats can be viewed [here](https://docs.sheetjs.com/docs/csf/
   maxFileSize?: number
   // Automatically map imported headers to specified fields if possible. Default: true
   autoMapHeaders?: boolean
-  // When field type is "select", automatically match values if possible. Default: false
-  autoMapSelectValues?: boolean
   // Headers matching accuracy: 1 for strict and up for more flexible matching. Default: 2
   autoMapDistance?: number
+  // Fraction (0-1) of schema fields that must fuzzy-match row 0 to auto-select the header row
+  autoSelectHeaderThreshold?: number
   // Enable navigation in stepper component and show back button. Default: false
   isNavigationEnabled?: boolean
+  // Hide sheets with given name(s) in the SelectSheet step
+  ignoredSheetNames?: string[]
 ```
 
 ## Customisation

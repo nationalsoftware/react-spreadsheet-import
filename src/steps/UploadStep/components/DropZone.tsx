@@ -1,4 +1,4 @@
-import { Box, Button, Text, useStyleConfig, useToast } from "@chakra-ui/react"
+import { Box, Button, Spinner, Text, useStyleConfig, useToast } from "@chakra-ui/react"
 import { useDropzone } from "react-dropzone"
 import * as XLSX from "xlsx-ugnis"
 import { useState } from "react"
@@ -70,7 +70,10 @@ export const DropZone = ({ onContinue, isLoading }: DropZoneProps) => {
       {isDragActive ? (
         <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.activeDropzoneTitle}</Text>
       ) : loading || isLoading ? (
-        <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.loadingTitle}</Text>
+        <>
+          <Spinner />
+          <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.loadingTitle}</Text>
+        </>
       ) : (
         <>
           <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.title}</Text>

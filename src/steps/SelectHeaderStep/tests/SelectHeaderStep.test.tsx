@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom"
 import { render, waitFor, screen, fireEvent } from "@testing-library/react"
 import { SelectHeaderStep } from "../SelectHeaderStep"
 import { defaultTheme, ReactSpreadsheetImport } from "../../../ReactSpreadsheetImport"
@@ -8,6 +7,7 @@ import { ModalWrapper } from "../../../components/ModalWrapper"
 import userEvent from "@testing-library/user-event"
 import { readFileSync } from "fs"
 import { StepType } from "../../UploadFlow"
+import { shouldAutoSelectHeader } from "../utils/autoSelectHeader"
 
 const MUTATED_HEADER = "mutated header"
 const CONTINUE_BUTTON = "Next"
@@ -27,8 +27,8 @@ describe("Select header step tests", () => {
     ]
     const selectRowIndex = 2
 
-    const onContinue = jest.fn()
-    const onBack = jest.fn()
+    const onContinue = vi.fn()
+    const onBack = vi.fn()
     render(
       <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
         <ModalWrapper isOpen={true} onClose={() => {}}>
@@ -55,7 +55,7 @@ describe("Select header step tests", () => {
   })
 
   test("selectHeaderStepHook should be called after header is selected", async () => {
-    const selectHeaderStepHook = jest.fn(async (headerValues, data) => {
+    const selectHeaderStepHook = vi.fn(async (headerValues, data) => {
       return { headerValues, data }
     })
     render(<ReactSpreadsheetImport {...mockRsiValues} selectHeaderStepHook={selectHeaderStepHook} />)
@@ -84,7 +84,7 @@ describe("Select header step tests", () => {
     })
   })
   test("selectHeaderStepHook should be able to modify raw data", async () => {
-    const selectHeaderStepHook = jest.fn(async ([val, ...headerValues], data) => {
+    const selectHeaderStepHook = vi.fn(async ([val, ...headerValues], data) => {
       return { headerValues: [MUTATED_HEADER, ...headerValues], data }
     })
     render(
@@ -104,15 +104,21 @@ describe("Select header step tests", () => {
     )
     const continueButton = screen.getByText(CONTINUE_BUTTON)
     fireEvent.click(continueButton)
-    const mutatedHeader = await screen.findByText(MUTATED_HEADER)
 
+    // Wait for MatchColumnsStep to render — comboboxes appear once field rows are mounted
+    const selects = await screen.findAllByRole("combobox", undefined, { timeout: 5000 })
+
+    // Open the first field's select so CSV column names become visible as options
+    await userEvent.click(selects[0])
+
+    const mutatedHeader = await screen.findByText(MUTATED_HEADER)
     await waitFor(() => {
       expect(mutatedHeader).toBeInTheDocument()
     })
   })
 
   test("Should show error toast if error is thrown in selectHeaderStepHook", async () => {
-    const selectHeaderStepHook = jest.fn(async () => {
+    const selectHeaderStepHook = vi.fn(async () => {
       throw new Error(ERROR_MESSAGE)
       return undefined as any
     })
@@ -185,11 +191,11 @@ describe("Select header step tests", () => {
     expect(el).toBeInTheDocument()
   })
 
-  test.skip(
+  test(
     "trailing (not under a header) cells should be rendered in SelectHeaderStep table, " +
       "but not in MatchColumnStep if a shorter row is selected as a header",
     async () => {
-      const selectHeaderStepHook = jest.fn(async (headerValues, data) => {
+      const selectHeaderStepHook = vi.fn(async (headerValues, data) => {
         return { headerValues, data }
       })
       render(<ReactSpreadsheetImport {...mockRsiValues} selectHeaderStepHook={selectHeaderStepHook} />)
@@ -210,8 +216,72 @@ describe("Select header step tests", () => {
         name: "Next",
       })
       await userEvent.click(nextButton)
-      const trailingCellNextPage = await screen.findByText(TRAILING_CELL, undefined, { timeout: 10000 })
-      expect(trailingCellNextPage).not.toBeInTheDocument()
+      await waitFor(
+        () => {
+          expect(screen.queryByText(TRAILING_CELL)).not.toBeInTheDocument()
+        },
+        { timeout: 10000 },
+      )
     },
   )
+})
+
+describe("shouldAutoSelectHeader", () => {
+  const fields = [
+    { key: "name", label: "Name", fieldType: { type: "input" as const } },
+    { key: "age", label: "Age", fieldType: { type: "input" as const } },
+    { key: "email", label: "Email", fieldType: { type: "input" as const } },
+    { key: "team", label: "Team", fieldType: { type: "input" as const } },
+  ]
+
+  it("returns true when matched fields meet threshold", () => {
+    expect(shouldAutoSelectHeader(["name", "age", "email", "extra"], fields, 2, 0.75)).toBe(true)
+  })
+
+  it("returns false when matched fields fall below threshold", () => {
+    expect(shouldAutoSelectHeader(["name", "foo", "bar", "baz"], fields, 2, 0.75)).toBe(false)
+  })
+
+  it("returns false for an empty row", () => {
+    expect(shouldAutoSelectHeader([], fields, 2, 0.75)).toBe(false)
+  })
+
+  it("returns false when fields array is empty", () => {
+    expect(shouldAutoSelectHeader(["name", "age"], [], 2, 0.75)).toBe(false)
+  })
+
+  it("does not count the same field twice from duplicate header cells", () => {
+    expect(shouldAutoSelectHeader(["name", "name", "name", "foo"], fields, 2, 0.75)).toBe(false)
+  })
+})
+
+describe("autoSelectHeaderThreshold integration", () => {
+  it("skips SelectHeaderStep when first row matches schema above threshold", async () => {
+    const csvContent = "name,surname,age,birthday,team,skills,is_manager\nJosh,Smith,25,1990-01-01,one,js,true"
+    const file = new File([csvContent], "test.csv", { type: "text/csv" })
+
+    render(<ReactSpreadsheetImport {...mockRsiValues} autoSelectHeaderThreshold={0.75} />)
+
+    const uploader = screen.getByTestId("rsi-dropzone")
+    fireEvent.drop(uploader, { target: { files: [file] } })
+
+    // MatchColumnsStep shows field-mapping comboboxes; SelectHeaderStep shows radio buttons
+    const comboboxes = await screen.findAllByRole("combobox", undefined, { timeout: 10000 })
+    expect(comboboxes.length).toBeGreaterThan(0)
+    expect(screen.queryAllByRole("radio")).toHaveLength(0)
+  })
+
+  it("does NOT skip SelectHeaderStep when first row does not match schema above threshold", async () => {
+    const csvContent = "foo,bar,baz\n1,2,3"
+    const file = new File([csvContent], "test.csv", { type: "text/csv" })
+
+    render(<ReactSpreadsheetImport {...mockRsiValues} autoSelectHeaderThreshold={0.75} />)
+
+    const uploader = screen.getByTestId("rsi-dropzone")
+    fireEvent.drop(uploader, { target: { files: [file] } })
+
+    // SelectHeaderStep shows radio buttons for row selection
+    const radioButtons = await screen.findAllByRole("radio", undefined, { timeout: 10000 })
+    expect(radioButtons.length).toBeGreaterThan(0)
+  })
 })

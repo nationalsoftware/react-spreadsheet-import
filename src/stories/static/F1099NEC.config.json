@@ -1,0 +1,4186 @@
+[
+  {
+    "key": "IssuerDetail.TINSubmittedTypeCd",
+    "label": "Payer TIN Type",
+    "example": "EIN",
+    "description": "SSN or EIN",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "SSN",
+          "label": "SSN"
+        },
+        {
+          "value": "EIN",
+          "label": "EIN"
+        }
+      ]
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "TIN type is required",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.TIN",
+    "label": "Payer Taxpayer ID Number",
+    "alternateMatches": ["Payer TIN", "Payer TIN Number"],
+    "example": "123231234",
+    "description": "Enter the 9-digit TIN without dashes.",
+    "fieldType": {
+      "type": "input"
+    },
+    "preprocess": "numeric",
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^\\d{9}$",
+        "errorMessage": "TIN must be exactly 9 digits in length.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^(?!^123-45-6789$)(?!^12-3456789$)(?!^123456789$).*",
+        "errorMessage": "TIN cannot be 123456789",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^(?!^(\\d)(?:-?\\1){8}$).*$",
+        "errorMessage": "TIN cannot consist of the same digit repeated.",
+        "level": "error"
+      },
+      {
+        "rule": "required",
+        "errorMessage": "Payer TIN is required.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.BusinessName.BusinessNameLine1Txt",
+    "label": "Payer Business Name Line 1",
+    "alternateMatches": ["Payer Business Name", "Payer Business or Entity Name Line 1"],
+    "example": "John Finch Company",
+    "description": "One of either Payer Business Name or Payer Person Name is required.",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9#\\-()&'] ?)*[A-Za-z0-9#\\-()&']$",
+        "errorMessage": "Must contain only letters, numbers, #, -, (, ), &, or apostrophe, with no leading/trailing/adjacent spaces.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,75}$",
+        "errorMessage": "Must be 75 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.BusinessName.BusinessNameLine2Txt",
+    "label": "Payer Business Name Line 2",
+    "alternateMatches": ["Payer Business or Entity Name Line 2"],
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9#\\-()&'] ?)*[A-Za-z0-9#\\-()&']$",
+        "errorMessage": "Must contain only letters, numbers, #, -, (, ), &, or apostrophe, with no leading/trailing/adjacent spaces.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,75}$",
+        "errorMessage": "Must be 75 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.PersonName.PersonFirstNm",
+    "label": "Payer First Name",
+    "alternateMatches": ["Payer First"],
+    "example": "John",
+    "description": "One of either Payer Business Name or Payer Person Name is required.",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.PersonName.PersonMiddleNm",
+    "label": "Payer Middle Name",
+    "alternateMatches": ["Payer Middle"],
+    "example": "William",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.PersonName.PersonLastNm",
+    "label": "Payer Last Name",
+    "alternateMatches": ["Payer Last", "Payer Surname", "Payer Last Name (Surname)"],
+    "example": "Finch",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.PersonName.SuffixNm",
+    "label": "Payer Suffix",
+    "example": "III",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.Address.CountryCd",
+    "label": "Payer Country",
+    "alternateMatches": ["Payer Country Code"],
+    "description": "Must be a valid 2-character IRS country code (e.g., US, CA)",
+    "example": "US",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "US",
+          "label": "(US) United States",
+          "alternateMatches": ["U.S.", "U.S.A.", "USA", "United States of America", "America", "United States"]
+        },
+        {
+          "value": "AF",
+          "label": "(AF) Afghanistan",
+          "alternateMatches": ["Afghanistan"]
+        },
+        {
+          "value": "AX",
+          "label": "(AX) Akrotiri",
+          "alternateMatches": ["Akrotiri"]
+        },
+        {
+          "value": "AL",
+          "label": "(AL) Albania",
+          "alternateMatches": ["Albania"]
+        },
+        {
+          "value": "AG",
+          "label": "(AG) Algeria",
+          "alternateMatches": ["Algeria"]
+        },
+        {
+          "value": "AQ",
+          "label": "(AQ) American Samoa",
+          "alternateMatches": ["American Samoa"]
+        },
+        {
+          "value": "AN",
+          "label": "(AN) Andorra",
+          "alternateMatches": ["Andorra"]
+        },
+        {
+          "value": "AO",
+          "label": "(AO) Angola",
+          "alternateMatches": ["Angola"]
+        },
+        {
+          "value": "AV",
+          "label": "(AV) Anguilla",
+          "alternateMatches": ["Anguilla"]
+        },
+        {
+          "value": "AY",
+          "label": "(AY) Antarctica",
+          "alternateMatches": ["Antarctica"]
+        },
+        {
+          "value": "AC",
+          "label": "(AC) Antigua & Barbuda",
+          "alternateMatches": ["Antigua and Barbuda", "Antigua & Barbuda"]
+        },
+        {
+          "value": "AR",
+          "label": "(AR) Argentina",
+          "alternateMatches": ["Argentina"]
+        },
+        {
+          "value": "AM",
+          "label": "(AM) Armenia",
+          "alternateMatches": ["Armenia"]
+        },
+        {
+          "value": "AA",
+          "label": "(AA) Aruba",
+          "alternateMatches": ["Aruba"]
+        },
+        {
+          "value": "AT",
+          "label": "(AT) Ashmore and Cartier Islands",
+          "alternateMatches": ["Ashmore and Cartier Islands"]
+        },
+        {
+          "value": "AS",
+          "label": "(AS) Australia",
+          "alternateMatches": ["Australia"]
+        },
+        {
+          "value": "AU",
+          "label": "(AU) Austria",
+          "alternateMatches": ["Austria"]
+        },
+        {
+          "value": "AJ",
+          "label": "(AJ) Azerbaijan",
+          "alternateMatches": ["Azerbaijan"]
+        },
+        {
+          "value": "BF",
+          "label": "(BF) Bahamas",
+          "alternateMatches": ["The Bahamas", "Bahamas"]
+        },
+        {
+          "value": "BA",
+          "label": "(BA) Bahrain",
+          "alternateMatches": ["Bahrain"]
+        },
+        {
+          "value": "FQ",
+          "label": "(FQ) Baker Island",
+          "alternateMatches": ["Baker Island"]
+        },
+        {
+          "value": "BG",
+          "label": "(BG) Bangladesh",
+          "alternateMatches": ["Bangladesh"]
+        },
+        {
+          "value": "BB",
+          "label": "(BB) Barbados",
+          "alternateMatches": ["Barbados"]
+        },
+        {
+          "value": "BO",
+          "label": "(BO) Belarus",
+          "alternateMatches": ["Belarus"]
+        },
+        {
+          "value": "BE",
+          "label": "(BE) Belgium",
+          "alternateMatches": ["Belgium"]
+        },
+        {
+          "value": "BH",
+          "label": "(BH) Belize",
+          "alternateMatches": ["Belize"]
+        },
+        {
+          "value": "BN",
+          "label": "(BN) Benin",
+          "alternateMatches": ["Benin"]
+        },
+        {
+          "value": "BD",
+          "label": "(BD) Bermuda",
+          "alternateMatches": ["Bermuda"]
+        },
+        {
+          "value": "BT",
+          "label": "(BT) Bhutan",
+          "alternateMatches": ["Bhutan"]
+        },
+        {
+          "value": "BL",
+          "label": "(BL) Bolivia",
+          "alternateMatches": ["Bolivia"]
+        },
+        {
+          "value": "BK",
+          "label": "(BK) Bosnia-Herzegovina",
+          "alternateMatches": ["Bosnia and Herzegovina", "Bosnia & Herzegovina", "BiH", "Bosnia-Herzegovina"]
+        },
+        {
+          "value": "BC",
+          "label": "(BC) Botswana",
+          "alternateMatches": ["Botswana"]
+        },
+        {
+          "value": "BV",
+          "label": "(BV) Bouvet Island",
+          "alternateMatches": ["Bouvet Island"]
+        },
+        {
+          "value": "BR",
+          "label": "(BR) Brazil",
+          "alternateMatches": ["Brasil", "Brazil"]
+        },
+        {
+          "value": "IO",
+          "label": "(IO) British Indian Ocean Territory",
+          "alternateMatches": ["British Indian Ocean Territory"]
+        },
+        {
+          "value": "VI",
+          "label": "(VI) British Virgin Islands",
+          "alternateMatches": ["British Virgin Islands"]
+        },
+        {
+          "value": "BX",
+          "label": "(BX) Brunei",
+          "alternateMatches": ["Brunei Darussalam", "Brunei"]
+        },
+        {
+          "value": "BU",
+          "label": "(BU) Bulgaria",
+          "alternateMatches": ["Bulgaria"]
+        },
+        {
+          "value": "UV",
+          "label": "(UV) Burkina Faso",
+          "alternateMatches": ["Upper Volta", "Burkina Faso"]
+        },
+        {
+          "value": "BM",
+          "label": "(BM) Burma",
+          "alternateMatches": ["Myanmar", "Burma"]
+        },
+        {
+          "value": "BY",
+          "label": "(BY) Burundi",
+          "alternateMatches": ["Burundi"]
+        },
+        {
+          "value": "CB",
+          "label": "(CB) Cambodia",
+          "alternateMatches": ["Kampuchea", "Cambodia"]
+        },
+        {
+          "value": "CM",
+          "label": "(CM) Cameroon",
+          "alternateMatches": ["Cameroon"]
+        },
+        {
+          "value": "CA",
+          "label": "(CA) Canada",
+          "alternateMatches": ["Canada"]
+        },
+        {
+          "value": "CV",
+          "label": "(CV) Cape Verde",
+          "alternateMatches": ["Cabo Verde", "Cape Verde"]
+        },
+        {
+          "value": "CJ",
+          "label": "(CJ) Cayman Islands",
+          "alternateMatches": ["Cayman Islands"]
+        },
+        {
+          "value": "CT",
+          "label": "(CT) Central African Republic",
+          "alternateMatches": ["CAR", "Central African Republic"]
+        },
+        {
+          "value": "CD",
+          "label": "(CD) Chad",
+          "alternateMatches": ["Chad"]
+        },
+        {
+          "value": "CI",
+          "label": "(CI) Chile",
+          "alternateMatches": ["Chile"]
+        },
+        {
+          "value": "CH",
+          "label": "(CH) China",
+          "alternateMatches": ["People's Republic of China", "PRC", "Mainland China", "China"]
+        },
+        {
+          "value": "KT",
+          "label": "(KT) Christmas Island",
+          "alternateMatches": ["Christmas Island"]
+        },
+        {
+          "value": "IP",
+          "label": "(IP) Clipperton Island",
+          "alternateMatches": ["Clipperton Island"]
+        },
+        {
+          "value": "CK",
+          "label": "(CK) Cocos (Keeling) Islands",
+          "alternateMatches": ["Keeling Islands", "Cocos Islands", "Cocos (Keeling) Islands"]
+        },
+        {
+          "value": "CO",
+          "label": "(CO) Colombia",
+          "alternateMatches": ["Colombia"]
+        },
+        {
+          "value": "CN",
+          "label": "(CN) Comoros",
+          "alternateMatches": ["Comoros"]
+        },
+        {
+          "value": "CF",
+          "label": "(CF) Congo (Brazzaville)",
+          "alternateMatches": ["Republic of the Congo", "Republic of Congo", "Congo-Brazzaville", "Congo (Brazzaville)"]
+        },
+        {
+          "value": "CG",
+          "label": "(CG) Congo (Kinshasa)",
+          "alternateMatches": [
+            "Democratic Republic of the Congo",
+            "DRC",
+            "DR Congo",
+            "Zaire",
+            "Congo-Kinshasa",
+            "Congo (Kinshasa)"
+          ]
+        },
+        {
+          "value": "CW",
+          "label": "(CW) Cook Islands",
+          "alternateMatches": ["Cook Islands"]
+        },
+        {
+          "value": "CR",
+          "label": "(CR) Coral Sea Islands",
+          "alternateMatches": ["Coral Sea Islands"]
+        },
+        {
+          "value": "CS",
+          "label": "(CS) Costa Rica",
+          "alternateMatches": ["Costa Rica"]
+        },
+        {
+          "value": "IV",
+          "label": "(IV) Ivory Coast",
+          "alternateMatches": ["Côte d'Ivoire", "Cote d'Ivoire", "Ivory Coast"]
+        },
+        {
+          "value": "HR",
+          "label": "(HR) Croatia",
+          "alternateMatches": ["Croatia"]
+        },
+        {
+          "value": "CU",
+          "label": "(CU) Cuba",
+          "alternateMatches": ["Cuba"]
+        },
+        {
+          "value": "UC",
+          "label": "(UC) Curacao",
+          "alternateMatches": ["Curaçao", "Curacao"]
+        },
+        {
+          "value": "CY",
+          "label": "(CY) Cyprus",
+          "alternateMatches": ["Cyprus"]
+        },
+        {
+          "value": "EZ",
+          "label": "(EZ) Czech Republic",
+          "alternateMatches": ["Czechia", "Czech Republic"]
+        },
+        {
+          "value": "DA",
+          "label": "(DA) Denmark",
+          "alternateMatches": ["Denmark"]
+        },
+        {
+          "value": "DX",
+          "label": "(DX) Dhekelia",
+          "alternateMatches": ["Dhekelia"]
+        },
+        {
+          "value": "DJ",
+          "label": "(DJ) Djibouti",
+          "alternateMatches": ["Djibouti"]
+        },
+        {
+          "value": "DO",
+          "label": "(DO) Dominica",
+          "alternateMatches": ["Dominica"]
+        },
+        {
+          "value": "DR",
+          "label": "(DR) Dominican Republic",
+          "alternateMatches": ["Dominican Republic"]
+        },
+        {
+          "value": "TT",
+          "label": "(TT) East Timor",
+          "alternateMatches": ["Timor-Leste", "Timor Leste", "East Timor"]
+        },
+        {
+          "value": "EC",
+          "label": "(EC) Ecuador",
+          "alternateMatches": ["Ecuador"]
+        },
+        {
+          "value": "EG",
+          "label": "(EG) Egypt",
+          "alternateMatches": ["Egypt"]
+        },
+        {
+          "value": "ES",
+          "label": "(ES) El Salvador",
+          "alternateMatches": ["El Salvador"]
+        },
+        {
+          "value": "EK",
+          "label": "(EK) Equatorial Guinea",
+          "alternateMatches": ["Equatorial Guinea"]
+        },
+        {
+          "value": "ER",
+          "label": "(ER) Eritrea",
+          "alternateMatches": ["Eritrea"]
+        },
+        {
+          "value": "EN",
+          "label": "(EN) Estonia",
+          "alternateMatches": ["Estonia"]
+        },
+        {
+          "value": "ET",
+          "label": "(ET) Ethiopia",
+          "alternateMatches": ["Ethiopia"]
+        },
+        {
+          "value": "FK",
+          "label": "(FK) Falkland Islands",
+          "alternateMatches": ["Malvinas", "Islas Malvinas", "Falkland Islands"]
+        },
+        {
+          "value": "FO",
+          "label": "(FO) Faroe Islands",
+          "alternateMatches": ["Faroe Islands"]
+        },
+        {
+          "value": "FM",
+          "label": "(FM) Micronesia",
+          "alternateMatches": ["Federated States of Micronesia", "FSM", "Micronesia"]
+        },
+        {
+          "value": "FJ",
+          "label": "(FJ) Fiji",
+          "alternateMatches": ["Fiji"]
+        },
+        {
+          "value": "FI",
+          "label": "(FI) Finland",
+          "alternateMatches": ["Finland"]
+        },
+        {
+          "value": "FR",
+          "label": "(FR) France",
+          "alternateMatches": ["France"]
+        },
+        {
+          "value": "FP",
+          "label": "(FP) French Polynesia",
+          "alternateMatches": ["French Polynesia"]
+        },
+        {
+          "value": "FS",
+          "label": "(FS) French Southern and Antarctic Lands",
+          "alternateMatches": ["French Southern and Antarctic Lands"]
+        },
+        {
+          "value": "GB",
+          "label": "(GB) Gabon",
+          "alternateMatches": ["Gabon"]
+        },
+        {
+          "value": "GA",
+          "label": "(GA) The Gambia",
+          "alternateMatches": ["Gambia", "The Gambia"]
+        },
+        {
+          "value": "GG",
+          "label": "(GG) Georgia",
+          "alternateMatches": ["Georgia"]
+        },
+        {
+          "value": "GM",
+          "label": "(GM) Germany",
+          "alternateMatches": ["Deutschland", "Germany"]
+        },
+        {
+          "value": "GH",
+          "label": "(GH) Ghana",
+          "alternateMatches": ["Ghana"]
+        },
+        {
+          "value": "GI",
+          "label": "(GI) Gibraltar",
+          "alternateMatches": ["Gibraltar"]
+        },
+        {
+          "value": "GR",
+          "label": "(GR) Greece",
+          "alternateMatches": ["Hellenic Republic", "Greece"]
+        },
+        {
+          "value": "GL",
+          "label": "(GL) Greenland",
+          "alternateMatches": ["Greenland"]
+        },
+        {
+          "value": "GJ",
+          "label": "(GJ) Grenada",
+          "alternateMatches": ["Grenada"]
+        },
+        {
+          "value": "GQ",
+          "label": "(GQ) Guam",
+          "alternateMatches": ["Guam"]
+        },
+        {
+          "value": "GT",
+          "label": "(GT) Guatemala",
+          "alternateMatches": ["Guatemala"]
+        },
+        {
+          "value": "GK",
+          "label": "(GK) Guernsey",
+          "alternateMatches": ["Guernsey"]
+        },
+        {
+          "value": "GV",
+          "label": "(GV) Guinea",
+          "alternateMatches": ["Guinea-Conakry", "Guinea"]
+        },
+        {
+          "value": "PU",
+          "label": "(PU) Guinea-Bissau",
+          "alternateMatches": ["Guinea-Bissau"]
+        },
+        {
+          "value": "GY",
+          "label": "(GY) Guyana",
+          "alternateMatches": ["Guyana"]
+        },
+        {
+          "value": "HA",
+          "label": "(HA) Haiti",
+          "alternateMatches": ["Haiti"]
+        },
+        {
+          "value": "HM",
+          "label": "(HM) Heard Island and McDonald Islands",
+          "alternateMatches": ["Heard Island and McDonald Islands"]
+        },
+        {
+          "value": "VT",
+          "label": "(VT) Holy See",
+          "alternateMatches": ["Vatican City", "Vatican", "Holy See"]
+        },
+        {
+          "value": "HO",
+          "label": "(HO) Honduras",
+          "alternateMatches": ["Honduras"]
+        },
+        {
+          "value": "HK",
+          "label": "(HK) Hong Kong",
+          "alternateMatches": ["Hong Kong SAR", "Hong Kong"]
+        },
+        {
+          "value": "HQ",
+          "label": "(HQ) Howland Island",
+          "alternateMatches": ["Howland Island"]
+        },
+        {
+          "value": "HU",
+          "label": "(HU) Hungary",
+          "alternateMatches": ["Hungary"]
+        },
+        {
+          "value": "IC",
+          "label": "(IC) Iceland",
+          "alternateMatches": ["Iceland"]
+        },
+        {
+          "value": "IN",
+          "label": "(IN) India",
+          "alternateMatches": ["India"]
+        },
+        {
+          "value": "ID",
+          "label": "(ID) Indonesia",
+          "alternateMatches": ["Indonesia"]
+        },
+        {
+          "value": "IR",
+          "label": "(IR) Iran",
+          "alternateMatches": ["Iran"]
+        },
+        {
+          "value": "IZ",
+          "label": "(IZ) Iraq",
+          "alternateMatches": ["Iraq"]
+        },
+        {
+          "value": "EI",
+          "label": "(EI) Ireland",
+          "alternateMatches": ["Republic of Ireland", "Eire", "Ireland"]
+        },
+        {
+          "value": "IS",
+          "label": "(IS) Israel",
+          "alternateMatches": ["Israel"]
+        },
+        {
+          "value": "IT",
+          "label": "(IT) Italy",
+          "alternateMatches": ["Italy"]
+        },
+        {
+          "value": "JM",
+          "label": "(JM) Jamaica",
+          "alternateMatches": ["Jamaica"]
+        },
+        {
+          "value": "JN",
+          "label": "(JN) Jan Mayen",
+          "alternateMatches": ["Jan Mayen"]
+        },
+        {
+          "value": "JA",
+          "label": "(JA) Japan",
+          "alternateMatches": ["Japan"]
+        },
+        {
+          "value": "DQ",
+          "label": "(DQ) Jarvis Island",
+          "alternateMatches": ["Jarvis Island"]
+        },
+        {
+          "value": "JE",
+          "label": "(JE) Jersey",
+          "alternateMatches": ["Jersey"]
+        },
+        {
+          "value": "JQ",
+          "label": "(JQ) Johnston Atoll",
+          "alternateMatches": ["Johnston Atoll"]
+        },
+        {
+          "value": "JO",
+          "label": "(JO) Jordan",
+          "alternateMatches": ["Jordan"]
+        },
+        {
+          "value": "KZ",
+          "label": "(KZ) Kazakhstan",
+          "alternateMatches": ["Kazakstan", "Kazakhstan"]
+        },
+        {
+          "value": "KE",
+          "label": "(KE) Kenya",
+          "alternateMatches": ["Kenya"]
+        },
+        {
+          "value": "KQ",
+          "label": "(KQ) Kingman Reef",
+          "alternateMatches": ["Kingman Reef"]
+        },
+        {
+          "value": "KR",
+          "label": "(KR) Kiribati",
+          "alternateMatches": ["Kiribati"]
+        },
+        {
+          "value": "KN",
+          "label": "(KN) North Korea",
+          "alternateMatches": ["DPRK", "Korea North", "Korea, North", "North Korea"]
+        },
+        {
+          "value": "KS",
+          "label": "(KS) South Korea",
+          "alternateMatches": ["Republic of Korea", "Korea South", "Korea, South", "South Korea"]
+        },
+        {
+          "value": "KV",
+          "label": "(KV) Kosovo",
+          "alternateMatches": ["Kosovo"]
+        },
+        {
+          "value": "KU",
+          "label": "(KU) Kuwait",
+          "alternateMatches": ["Kuwait"]
+        },
+        {
+          "value": "KG",
+          "label": "(KG) Kyrgyzstan",
+          "alternateMatches": ["Kyrgyz Republic", "Kyrgyzstan"]
+        },
+        {
+          "value": "LA",
+          "label": "(LA) Laos",
+          "alternateMatches": ["Lao PDR", "Lao", "Laos"]
+        },
+        {
+          "value": "LG",
+          "label": "(LG) Latvia",
+          "alternateMatches": ["Latvia"]
+        },
+        {
+          "value": "LE",
+          "label": "(LE) Lebanon",
+          "alternateMatches": ["Lebanon"]
+        },
+        {
+          "value": "LT",
+          "label": "(LT) Lesotho",
+          "alternateMatches": ["Lesotho"]
+        },
+        {
+          "value": "LI",
+          "label": "(LI) Liberia",
+          "alternateMatches": ["Liberia"]
+        },
+        {
+          "value": "LY",
+          "label": "(LY) Libya",
+          "alternateMatches": ["Libya"]
+        },
+        {
+          "value": "LS",
+          "label": "(LS) Liechtenstein",
+          "alternateMatches": ["Liechtenstein"]
+        },
+        {
+          "value": "LH",
+          "label": "(LH) Lithuania",
+          "alternateMatches": ["Lithuania"]
+        },
+        {
+          "value": "LU",
+          "label": "(LU) Luxembourg",
+          "alternateMatches": ["Luxembourg"]
+        },
+        {
+          "value": "MC",
+          "label": "(MC) Macau",
+          "alternateMatches": ["Macao", "Macau SAR", "Macao SAR", "Macau"]
+        },
+        {
+          "value": "MK",
+          "label": "(MK) Macedonia",
+          "alternateMatches": ["North Macedonia", "FYROM", "Macedonia"]
+        },
+        {
+          "value": "MA",
+          "label": "(MA) Madagascar",
+          "alternateMatches": ["Madagascar"]
+        },
+        {
+          "value": "MI",
+          "label": "(MI) Malawi",
+          "alternateMatches": ["Malawi"]
+        },
+        {
+          "value": "MY",
+          "label": "(MY) Malaysia",
+          "alternateMatches": ["Malaysia"]
+        },
+        {
+          "value": "MV",
+          "label": "(MV) Maldives",
+          "alternateMatches": ["Maldives"]
+        },
+        {
+          "value": "ML",
+          "label": "(ML) Mali",
+          "alternateMatches": ["Mali"]
+        },
+        {
+          "value": "MT",
+          "label": "(MT) Malta",
+          "alternateMatches": ["Malta"]
+        },
+        {
+          "value": "IM",
+          "label": "(IM) Isle of Man",
+          "alternateMatches": ["Man, Isle of", "Isle of Man"]
+        },
+        {
+          "value": "RM",
+          "label": "(RM) Marshall Islands",
+          "alternateMatches": ["Marshall Islands"]
+        },
+        {
+          "value": "MR",
+          "label": "(MR) Mauritania",
+          "alternateMatches": ["Mauritania"]
+        },
+        {
+          "value": "MP",
+          "label": "(MP) Mauritius",
+          "alternateMatches": ["Mauritius"]
+        },
+        {
+          "value": "MX",
+          "label": "(MX) Mexico",
+          "alternateMatches": ["Mexico"]
+        },
+        {
+          "value": "MQ",
+          "label": "(MQ) Midway Islands",
+          "alternateMatches": ["Midway Islands"]
+        },
+        {
+          "value": "MD",
+          "label": "(MD) Moldova",
+          "alternateMatches": ["Moldova"]
+        },
+        {
+          "value": "MN",
+          "label": "(MN) Monaco",
+          "alternateMatches": ["Monaco"]
+        },
+        {
+          "value": "MG",
+          "label": "(MG) Mongolia",
+          "alternateMatches": ["Mongolia"]
+        },
+        {
+          "value": "MJ",
+          "label": "(MJ) Montenegro",
+          "alternateMatches": ["Montenegro"]
+        },
+        {
+          "value": "MH",
+          "label": "(MH) Montserrat",
+          "alternateMatches": ["Montserrat"]
+        },
+        {
+          "value": "MO",
+          "label": "(MO) Morocco",
+          "alternateMatches": ["Morocco"]
+        },
+        {
+          "value": "MZ",
+          "label": "(MZ) Mozambique",
+          "alternateMatches": ["Mozambique"]
+        },
+        {
+          "value": "WA",
+          "label": "(WA) Namibia",
+          "alternateMatches": ["Namibia"]
+        },
+        {
+          "value": "NR",
+          "label": "(NR) Nauru",
+          "alternateMatches": ["Nauru"]
+        },
+        {
+          "value": "BQ",
+          "label": "(BQ) Navassa Island",
+          "alternateMatches": ["Navassa Island"]
+        },
+        {
+          "value": "NP",
+          "label": "(NP) Nepal",
+          "alternateMatches": ["Nepal"]
+        },
+        {
+          "value": "NL",
+          "label": "(NL) Netherlands",
+          "alternateMatches": ["Holland", "Netherlands"]
+        },
+        {
+          "value": "NC",
+          "label": "(NC) New Caledonia",
+          "alternateMatches": ["New Caledonia"]
+        },
+        {
+          "value": "NZ",
+          "label": "(NZ) New Zealand",
+          "alternateMatches": ["Aotearoa", "New Zealand"]
+        },
+        {
+          "value": "NU",
+          "label": "(NU) Nicaragua",
+          "alternateMatches": ["Nicaragua"]
+        },
+        {
+          "value": "NG",
+          "label": "(NG) Niger",
+          "alternateMatches": ["Niger"]
+        },
+        {
+          "value": "NI",
+          "label": "(NI) Nigeria",
+          "alternateMatches": ["Nigeria"]
+        },
+        {
+          "value": "NE",
+          "label": "(NE) Niue",
+          "alternateMatches": ["Niue"]
+        },
+        {
+          "value": "NF",
+          "label": "(NF) Norfolk Island",
+          "alternateMatches": ["Norfolk Island"]
+        },
+        {
+          "value": "CQ",
+          "label": "(CQ) Northern Mariana Islands",
+          "alternateMatches": ["Northern Mariana Islands"]
+        },
+        {
+          "value": "NO",
+          "label": "(NO) Norway",
+          "alternateMatches": ["Norway"]
+        },
+        {
+          "value": "MU",
+          "label": "(MU) Oman",
+          "alternateMatches": ["Oman"]
+        },
+        {
+          "value": "OC",
+          "label": "(OC) Other Country",
+          "alternateMatches": ["Other Country"]
+        },
+        {
+          "value": "PK",
+          "label": "(PK) Pakistan",
+          "alternateMatches": ["Pakistan"]
+        },
+        {
+          "value": "PS",
+          "label": "(PS) Palau",
+          "alternateMatches": ["Palau"]
+        },
+        {
+          "value": "LQ",
+          "label": "(LQ) Palmyra Atoll",
+          "alternateMatches": ["Palmyra Atoll"]
+        },
+        {
+          "value": "PM",
+          "label": "(PM) Panama",
+          "alternateMatches": ["Panama"]
+        },
+        {
+          "value": "PP",
+          "label": "(PP) Papua New Guinea",
+          "alternateMatches": ["PNG", "Papua New Guinea"]
+        },
+        {
+          "value": "PF",
+          "label": "(PF) Paracel Islands",
+          "alternateMatches": ["Paracel Islands"]
+        },
+        {
+          "value": "PA",
+          "label": "(PA) Paraguay",
+          "alternateMatches": ["Paraguay"]
+        },
+        {
+          "value": "PE",
+          "label": "(PE) Peru",
+          "alternateMatches": ["Peru"]
+        },
+        {
+          "value": "RP",
+          "label": "(RP) Philippines",
+          "alternateMatches": ["Philippines"]
+        },
+        {
+          "value": "PC",
+          "label": "(PC) Pitcairn Islands",
+          "alternateMatches": ["Pitcairn Islands"]
+        },
+        {
+          "value": "PL",
+          "label": "(PL) Poland",
+          "alternateMatches": ["Poland"]
+        },
+        {
+          "value": "PO",
+          "label": "(PO) Portugal",
+          "alternateMatches": ["Portugal"]
+        },
+        {
+          "value": "RQ",
+          "label": "(RQ) Puerto Rico",
+          "alternateMatches": ["PR", "Puerto Rico"]
+        },
+        {
+          "value": "QA",
+          "label": "(QA) Qatar",
+          "alternateMatches": ["Qatar"]
+        },
+        {
+          "value": "RO",
+          "label": "(RO) Romania",
+          "alternateMatches": ["Romania"]
+        },
+        {
+          "value": "RS",
+          "label": "(RS) Russia",
+          "alternateMatches": ["Russian Federation", "Russia"]
+        },
+        {
+          "value": "RW",
+          "label": "(RW) Rwanda",
+          "alternateMatches": ["Rwanda"]
+        },
+        {
+          "value": "TB",
+          "label": "(TB) Saint Barthelemy",
+          "alternateMatches": ["St. Barthelemy", "St. Barts", "Saint Barts", "Saint Barthelemy"]
+        },
+        {
+          "value": "RN",
+          "label": "(RN) Saint Martin",
+          "alternateMatches": ["St. Martin", "Saint Martin"]
+        },
+        {
+          "value": "WS",
+          "label": "(WS) Samoa",
+          "alternateMatches": ["Western Samoa", "Independent State of Samoa", "Samoa"]
+        },
+        {
+          "value": "SM",
+          "label": "(SM) San Marino",
+          "alternateMatches": ["San Marino"]
+        },
+        {
+          "value": "TP",
+          "label": "(TP) Sao Tome and Principe",
+          "alternateMatches": [
+            "São Tomé and Príncipe",
+            "Sao Tome & Principe",
+            "São Tomé & Príncipe",
+            "Sao Tome and Principe"
+          ]
+        },
+        {
+          "value": "SA",
+          "label": "(SA) Saudi Arabia",
+          "alternateMatches": ["KSA", "Saudi Arabia"]
+        },
+        {
+          "value": "SG",
+          "label": "(SG) Senegal",
+          "alternateMatches": ["Senegal"]
+        },
+        {
+          "value": "RI",
+          "label": "(RI) Serbia",
+          "alternateMatches": ["Serbia"]
+        },
+        {
+          "value": "SE",
+          "label": "(SE) Seychelles",
+          "alternateMatches": ["Seychelles"]
+        },
+        {
+          "value": "SL",
+          "label": "(SL) Sierra Leone",
+          "alternateMatches": ["Sierra Leone"]
+        },
+        {
+          "value": "SN",
+          "label": "(SN) Singapore",
+          "alternateMatches": ["Singapore"]
+        },
+        {
+          "value": "NN",
+          "label": "(NN) Sint Maarten",
+          "alternateMatches": ["Saint Maarten", "St. Maarten", "Sint Maarten"]
+        },
+        {
+          "value": "LO",
+          "label": "(LO) Slovakia",
+          "alternateMatches": ["Slovak Republic", "Slovakia"]
+        },
+        {
+          "value": "SI",
+          "label": "(SI) Slovenia",
+          "alternateMatches": ["Slovenia"]
+        },
+        {
+          "value": "BP",
+          "label": "(BP) Solomon Islands",
+          "alternateMatches": ["Solomon Islands"]
+        },
+        {
+          "value": "SO",
+          "label": "(SO) Somalia",
+          "alternateMatches": ["Somalia"]
+        },
+        {
+          "value": "SF",
+          "label": "(SF) South Africa",
+          "alternateMatches": ["RSA", "South Africa"]
+        },
+        {
+          "value": "SX",
+          "label": "(SX) South Georgia & South Sandwich Islands",
+          "alternateMatches": ["South Georgia and South Sandwich Islands", "South Georgia & South Sandwich Islands"]
+        },
+        {
+          "value": "OD",
+          "label": "(OD) South Sudan",
+          "alternateMatches": ["South Sudan"]
+        },
+        {
+          "value": "SP",
+          "label": "(SP) Spain",
+          "alternateMatches": ["Spain"]
+        },
+        {
+          "value": "PG",
+          "label": "(PG) Spratly Islands",
+          "alternateMatches": ["Spratly Islands"]
+        },
+        {
+          "value": "CE",
+          "label": "(CE) Sri Lanka",
+          "alternateMatches": ["Ceylon", "Sri Lanka"]
+        },
+        {
+          "value": "SH",
+          "label": "(SH) St. Helena",
+          "alternateMatches": ["Saint Helena", "St. Helena"]
+        },
+        {
+          "value": "SC",
+          "label": "(SC) St. Kitts and Nevis",
+          "alternateMatches": [
+            "Saint Kitts and Nevis",
+            "Saint Kitts & Nevis",
+            "St. Kitts & Nevis",
+            "St. Kitts and Nevis"
+          ]
+        },
+        {
+          "value": "ST",
+          "label": "(ST) St. Lucia",
+          "alternateMatches": ["Saint Lucia", "St. Lucia"]
+        },
+        {
+          "value": "SB",
+          "label": "(SB) St. Pierre and Miquelon",
+          "alternateMatches": ["Saint Pierre and Miquelon", "St. Pierre and Miquelon"]
+        },
+        {
+          "value": "VC",
+          "label": "(VC) St. Vincent and the Grenadines",
+          "alternateMatches": [
+            "Saint Vincent and the Grenadines",
+            "Saint Vincent & the Grenadines",
+            "St. Vincent & the Grenadines",
+            "St. Vincent and the Grenadines"
+          ]
+        },
+        {
+          "value": "SU",
+          "label": "(SU) Sudan",
+          "alternateMatches": ["Sudan"]
+        },
+        {
+          "value": "NS",
+          "label": "(NS) Suriname",
+          "alternateMatches": ["Surinam", "Suriname"]
+        },
+        {
+          "value": "SV",
+          "label": "(SV) Svalbard",
+          "alternateMatches": ["Svalbard"]
+        },
+        {
+          "value": "WZ",
+          "label": "(WZ) Swaziland",
+          "alternateMatches": ["Eswatini", "Swaziland"]
+        },
+        {
+          "value": "SW",
+          "label": "(SW) Sweden",
+          "alternateMatches": ["Sweden"]
+        },
+        {
+          "value": "SZ",
+          "label": "(SZ) Switzerland",
+          "alternateMatches": ["Switzerland"]
+        },
+        {
+          "value": "SY",
+          "label": "(SY) Syria",
+          "alternateMatches": ["Syrian Arab Republic", "Syria"]
+        },
+        {
+          "value": "TW",
+          "label": "(TW) Taiwan",
+          "alternateMatches": ["Republic of China", "Formosa", "Taiwan"]
+        },
+        {
+          "value": "TI",
+          "label": "(TI) Tajikistan",
+          "alternateMatches": ["Tajikistan"]
+        },
+        {
+          "value": "TZ",
+          "label": "(TZ) Tanzania",
+          "alternateMatches": ["Tanzania"]
+        },
+        {
+          "value": "TH",
+          "label": "(TH) Thailand",
+          "alternateMatches": ["Thailand"]
+        },
+        {
+          "value": "TO",
+          "label": "(TO) Togo",
+          "alternateMatches": ["Togo"]
+        },
+        {
+          "value": "TL",
+          "label": "(TL) Tokelau",
+          "alternateMatches": ["Tokelau"]
+        },
+        {
+          "value": "TN",
+          "label": "(TN) Tonga",
+          "alternateMatches": ["Tonga"]
+        },
+        {
+          "value": "TD",
+          "label": "(TD) Trinidad and Tobago",
+          "alternateMatches": ["Trinidad & Tobago", "Trinidad and Tobago"]
+        },
+        {
+          "value": "TS",
+          "label": "(TS) Tunisia",
+          "alternateMatches": ["Tunisia"]
+        },
+        {
+          "value": "TU",
+          "label": "(TU) Turkey",
+          "alternateMatches": ["Türkiye", "Turkiye", "Turkey"]
+        },
+        {
+          "value": "TX",
+          "label": "(TX) Turkmenistan",
+          "alternateMatches": ["Turkmenistan"]
+        },
+        {
+          "value": "TK",
+          "label": "(TK) Turks and Caicos Islands",
+          "alternateMatches": ["Turks & Caicos Islands", "TCI", "Turks and Caicos Islands"]
+        },
+        {
+          "value": "TV",
+          "label": "(TV) Tuvalu",
+          "alternateMatches": ["Tuvalu"]
+        },
+        {
+          "value": "UG",
+          "label": "(UG) Uganda",
+          "alternateMatches": ["Uganda"]
+        },
+        {
+          "value": "UP",
+          "label": "(UP) Ukraine",
+          "alternateMatches": ["Ukraine"]
+        },
+        {
+          "value": "AE",
+          "label": "(AE) United Arab Emirates",
+          "alternateMatches": ["UAE", "Emirates", "United Arab Emirates"]
+        },
+        {
+          "value": "UK",
+          "label": "(UK) United Kingdom",
+          "alternateMatches": ["Great Britain", "Britain", "England", "U.K.", "United Kingdom"]
+        },
+        {
+          "value": "UY",
+          "label": "(UY) Uruguay",
+          "alternateMatches": ["Uruguay"]
+        },
+        {
+          "value": "UZ",
+          "label": "(UZ) Uzbekistan",
+          "alternateMatches": ["Uzbekistan"]
+        },
+        {
+          "value": "NH",
+          "label": "(NH) Vanuatu",
+          "alternateMatches": ["Vanuatu"]
+        },
+        {
+          "value": "VE",
+          "label": "(VE) Venezuela",
+          "alternateMatches": ["Bolivarian Republic of Venezuela", "Venezuela"]
+        },
+        {
+          "value": "VM",
+          "label": "(VM) Vietnam",
+          "alternateMatches": ["Viet Nam", "Vietnam"]
+        },
+        {
+          "value": "VQ",
+          "label": "(VQ) Virgin Islands",
+          "alternateMatches": ["U.S. Virgin Islands", "USVI", "Virgin Islands"]
+        },
+        {
+          "value": "WQ",
+          "label": "(WQ) Wake Island",
+          "alternateMatches": ["Wake Island"]
+        },
+        {
+          "value": "WF",
+          "label": "(WF) Wallis and Futuna",
+          "alternateMatches": ["Wallis and Futuna"]
+        },
+        {
+          "value": "WI",
+          "label": "(WI) Western Sahara",
+          "alternateMatches": ["Western Sahara"]
+        },
+        {
+          "value": "YM",
+          "label": "(YM) Yemen",
+          "alternateMatches": ["Yemen"]
+        },
+        {
+          "value": "ZA",
+          "label": "(ZA) Zambia",
+          "alternateMatches": ["Zambia"]
+        },
+        {
+          "value": "ZI",
+          "label": "(ZI) Zimbabwe",
+          "alternateMatches": ["Zimbabwe"]
+        }
+      ]
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "Country is required",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.Address.AddressLine1Txt",
+    "label": "Payer Address Line 1",
+    "alternateMatches": ["Payer Street Address"],
+    "example": "123 Business Rd",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "Payer Address line 1 is required.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,35}$",
+        "errorMessage": "Must be 35 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.Address.AddressLine2Txt",
+    "label": "Payer Address Line 2",
+    "example": "Suite 21",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,35}$",
+        "errorMessage": "Must be 35 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.Address.CityNm",
+    "label": "Payer City/Town",
+    "alternateMatches": ["Payer City", "Payer Town"],
+    "example": "New York",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^[A-Za-z\\s'.\\-]+$",
+        "errorMessage": "City must contain only letters, spaces, hyphens, apostrophes, or periods.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,40}$",
+        "errorMessage": "Must be 40 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "IssuerDetail.Address.StateCd",
+    "label": "Payer State/Province/Territory",
+    "alternateMatches": ["Payer State", "Payer Province", "Payer Territory"],
+    "description": "Domestic: must be a valid US state/territory code (e.g., NY, TX).\nForeign: Must be 17 characters or fewer.",
+    "example": "NY",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "AK",
+          "label": "Alaska"
+        },
+        {
+          "value": "AZ",
+          "label": "Arizona"
+        },
+        {
+          "value": "CA",
+          "label": "California"
+        }
+      ]
+    }
+  },
+  {
+    "key": "IssuerDetail.Address.PostalCd",
+    "label": "Payer ZIP/Postal Code",
+    "alternateMatches": ["Payer ZIP", "Payer Postal Code"],
+    "description": "Domestic: zip, zip+4, or zip+7.\nForeign: Alpha-numeric characters only",
+    "example": "10055",
+    "fieldType": {
+      "type": "input"
+    }
+  },
+  {
+    "key": "IssuerDetail.PhoneNum",
+    "label": "Payer Phone",
+    "alternateMatches": ["Payer Phone Number"],
+    "example": "2145555555",
+    "fieldType": {
+      "type": "input"
+    },
+    "preprocess": "numeric",
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^\\d{10,20}$",
+        "errorMessage": "Phone must be 10-20 digits.",
+        "level": "error"
+      },
+      {
+        "rule": "required",
+        "errorMessage": "Submitting a Payer without a phone number result in an 'Accepted with Errors' status",
+        "level": "warning"
+      }
+    ]
+  },
+  {
+    "key": "IssuerOfficeCd",
+    "label": "Office Code",
+    "description": "This is an optional field. For users with multiple locations, this field may be used to identify the location of the office submitting the information returns.",
+    "example": "1234",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^\\d{4}$",
+        "errorMessage": "Office Code must be exactly 4 digits.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.TINSubmittedTypeCd",
+    "label": "Recipient TIN Type",
+    "example": "SSN",
+    "description": "SSN, EIN, ATIN, ITIN, QI-EIN, or UND",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "SSN",
+          "label": "SSN"
+        },
+        {
+          "value": "EIN",
+          "label": "EIN"
+        },
+        {
+          "value": "ATIN",
+          "label": "ATIN"
+        },
+        {
+          "value": "ITIN",
+          "label": "ITIN"
+        },
+        {
+          "value": "QI-EIN",
+          "label": "QI-EIN"
+        },
+        {
+          "value": "UND",
+          "label": "UND"
+        }
+      ]
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "Recipients with blank TIN Types will be submitted as \"UND\" (Unknown).",
+        "level": "info"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.TIN",
+    "label": "Recipient Taxpayer ID Number",
+    "alternateMatches": ["Recipient TIN", "Recipient TIN Number"],
+    "example": "123231234",
+    "description": "Enter the 9-digit TIN without dashes.",
+    "fieldType": {
+      "type": "input"
+    },
+    "preprocess": "numeric",
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^\\d{9}$",
+        "errorMessage": "TIN must be exactly 9 digits in length.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^(?!^123-45-6789$)(?!^12-3456789$)(?!^123456789$).*",
+        "errorMessage": "TIN cannot be 123456789",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^(?!^(\\d)(?:-?\\1){8}$).*$",
+        "errorMessage": "TIN cannot consist of the same digit repeated.",
+        "level": "error"
+      },
+      {
+        "rule": "required",
+        "errorMessage": "Submitting Recipients without a TIN will result in an 'Accepted with Errors' status",
+        "level": "warning"
+      },
+      {
+        "rule": "unique",
+        "keys": ["RecipientDetail.TIN", "RecipientAccountNum"],
+        "errorMessage": "The composite Recipient TIN + Account Number must be unique",
+        "level": "warning"
+      }
+    ]
+  },
+  {
+    "key": "RecipientAccountNum",
+    "label": "Recipient Account Number",
+    "alternateMatches": ["Form Account Number"],
+    "example": "AA1234",
+    "fieldType": {
+      "type": "input"
+    },
+    "preprocess": "text",
+    "description": "The account number is required if you have multiple accounts for a recipient for whom you are filing more than one Form 1099-NEC.",
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "unique",
+        "keys": ["RecipientDetail.TIN", "RecipientAccountNum"],
+        "errorMessage": "The composite Recipient TIN + Account Number must be unique",
+        "level": "warning"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.BusinessName.BusinessNameLine1Txt",
+    "label": "Recipient Business Name Line 1",
+    "alternateMatches": ["Recipient Business Name", "Recipient Business or Entity Name Line 1"],
+    "example": "Hello Mother Goose Inc",
+    "description": "One of either Recipient Business Name or Recipient Person Name is required.",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9#\\-()&'] ?)*[A-Za-z0-9#\\-()&']$",
+        "errorMessage": "Must contain only letters, numbers, #, -, (, ), &, or apostrophe, with no leading/trailing/adjacent spaces.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,75}$",
+        "errorMessage": "Must be 75 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.BusinessName.BusinessNameLine2Txt",
+    "label": "Recipient Business Name Line 2",
+    "alternateMatches": ["Recipient Business or Entity Name Line 2"],
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9#\\-()&'] ?)*[A-Za-z0-9#\\-()&']$",
+        "errorMessage": "Must contain only letters, numbers, #, -, (, ), &, or apostrophe, with no leading/trailing/adjacent spaces.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,75}$",
+        "errorMessage": "Must be 75 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.PersonName.PersonFirstNm",
+    "label": "Recipient First Name",
+    "alternateMatches": ["Recipient First"],
+    "example": "John",
+    "description": "One of either Recipient Business Name or Recipient Person Name is required.",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.PersonName.PersonMiddleNm",
+    "label": "Recipient Middle Name",
+    "alternateMatches": ["Recipient Middle"],
+    "example": "William",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.PersonName.PersonLastNm",
+    "label": "Recipient Last Name",
+    "alternateMatches": ["Recipient Last", "Recipient Surname", "Recipient Last Name (Surname)"],
+    "example": "Finch",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.PersonName.SuffixNm",
+    "label": "Recipient Suffix",
+    "example": "III",
+    "preprocess": "text",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,20}$",
+        "errorMessage": "Must be 20 characters or fewer.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^$|^([A-Za-z0-9'\\-] ?)*[A-Za-z0-9'\\-]$",
+        "errorMessage": "Must contain only letters, numbers, hyphens, or apostrophes.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.Address.CountryCd",
+    "label": "Recipient Country",
+    "alternateMatches": ["Recipient Country Code"],
+    "description": "Must be a valid 2-character IRS country code (e.g., US, CA)",
+    "example": "US",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "US",
+          "label": "(US) United States",
+          "alternateMatches": ["U.S.", "U.S.A.", "USA", "United States of America", "America", "United States"]
+        },
+        {
+          "value": "AF",
+          "label": "(AF) Afghanistan",
+          "alternateMatches": ["Afghanistan"]
+        },
+        {
+          "value": "AX",
+          "label": "(AX) Akrotiri",
+          "alternateMatches": ["Akrotiri"]
+        },
+        {
+          "value": "AL",
+          "label": "(AL) Albania",
+          "alternateMatches": ["Albania"]
+        },
+        {
+          "value": "AG",
+          "label": "(AG) Algeria",
+          "alternateMatches": ["Algeria"]
+        },
+        {
+          "value": "AQ",
+          "label": "(AQ) American Samoa",
+          "alternateMatches": ["American Samoa"]
+        },
+        {
+          "value": "AN",
+          "label": "(AN) Andorra",
+          "alternateMatches": ["Andorra"]
+        },
+        {
+          "value": "AO",
+          "label": "(AO) Angola",
+          "alternateMatches": ["Angola"]
+        },
+        {
+          "value": "AV",
+          "label": "(AV) Anguilla",
+          "alternateMatches": ["Anguilla"]
+        },
+        {
+          "value": "AY",
+          "label": "(AY) Antarctica",
+          "alternateMatches": ["Antarctica"]
+        },
+        {
+          "value": "AC",
+          "label": "(AC) Antigua & Barbuda",
+          "alternateMatches": ["Antigua and Barbuda", "Antigua & Barbuda"]
+        },
+        {
+          "value": "AR",
+          "label": "(AR) Argentina",
+          "alternateMatches": ["Argentina"]
+        },
+        {
+          "value": "AM",
+          "label": "(AM) Armenia",
+          "alternateMatches": ["Armenia"]
+        },
+        {
+          "value": "AA",
+          "label": "(AA) Aruba",
+          "alternateMatches": ["Aruba"]
+        },
+        {
+          "value": "AT",
+          "label": "(AT) Ashmore and Cartier Islands",
+          "alternateMatches": ["Ashmore and Cartier Islands"]
+        },
+        {
+          "value": "AS",
+          "label": "(AS) Australia",
+          "alternateMatches": ["Australia"]
+        },
+        {
+          "value": "AU",
+          "label": "(AU) Austria",
+          "alternateMatches": ["Austria"]
+        },
+        {
+          "value": "AJ",
+          "label": "(AJ) Azerbaijan",
+          "alternateMatches": ["Azerbaijan"]
+        },
+        {
+          "value": "BF",
+          "label": "(BF) Bahamas",
+          "alternateMatches": ["The Bahamas", "Bahamas"]
+        },
+        {
+          "value": "BA",
+          "label": "(BA) Bahrain",
+          "alternateMatches": ["Bahrain"]
+        },
+        {
+          "value": "FQ",
+          "label": "(FQ) Baker Island",
+          "alternateMatches": ["Baker Island"]
+        },
+        {
+          "value": "BG",
+          "label": "(BG) Bangladesh",
+          "alternateMatches": ["Bangladesh"]
+        },
+        {
+          "value": "BB",
+          "label": "(BB) Barbados",
+          "alternateMatches": ["Barbados"]
+        },
+        {
+          "value": "BO",
+          "label": "(BO) Belarus",
+          "alternateMatches": ["Belarus"]
+        },
+        {
+          "value": "BE",
+          "label": "(BE) Belgium",
+          "alternateMatches": ["Belgium"]
+        },
+        {
+          "value": "BH",
+          "label": "(BH) Belize",
+          "alternateMatches": ["Belize"]
+        },
+        {
+          "value": "BN",
+          "label": "(BN) Benin",
+          "alternateMatches": ["Benin"]
+        },
+        {
+          "value": "BD",
+          "label": "(BD) Bermuda",
+          "alternateMatches": ["Bermuda"]
+        },
+        {
+          "value": "BT",
+          "label": "(BT) Bhutan",
+          "alternateMatches": ["Bhutan"]
+        },
+        {
+          "value": "BL",
+          "label": "(BL) Bolivia",
+          "alternateMatches": ["Bolivia"]
+        },
+        {
+          "value": "BK",
+          "label": "(BK) Bosnia-Herzegovina",
+          "alternateMatches": ["Bosnia and Herzegovina", "Bosnia & Herzegovina", "BiH", "Bosnia-Herzegovina"]
+        },
+        {
+          "value": "BC",
+          "label": "(BC) Botswana",
+          "alternateMatches": ["Botswana"]
+        },
+        {
+          "value": "BV",
+          "label": "(BV) Bouvet Island",
+          "alternateMatches": ["Bouvet Island"]
+        },
+        {
+          "value": "BR",
+          "label": "(BR) Brazil",
+          "alternateMatches": ["Brasil", "Brazil"]
+        },
+        {
+          "value": "IO",
+          "label": "(IO) British Indian Ocean Territory",
+          "alternateMatches": ["British Indian Ocean Territory"]
+        },
+        {
+          "value": "VI",
+          "label": "(VI) British Virgin Islands",
+          "alternateMatches": ["British Virgin Islands"]
+        },
+        {
+          "value": "BX",
+          "label": "(BX) Brunei",
+          "alternateMatches": ["Brunei Darussalam", "Brunei"]
+        },
+        {
+          "value": "BU",
+          "label": "(BU) Bulgaria",
+          "alternateMatches": ["Bulgaria"]
+        },
+        {
+          "value": "UV",
+          "label": "(UV) Burkina Faso",
+          "alternateMatches": ["Upper Volta", "Burkina Faso"]
+        },
+        {
+          "value": "BM",
+          "label": "(BM) Burma",
+          "alternateMatches": ["Myanmar", "Burma"]
+        },
+        {
+          "value": "BY",
+          "label": "(BY) Burundi",
+          "alternateMatches": ["Burundi"]
+        },
+        {
+          "value": "CB",
+          "label": "(CB) Cambodia",
+          "alternateMatches": ["Kampuchea", "Cambodia"]
+        },
+        {
+          "value": "CM",
+          "label": "(CM) Cameroon",
+          "alternateMatches": ["Cameroon"]
+        },
+        {
+          "value": "CA",
+          "label": "(CA) Canada",
+          "alternateMatches": ["Canada"]
+        },
+        {
+          "value": "CV",
+          "label": "(CV) Cape Verde",
+          "alternateMatches": ["Cabo Verde", "Cape Verde"]
+        },
+        {
+          "value": "CJ",
+          "label": "(CJ) Cayman Islands",
+          "alternateMatches": ["Cayman Islands"]
+        },
+        {
+          "value": "CT",
+          "label": "(CT) Central African Republic",
+          "alternateMatches": ["CAR", "Central African Republic"]
+        },
+        {
+          "value": "CD",
+          "label": "(CD) Chad",
+          "alternateMatches": ["Chad"]
+        },
+        {
+          "value": "CI",
+          "label": "(CI) Chile",
+          "alternateMatches": ["Chile"]
+        },
+        {
+          "value": "CH",
+          "label": "(CH) China",
+          "alternateMatches": ["People's Republic of China", "PRC", "Mainland China", "China"]
+        },
+        {
+          "value": "KT",
+          "label": "(KT) Christmas Island",
+          "alternateMatches": ["Christmas Island"]
+        },
+        {
+          "value": "IP",
+          "label": "(IP) Clipperton Island",
+          "alternateMatches": ["Clipperton Island"]
+        },
+        {
+          "value": "CK",
+          "label": "(CK) Cocos (Keeling) Islands",
+          "alternateMatches": ["Keeling Islands", "Cocos Islands", "Cocos (Keeling) Islands"]
+        },
+        {
+          "value": "CO",
+          "label": "(CO) Colombia",
+          "alternateMatches": ["Colombia"]
+        },
+        {
+          "value": "CN",
+          "label": "(CN) Comoros",
+          "alternateMatches": ["Comoros"]
+        },
+        {
+          "value": "CF",
+          "label": "(CF) Congo (Brazzaville)",
+          "alternateMatches": ["Republic of the Congo", "Republic of Congo", "Congo-Brazzaville", "Congo (Brazzaville)"]
+        },
+        {
+          "value": "CG",
+          "label": "(CG) Congo (Kinshasa)",
+          "alternateMatches": [
+            "Democratic Republic of the Congo",
+            "DRC",
+            "DR Congo",
+            "Zaire",
+            "Congo-Kinshasa",
+            "Congo (Kinshasa)"
+          ]
+        },
+        {
+          "value": "CW",
+          "label": "(CW) Cook Islands",
+          "alternateMatches": ["Cook Islands"]
+        },
+        {
+          "value": "CR",
+          "label": "(CR) Coral Sea Islands",
+          "alternateMatches": ["Coral Sea Islands"]
+        },
+        {
+          "value": "CS",
+          "label": "(CS) Costa Rica",
+          "alternateMatches": ["Costa Rica"]
+        },
+        {
+          "value": "IV",
+          "label": "(IV) Ivory Coast",
+          "alternateMatches": ["Côte d'Ivoire", "Cote d'Ivoire", "Ivory Coast"]
+        },
+        {
+          "value": "HR",
+          "label": "(HR) Croatia",
+          "alternateMatches": ["Croatia"]
+        },
+        {
+          "value": "CU",
+          "label": "(CU) Cuba",
+          "alternateMatches": ["Cuba"]
+        },
+        {
+          "value": "UC",
+          "label": "(UC) Curacao",
+          "alternateMatches": ["Curaçao", "Curacao"]
+        },
+        {
+          "value": "CY",
+          "label": "(CY) Cyprus",
+          "alternateMatches": ["Cyprus"]
+        },
+        {
+          "value": "EZ",
+          "label": "(EZ) Czech Republic",
+          "alternateMatches": ["Czechia", "Czech Republic"]
+        },
+        {
+          "value": "DA",
+          "label": "(DA) Denmark",
+          "alternateMatches": ["Denmark"]
+        },
+        {
+          "value": "DX",
+          "label": "(DX) Dhekelia",
+          "alternateMatches": ["Dhekelia"]
+        },
+        {
+          "value": "DJ",
+          "label": "(DJ) Djibouti",
+          "alternateMatches": ["Djibouti"]
+        },
+        {
+          "value": "DO",
+          "label": "(DO) Dominica",
+          "alternateMatches": ["Dominica"]
+        },
+        {
+          "value": "DR",
+          "label": "(DR) Dominican Republic",
+          "alternateMatches": ["Dominican Republic"]
+        },
+        {
+          "value": "TT",
+          "label": "(TT) East Timor",
+          "alternateMatches": ["Timor-Leste", "Timor Leste", "East Timor"]
+        },
+        {
+          "value": "EC",
+          "label": "(EC) Ecuador",
+          "alternateMatches": ["Ecuador"]
+        },
+        {
+          "value": "EG",
+          "label": "(EG) Egypt",
+          "alternateMatches": ["Egypt"]
+        },
+        {
+          "value": "ES",
+          "label": "(ES) El Salvador",
+          "alternateMatches": ["El Salvador"]
+        },
+        {
+          "value": "EK",
+          "label": "(EK) Equatorial Guinea",
+          "alternateMatches": ["Equatorial Guinea"]
+        },
+        {
+          "value": "ER",
+          "label": "(ER) Eritrea",
+          "alternateMatches": ["Eritrea"]
+        },
+        {
+          "value": "EN",
+          "label": "(EN) Estonia",
+          "alternateMatches": ["Estonia"]
+        },
+        {
+          "value": "ET",
+          "label": "(ET) Ethiopia",
+          "alternateMatches": ["Ethiopia"]
+        },
+        {
+          "value": "FK",
+          "label": "(FK) Falkland Islands",
+          "alternateMatches": ["Malvinas", "Islas Malvinas", "Falkland Islands"]
+        },
+        {
+          "value": "FO",
+          "label": "(FO) Faroe Islands",
+          "alternateMatches": ["Faroe Islands"]
+        },
+        {
+          "value": "FM",
+          "label": "(FM) Micronesia",
+          "alternateMatches": ["Federated States of Micronesia", "FSM", "Micronesia"]
+        },
+        {
+          "value": "FJ",
+          "label": "(FJ) Fiji",
+          "alternateMatches": ["Fiji"]
+        },
+        {
+          "value": "FI",
+          "label": "(FI) Finland",
+          "alternateMatches": ["Finland"]
+        },
+        {
+          "value": "FR",
+          "label": "(FR) France",
+          "alternateMatches": ["France"]
+        },
+        {
+          "value": "FP",
+          "label": "(FP) French Polynesia",
+          "alternateMatches": ["French Polynesia"]
+        },
+        {
+          "value": "FS",
+          "label": "(FS) French Southern and Antarctic Lands",
+          "alternateMatches": ["French Southern and Antarctic Lands"]
+        },
+        {
+          "value": "GB",
+          "label": "(GB) Gabon",
+          "alternateMatches": ["Gabon"]
+        },
+        {
+          "value": "GA",
+          "label": "(GA) The Gambia",
+          "alternateMatches": ["Gambia", "The Gambia"]
+        },
+        {
+          "value": "GG",
+          "label": "(GG) Georgia",
+          "alternateMatches": ["Georgia"]
+        },
+        {
+          "value": "GM",
+          "label": "(GM) Germany",
+          "alternateMatches": ["Deutschland", "Germany"]
+        },
+        {
+          "value": "GH",
+          "label": "(GH) Ghana",
+          "alternateMatches": ["Ghana"]
+        },
+        {
+          "value": "GI",
+          "label": "(GI) Gibraltar",
+          "alternateMatches": ["Gibraltar"]
+        },
+        {
+          "value": "GR",
+          "label": "(GR) Greece",
+          "alternateMatches": ["Hellenic Republic", "Greece"]
+        },
+        {
+          "value": "GL",
+          "label": "(GL) Greenland",
+          "alternateMatches": ["Greenland"]
+        },
+        {
+          "value": "GJ",
+          "label": "(GJ) Grenada",
+          "alternateMatches": ["Grenada"]
+        },
+        {
+          "value": "GQ",
+          "label": "(GQ) Guam",
+          "alternateMatches": ["Guam"]
+        },
+        {
+          "value": "GT",
+          "label": "(GT) Guatemala",
+          "alternateMatches": ["Guatemala"]
+        },
+        {
+          "value": "GK",
+          "label": "(GK) Guernsey",
+          "alternateMatches": ["Guernsey"]
+        },
+        {
+          "value": "GV",
+          "label": "(GV) Guinea",
+          "alternateMatches": ["Guinea-Conakry", "Guinea"]
+        },
+        {
+          "value": "PU",
+          "label": "(PU) Guinea-Bissau",
+          "alternateMatches": ["Guinea-Bissau"]
+        },
+        {
+          "value": "GY",
+          "label": "(GY) Guyana",
+          "alternateMatches": ["Guyana"]
+        },
+        {
+          "value": "HA",
+          "label": "(HA) Haiti",
+          "alternateMatches": ["Haiti"]
+        },
+        {
+          "value": "HM",
+          "label": "(HM) Heard Island and McDonald Islands",
+          "alternateMatches": ["Heard Island and McDonald Islands"]
+        },
+        {
+          "value": "VT",
+          "label": "(VT) Holy See",
+          "alternateMatches": ["Vatican City", "Vatican", "Holy See"]
+        },
+        {
+          "value": "HO",
+          "label": "(HO) Honduras",
+          "alternateMatches": ["Honduras"]
+        },
+        {
+          "value": "HK",
+          "label": "(HK) Hong Kong",
+          "alternateMatches": ["Hong Kong SAR", "Hong Kong"]
+        },
+        {
+          "value": "HQ",
+          "label": "(HQ) Howland Island",
+          "alternateMatches": ["Howland Island"]
+        },
+        {
+          "value": "HU",
+          "label": "(HU) Hungary",
+          "alternateMatches": ["Hungary"]
+        },
+        {
+          "value": "IC",
+          "label": "(IC) Iceland",
+          "alternateMatches": ["Iceland"]
+        },
+        {
+          "value": "IN",
+          "label": "(IN) India",
+          "alternateMatches": ["India"]
+        },
+        {
+          "value": "ID",
+          "label": "(ID) Indonesia",
+          "alternateMatches": ["Indonesia"]
+        },
+        {
+          "value": "IR",
+          "label": "(IR) Iran",
+          "alternateMatches": ["Iran"]
+        },
+        {
+          "value": "IZ",
+          "label": "(IZ) Iraq",
+          "alternateMatches": ["Iraq"]
+        },
+        {
+          "value": "EI",
+          "label": "(EI) Ireland",
+          "alternateMatches": ["Republic of Ireland", "Eire", "Ireland"]
+        },
+        {
+          "value": "IS",
+          "label": "(IS) Israel",
+          "alternateMatches": ["Israel"]
+        },
+        {
+          "value": "IT",
+          "label": "(IT) Italy",
+          "alternateMatches": ["Italy"]
+        },
+        {
+          "value": "JM",
+          "label": "(JM) Jamaica",
+          "alternateMatches": ["Jamaica"]
+        },
+        {
+          "value": "JN",
+          "label": "(JN) Jan Mayen",
+          "alternateMatches": ["Jan Mayen"]
+        },
+        {
+          "value": "JA",
+          "label": "(JA) Japan",
+          "alternateMatches": ["Japan"]
+        },
+        {
+          "value": "DQ",
+          "label": "(DQ) Jarvis Island",
+          "alternateMatches": ["Jarvis Island"]
+        },
+        {
+          "value": "JE",
+          "label": "(JE) Jersey",
+          "alternateMatches": ["Jersey"]
+        },
+        {
+          "value": "JQ",
+          "label": "(JQ) Johnston Atoll",
+          "alternateMatches": ["Johnston Atoll"]
+        },
+        {
+          "value": "JO",
+          "label": "(JO) Jordan",
+          "alternateMatches": ["Jordan"]
+        },
+        {
+          "value": "KZ",
+          "label": "(KZ) Kazakhstan",
+          "alternateMatches": ["Kazakstan", "Kazakhstan"]
+        },
+        {
+          "value": "KE",
+          "label": "(KE) Kenya",
+          "alternateMatches": ["Kenya"]
+        },
+        {
+          "value": "KQ",
+          "label": "(KQ) Kingman Reef",
+          "alternateMatches": ["Kingman Reef"]
+        },
+        {
+          "value": "KR",
+          "label": "(KR) Kiribati",
+          "alternateMatches": ["Kiribati"]
+        },
+        {
+          "value": "KN",
+          "label": "(KN) North Korea",
+          "alternateMatches": ["DPRK", "Korea North", "Korea, North", "North Korea"]
+        },
+        {
+          "value": "KS",
+          "label": "(KS) South Korea",
+          "alternateMatches": ["Republic of Korea", "Korea South", "Korea, South", "South Korea"]
+        },
+        {
+          "value": "KV",
+          "label": "(KV) Kosovo",
+          "alternateMatches": ["Kosovo"]
+        },
+        {
+          "value": "KU",
+          "label": "(KU) Kuwait",
+          "alternateMatches": ["Kuwait"]
+        },
+        {
+          "value": "KG",
+          "label": "(KG) Kyrgyzstan",
+          "alternateMatches": ["Kyrgyz Republic", "Kyrgyzstan"]
+        },
+        {
+          "value": "LA",
+          "label": "(LA) Laos",
+          "alternateMatches": ["Lao PDR", "Lao", "Laos"]
+        },
+        {
+          "value": "LG",
+          "label": "(LG) Latvia",
+          "alternateMatches": ["Latvia"]
+        },
+        {
+          "value": "LE",
+          "label": "(LE) Lebanon",
+          "alternateMatches": ["Lebanon"]
+        },
+        {
+          "value": "LT",
+          "label": "(LT) Lesotho",
+          "alternateMatches": ["Lesotho"]
+        },
+        {
+          "value": "LI",
+          "label": "(LI) Liberia",
+          "alternateMatches": ["Liberia"]
+        },
+        {
+          "value": "LY",
+          "label": "(LY) Libya",
+          "alternateMatches": ["Libya"]
+        },
+        {
+          "value": "LS",
+          "label": "(LS) Liechtenstein",
+          "alternateMatches": ["Liechtenstein"]
+        },
+        {
+          "value": "LH",
+          "label": "(LH) Lithuania",
+          "alternateMatches": ["Lithuania"]
+        },
+        {
+          "value": "LU",
+          "label": "(LU) Luxembourg",
+          "alternateMatches": ["Luxembourg"]
+        },
+        {
+          "value": "MC",
+          "label": "(MC) Macau",
+          "alternateMatches": ["Macao", "Macau SAR", "Macao SAR", "Macau"]
+        },
+        {
+          "value": "MK",
+          "label": "(MK) Macedonia",
+          "alternateMatches": ["North Macedonia", "FYROM", "Macedonia"]
+        },
+        {
+          "value": "MA",
+          "label": "(MA) Madagascar",
+          "alternateMatches": ["Madagascar"]
+        },
+        {
+          "value": "MI",
+          "label": "(MI) Malawi",
+          "alternateMatches": ["Malawi"]
+        },
+        {
+          "value": "MY",
+          "label": "(MY) Malaysia",
+          "alternateMatches": ["Malaysia"]
+        },
+        {
+          "value": "MV",
+          "label": "(MV) Maldives",
+          "alternateMatches": ["Maldives"]
+        },
+        {
+          "value": "ML",
+          "label": "(ML) Mali",
+          "alternateMatches": ["Mali"]
+        },
+        {
+          "value": "MT",
+          "label": "(MT) Malta",
+          "alternateMatches": ["Malta"]
+        },
+        {
+          "value": "IM",
+          "label": "(IM) Isle of Man",
+          "alternateMatches": ["Man, Isle of", "Isle of Man"]
+        },
+        {
+          "value": "RM",
+          "label": "(RM) Marshall Islands",
+          "alternateMatches": ["Marshall Islands"]
+        },
+        {
+          "value": "MR",
+          "label": "(MR) Mauritania",
+          "alternateMatches": ["Mauritania"]
+        },
+        {
+          "value": "MP",
+          "label": "(MP) Mauritius",
+          "alternateMatches": ["Mauritius"]
+        },
+        {
+          "value": "MX",
+          "label": "(MX) Mexico",
+          "alternateMatches": ["Mexico"]
+        },
+        {
+          "value": "MQ",
+          "label": "(MQ) Midway Islands",
+          "alternateMatches": ["Midway Islands"]
+        },
+        {
+          "value": "MD",
+          "label": "(MD) Moldova",
+          "alternateMatches": ["Moldova"]
+        },
+        {
+          "value": "MN",
+          "label": "(MN) Monaco",
+          "alternateMatches": ["Monaco"]
+        },
+        {
+          "value": "MG",
+          "label": "(MG) Mongolia",
+          "alternateMatches": ["Mongolia"]
+        },
+        {
+          "value": "MJ",
+          "label": "(MJ) Montenegro",
+          "alternateMatches": ["Montenegro"]
+        },
+        {
+          "value": "MH",
+          "label": "(MH) Montserrat",
+          "alternateMatches": ["Montserrat"]
+        },
+        {
+          "value": "MO",
+          "label": "(MO) Morocco",
+          "alternateMatches": ["Morocco"]
+        },
+        {
+          "value": "MZ",
+          "label": "(MZ) Mozambique",
+          "alternateMatches": ["Mozambique"]
+        },
+        {
+          "value": "WA",
+          "label": "(WA) Namibia",
+          "alternateMatches": ["Namibia"]
+        },
+        {
+          "value": "NR",
+          "label": "(NR) Nauru",
+          "alternateMatches": ["Nauru"]
+        },
+        {
+          "value": "BQ",
+          "label": "(BQ) Navassa Island",
+          "alternateMatches": ["Navassa Island"]
+        },
+        {
+          "value": "NP",
+          "label": "(NP) Nepal",
+          "alternateMatches": ["Nepal"]
+        },
+        {
+          "value": "NL",
+          "label": "(NL) Netherlands",
+          "alternateMatches": ["Holland", "Netherlands"]
+        },
+        {
+          "value": "NC",
+          "label": "(NC) New Caledonia",
+          "alternateMatches": ["New Caledonia"]
+        },
+        {
+          "value": "NZ",
+          "label": "(NZ) New Zealand",
+          "alternateMatches": ["Aotearoa", "New Zealand"]
+        },
+        {
+          "value": "NU",
+          "label": "(NU) Nicaragua",
+          "alternateMatches": ["Nicaragua"]
+        },
+        {
+          "value": "NG",
+          "label": "(NG) Niger",
+          "alternateMatches": ["Niger"]
+        },
+        {
+          "value": "NI",
+          "label": "(NI) Nigeria",
+          "alternateMatches": ["Nigeria"]
+        },
+        {
+          "value": "NE",
+          "label": "(NE) Niue",
+          "alternateMatches": ["Niue"]
+        },
+        {
+          "value": "NF",
+          "label": "(NF) Norfolk Island",
+          "alternateMatches": ["Norfolk Island"]
+        },
+        {
+          "value": "CQ",
+          "label": "(CQ) Northern Mariana Islands",
+          "alternateMatches": ["Northern Mariana Islands"]
+        },
+        {
+          "value": "NO",
+          "label": "(NO) Norway",
+          "alternateMatches": ["Norway"]
+        },
+        {
+          "value": "MU",
+          "label": "(MU) Oman",
+          "alternateMatches": ["Oman"]
+        },
+        {
+          "value": "OC",
+          "label": "(OC) Other Country",
+          "alternateMatches": ["Other Country"]
+        },
+        {
+          "value": "PK",
+          "label": "(PK) Pakistan",
+          "alternateMatches": ["Pakistan"]
+        },
+        {
+          "value": "PS",
+          "label": "(PS) Palau",
+          "alternateMatches": ["Palau"]
+        },
+        {
+          "value": "LQ",
+          "label": "(LQ) Palmyra Atoll",
+          "alternateMatches": ["Palmyra Atoll"]
+        },
+        {
+          "value": "PM",
+          "label": "(PM) Panama",
+          "alternateMatches": ["Panama"]
+        },
+        {
+          "value": "PP",
+          "label": "(PP) Papua New Guinea",
+          "alternateMatches": ["PNG", "Papua New Guinea"]
+        },
+        {
+          "value": "PF",
+          "label": "(PF) Paracel Islands",
+          "alternateMatches": ["Paracel Islands"]
+        },
+        {
+          "value": "PA",
+          "label": "(PA) Paraguay",
+          "alternateMatches": ["Paraguay"]
+        },
+        {
+          "value": "PE",
+          "label": "(PE) Peru",
+          "alternateMatches": ["Peru"]
+        },
+        {
+          "value": "RP",
+          "label": "(RP) Philippines",
+          "alternateMatches": ["Philippines"]
+        },
+        {
+          "value": "PC",
+          "label": "(PC) Pitcairn Islands",
+          "alternateMatches": ["Pitcairn Islands"]
+        },
+        {
+          "value": "PL",
+          "label": "(PL) Poland",
+          "alternateMatches": ["Poland"]
+        },
+        {
+          "value": "PO",
+          "label": "(PO) Portugal",
+          "alternateMatches": ["Portugal"]
+        },
+        {
+          "value": "RQ",
+          "label": "(RQ) Puerto Rico",
+          "alternateMatches": ["PR", "Puerto Rico"]
+        },
+        {
+          "value": "QA",
+          "label": "(QA) Qatar",
+          "alternateMatches": ["Qatar"]
+        },
+        {
+          "value": "RO",
+          "label": "(RO) Romania",
+          "alternateMatches": ["Romania"]
+        },
+        {
+          "value": "RS",
+          "label": "(RS) Russia",
+          "alternateMatches": ["Russian Federation", "Russia"]
+        },
+        {
+          "value": "RW",
+          "label": "(RW) Rwanda",
+          "alternateMatches": ["Rwanda"]
+        },
+        {
+          "value": "TB",
+          "label": "(TB) Saint Barthelemy",
+          "alternateMatches": ["St. Barthelemy", "St. Barts", "Saint Barts", "Saint Barthelemy"]
+        },
+        {
+          "value": "RN",
+          "label": "(RN) Saint Martin",
+          "alternateMatches": ["St. Martin", "Saint Martin"]
+        },
+        {
+          "value": "WS",
+          "label": "(WS) Samoa",
+          "alternateMatches": ["Western Samoa", "Independent State of Samoa", "Samoa"]
+        },
+        {
+          "value": "SM",
+          "label": "(SM) San Marino",
+          "alternateMatches": ["San Marino"]
+        },
+        {
+          "value": "TP",
+          "label": "(TP) Sao Tome and Principe",
+          "alternateMatches": [
+            "São Tomé and Príncipe",
+            "Sao Tome & Principe",
+            "São Tomé & Príncipe",
+            "Sao Tome and Principe"
+          ]
+        },
+        {
+          "value": "SA",
+          "label": "(SA) Saudi Arabia",
+          "alternateMatches": ["KSA", "Saudi Arabia"]
+        },
+        {
+          "value": "SG",
+          "label": "(SG) Senegal",
+          "alternateMatches": ["Senegal"]
+        },
+        {
+          "value": "RI",
+          "label": "(RI) Serbia",
+          "alternateMatches": ["Serbia"]
+        },
+        {
+          "value": "SE",
+          "label": "(SE) Seychelles",
+          "alternateMatches": ["Seychelles"]
+        },
+        {
+          "value": "SL",
+          "label": "(SL) Sierra Leone",
+          "alternateMatches": ["Sierra Leone"]
+        },
+        {
+          "value": "SN",
+          "label": "(SN) Singapore",
+          "alternateMatches": ["Singapore"]
+        },
+        {
+          "value": "NN",
+          "label": "(NN) Sint Maarten",
+          "alternateMatches": ["Saint Maarten", "St. Maarten", "Sint Maarten"]
+        },
+        {
+          "value": "LO",
+          "label": "(LO) Slovakia",
+          "alternateMatches": ["Slovak Republic", "Slovakia"]
+        },
+        {
+          "value": "SI",
+          "label": "(SI) Slovenia",
+          "alternateMatches": ["Slovenia"]
+        },
+        {
+          "value": "BP",
+          "label": "(BP) Solomon Islands",
+          "alternateMatches": ["Solomon Islands"]
+        },
+        {
+          "value": "SO",
+          "label": "(SO) Somalia",
+          "alternateMatches": ["Somalia"]
+        },
+        {
+          "value": "SF",
+          "label": "(SF) South Africa",
+          "alternateMatches": ["RSA", "South Africa"]
+        },
+        {
+          "value": "SX",
+          "label": "(SX) South Georgia & South Sandwich Islands",
+          "alternateMatches": ["South Georgia and South Sandwich Islands", "South Georgia & South Sandwich Islands"]
+        },
+        {
+          "value": "OD",
+          "label": "(OD) South Sudan",
+          "alternateMatches": ["South Sudan"]
+        },
+        {
+          "value": "SP",
+          "label": "(SP) Spain",
+          "alternateMatches": ["Spain"]
+        },
+        {
+          "value": "PG",
+          "label": "(PG) Spratly Islands",
+          "alternateMatches": ["Spratly Islands"]
+        },
+        {
+          "value": "CE",
+          "label": "(CE) Sri Lanka",
+          "alternateMatches": ["Ceylon", "Sri Lanka"]
+        },
+        {
+          "value": "SH",
+          "label": "(SH) St. Helena",
+          "alternateMatches": ["Saint Helena", "St. Helena"]
+        },
+        {
+          "value": "SC",
+          "label": "(SC) St. Kitts and Nevis",
+          "alternateMatches": [
+            "Saint Kitts and Nevis",
+            "Saint Kitts & Nevis",
+            "St. Kitts & Nevis",
+            "St. Kitts and Nevis"
+          ]
+        },
+        {
+          "value": "ST",
+          "label": "(ST) St. Lucia",
+          "alternateMatches": ["Saint Lucia", "St. Lucia"]
+        },
+        {
+          "value": "SB",
+          "label": "(SB) St. Pierre and Miquelon",
+          "alternateMatches": ["Saint Pierre and Miquelon", "St. Pierre and Miquelon"]
+        },
+        {
+          "value": "VC",
+          "label": "(VC) St. Vincent and the Grenadines",
+          "alternateMatches": [
+            "Saint Vincent and the Grenadines",
+            "Saint Vincent & the Grenadines",
+            "St. Vincent & the Grenadines",
+            "St. Vincent and the Grenadines"
+          ]
+        },
+        {
+          "value": "SU",
+          "label": "(SU) Sudan",
+          "alternateMatches": ["Sudan"]
+        },
+        {
+          "value": "NS",
+          "label": "(NS) Suriname",
+          "alternateMatches": ["Surinam", "Suriname"]
+        },
+        {
+          "value": "SV",
+          "label": "(SV) Svalbard",
+          "alternateMatches": ["Svalbard"]
+        },
+        {
+          "value": "WZ",
+          "label": "(WZ) Swaziland",
+          "alternateMatches": ["Eswatini", "Swaziland"]
+        },
+        {
+          "value": "SW",
+          "label": "(SW) Sweden",
+          "alternateMatches": ["Sweden"]
+        },
+        {
+          "value": "SZ",
+          "label": "(SZ) Switzerland",
+          "alternateMatches": ["Switzerland"]
+        },
+        {
+          "value": "SY",
+          "label": "(SY) Syria",
+          "alternateMatches": ["Syrian Arab Republic", "Syria"]
+        },
+        {
+          "value": "TW",
+          "label": "(TW) Taiwan",
+          "alternateMatches": ["Republic of China", "Formosa", "Taiwan"]
+        },
+        {
+          "value": "TI",
+          "label": "(TI) Tajikistan",
+          "alternateMatches": ["Tajikistan"]
+        },
+        {
+          "value": "TZ",
+          "label": "(TZ) Tanzania",
+          "alternateMatches": ["Tanzania"]
+        },
+        {
+          "value": "TH",
+          "label": "(TH) Thailand",
+          "alternateMatches": ["Thailand"]
+        },
+        {
+          "value": "TO",
+          "label": "(TO) Togo",
+          "alternateMatches": ["Togo"]
+        },
+        {
+          "value": "TL",
+          "label": "(TL) Tokelau",
+          "alternateMatches": ["Tokelau"]
+        },
+        {
+          "value": "TN",
+          "label": "(TN) Tonga",
+          "alternateMatches": ["Tonga"]
+        },
+        {
+          "value": "TD",
+          "label": "(TD) Trinidad and Tobago",
+          "alternateMatches": ["Trinidad & Tobago", "Trinidad and Tobago"]
+        },
+        {
+          "value": "TS",
+          "label": "(TS) Tunisia",
+          "alternateMatches": ["Tunisia"]
+        },
+        {
+          "value": "TU",
+          "label": "(TU) Turkey",
+          "alternateMatches": ["Türkiye", "Turkiye", "Turkey"]
+        },
+        {
+          "value": "TX",
+          "label": "(TX) Turkmenistan",
+          "alternateMatches": ["Turkmenistan"]
+        },
+        {
+          "value": "TK",
+          "label": "(TK) Turks and Caicos Islands",
+          "alternateMatches": ["Turks & Caicos Islands", "TCI", "Turks and Caicos Islands"]
+        },
+        {
+          "value": "TV",
+          "label": "(TV) Tuvalu",
+          "alternateMatches": ["Tuvalu"]
+        },
+        {
+          "value": "UG",
+          "label": "(UG) Uganda",
+          "alternateMatches": ["Uganda"]
+        },
+        {
+          "value": "UP",
+          "label": "(UP) Ukraine",
+          "alternateMatches": ["Ukraine"]
+        },
+        {
+          "value": "AE",
+          "label": "(AE) United Arab Emirates",
+          "alternateMatches": ["UAE", "Emirates", "United Arab Emirates"]
+        },
+        {
+          "value": "UK",
+          "label": "(UK) United Kingdom",
+          "alternateMatches": ["Great Britain", "Britain", "England", "U.K.", "United Kingdom"]
+        },
+        {
+          "value": "UY",
+          "label": "(UY) Uruguay",
+          "alternateMatches": ["Uruguay"]
+        },
+        {
+          "value": "UZ",
+          "label": "(UZ) Uzbekistan",
+          "alternateMatches": ["Uzbekistan"]
+        },
+        {
+          "value": "NH",
+          "label": "(NH) Vanuatu",
+          "alternateMatches": ["Vanuatu"]
+        },
+        {
+          "value": "VE",
+          "label": "(VE) Venezuela",
+          "alternateMatches": ["Bolivarian Republic of Venezuela", "Venezuela"]
+        },
+        {
+          "value": "VM",
+          "label": "(VM) Vietnam",
+          "alternateMatches": ["Viet Nam", "Vietnam"]
+        },
+        {
+          "value": "VQ",
+          "label": "(VQ) Virgin Islands",
+          "alternateMatches": ["U.S. Virgin Islands", "USVI", "Virgin Islands"]
+        },
+        {
+          "value": "WQ",
+          "label": "(WQ) Wake Island",
+          "alternateMatches": ["Wake Island"]
+        },
+        {
+          "value": "WF",
+          "label": "(WF) Wallis and Futuna",
+          "alternateMatches": ["Wallis and Futuna"]
+        },
+        {
+          "value": "WI",
+          "label": "(WI) Western Sahara",
+          "alternateMatches": ["Western Sahara"]
+        },
+        {
+          "value": "YM",
+          "label": "(YM) Yemen",
+          "alternateMatches": ["Yemen"]
+        },
+        {
+          "value": "ZA",
+          "label": "(ZA) Zambia",
+          "alternateMatches": ["Zambia"]
+        },
+        {
+          "value": "ZI",
+          "label": "(ZI) Zimbabwe",
+          "alternateMatches": ["Zimbabwe"]
+        }
+      ]
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "Country is required",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.Address.AddressLine1Txt",
+    "label": "Recipient Address Line 1",
+    "alternateMatches": ["Recipient Street Address"],
+    "example": "123 Business Rd",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "required",
+        "errorMessage": "Recipient Address line 1 is required.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,35}$",
+        "errorMessage": "Must be 35 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.Address.AddressLine2Txt",
+    "label": "Recipient Address Line 2",
+    "example": "Suite 21",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,35}$",
+        "errorMessage": "Must be 35 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.Address.CityNm",
+    "label": "Recipient City/Town",
+    "alternateMatches": ["Recipient City", "Recipient Town"],
+    "example": "New York",
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^$|^[A-Za-z\\s'.\\-]+$",
+        "errorMessage": "City must contain only letters, spaces, hyphens, apostrophes, or periods.",
+        "level": "error"
+      },
+      {
+        "rule": "regex",
+        "value": "^.{0,40}$",
+        "errorMessage": "Must be 40 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "RecipientDetail.Address.StateCd",
+    "label": "Recipient State/Province/Territory",
+    "alternateMatches": ["Recipient State", "Recipient Province", "Recipient Territory"],
+    "description": "Domestic: must be a valid US state/territory code (e.g., NY, TX).\nForeign: Must be 17 characters or fewer.",
+    "example": "NY",
+    "fieldType": {
+      "type": "input"
+    }
+  },
+  {
+    "key": "RecipientDetail.Address.PostalCd",
+    "label": "Recipient ZIP/Postal Code",
+    "alternateMatches": ["Recipient ZIP", "Recipient Postal Code"],
+    "description": "Domestic: zip, zip+4, or zip+7.\nForeign: Alpha-numeric characters only",
+    "example": "10055",
+    "fieldType": {
+      "type": "input"
+    }
+  },
+  {
+    "key": "SecondTINNoticeInd",
+    "label": "2nd TIN Notice",
+    "alternateMatches": ["Second TIN Notice"],
+    "example": "Y",
+    "fieldType": {
+      "type": "checkbox",
+      "booleanMatches": {
+        "1": true,
+        "x": true,
+        "y": true,
+        "yes": true
+      }
+    }
+  },
+  {
+    "key": "NonemployeeCompensationAmt",
+    "label": "Box 1 - Nonemployee compensation",
+    "alternateMatches": ["Box 1"],
+    "description": "Box 1 must be filled or Box 2 must be checked.",
+    "example": "$12,500.00",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "DirectSaleAboveThresholdInd",
+    "label": "Box 2 - Payer made direct sales totaling $5,000 or more of consumer products to a recipient for resale",
+    "alternateMatches": [
+      "Box 2",
+      "Box 2 - Payer made direct sales totaling $5000 or more of consumer products to a recipient for resale"
+    ],
+    "example": "Y",
+    "fieldType": {
+      "type": "checkbox",
+      "booleanMatches": {
+        "1": true,
+        "x": true,
+        "y": true,
+        "yes": true
+      }
+    },
+    "description": "Box 1 must be filled in or Box 2 must be checked."
+  },
+  {
+    "key": "ExcessParachutePaymentAmt",
+    "label": "Box 3 - Excess golden parachute payments",
+    "alternateMatches": ["Box 3"],
+    "example": "$500.00",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "FederalIncomeTaxWithheldAmt",
+    "label": "Box 4 - Federal income tax withheld",
+    "alternateMatches": ["Box 4"],
+    "example": "$737.00",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "StateLocalTaxGrps.1.StateAbbreviationCd",
+    "label": "State 1 - State Code",
+    "alternateMatches": ["State 1"],
+    "description": "Must be a valid 2-character US state/territory code (e.g., NY, TX)",
+    "example": "AZ",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "AL",
+          "label": "(AL) Alabama",
+          "alternateMatches": ["Alabama"]
+        },
+        {
+          "value": "AK",
+          "label": "(AK) Alaska",
+          "alternateMatches": ["Alaska"]
+        },
+        {
+          "value": "AZ",
+          "label": "(AZ) Arizona",
+          "alternateMatches": ["Arizona"]
+        },
+        {
+          "value": "AR",
+          "label": "(AR) Arkansas",
+          "alternateMatches": ["Arkansas"]
+        },
+        {
+          "value": "CA",
+          "label": "(CA) California",
+          "alternateMatches": ["California"]
+        },
+        {
+          "value": "CO",
+          "label": "(CO) Colorado",
+          "alternateMatches": ["Colorado"]
+        },
+        {
+          "value": "CT",
+          "label": "(CT) Connecticut",
+          "alternateMatches": ["Connecticut"]
+        },
+        {
+          "value": "DE",
+          "label": "(DE) Delaware",
+          "alternateMatches": ["Delaware"]
+        },
+        {
+          "value": "DC",
+          "label": "(DC) District of Columbia",
+          "alternateMatches": ["Washington D.C.", "Washington DC", "Washington, D.C.", "District of Columbia"]
+        },
+        {
+          "value": "FL",
+          "label": "(FL) Florida",
+          "alternateMatches": ["Florida"]
+        },
+        {
+          "value": "GA",
+          "label": "(GA) Georgia",
+          "alternateMatches": ["Georgia"]
+        },
+        {
+          "value": "HI",
+          "label": "(HI) Hawaii",
+          "alternateMatches": ["Hawaii"]
+        },
+        {
+          "value": "ID",
+          "label": "(ID) Idaho",
+          "alternateMatches": ["Idaho"]
+        },
+        {
+          "value": "IL",
+          "label": "(IL) Illinois",
+          "alternateMatches": ["Illinois"]
+        },
+        {
+          "value": "IN",
+          "label": "(IN) Indiana",
+          "alternateMatches": ["Indiana"]
+        },
+        {
+          "value": "IA",
+          "label": "(IA) Iowa",
+          "alternateMatches": ["Iowa"]
+        },
+        {
+          "value": "KS",
+          "label": "(KS) Kansas",
+          "alternateMatches": ["Kansas"]
+        },
+        {
+          "value": "KY",
+          "label": "(KY) Kentucky",
+          "alternateMatches": ["Kentucky"]
+        },
+        {
+          "value": "LA",
+          "label": "(LA) Louisiana",
+          "alternateMatches": ["Louisiana"]
+        },
+        {
+          "value": "ME",
+          "label": "(ME) Maine",
+          "alternateMatches": ["Maine"]
+        },
+        {
+          "value": "MD",
+          "label": "(MD) Maryland",
+          "alternateMatches": ["Maryland"]
+        },
+        {
+          "value": "MA",
+          "label": "(MA) Massachusetts",
+          "alternateMatches": ["Massachusetts"]
+        },
+        {
+          "value": "MI",
+          "label": "(MI) Michigan",
+          "alternateMatches": ["Michigan"]
+        },
+        {
+          "value": "MN",
+          "label": "(MN) Minnesota",
+          "alternateMatches": ["Minnesota"]
+        },
+        {
+          "value": "MS",
+          "label": "(MS) Mississippi",
+          "alternateMatches": ["Mississippi"]
+        },
+        {
+          "value": "MO",
+          "label": "(MO) Missouri",
+          "alternateMatches": ["Missouri"]
+        },
+        {
+          "value": "MT",
+          "label": "(MT) Montana",
+          "alternateMatches": ["Montana"]
+        },
+        {
+          "value": "NE",
+          "label": "(NE) Nebraska",
+          "alternateMatches": ["Nebraska"]
+        },
+        {
+          "value": "NV",
+          "label": "(NV) Nevada",
+          "alternateMatches": ["Nevada"]
+        },
+        {
+          "value": "NH",
+          "label": "(NH) New Hampshire",
+          "alternateMatches": ["New Hampshire"]
+        },
+        {
+          "value": "NJ",
+          "label": "(NJ) New Jersey",
+          "alternateMatches": ["New Jersey"]
+        },
+        {
+          "value": "NM",
+          "label": "(NM) New Mexico",
+          "alternateMatches": ["New Mexico"]
+        },
+        {
+          "value": "NY",
+          "label": "(NY) New York",
+          "alternateMatches": ["New York State", "New York"]
+        },
+        {
+          "value": "NC",
+          "label": "(NC) North Carolina",
+          "alternateMatches": ["North Carolina"]
+        },
+        {
+          "value": "ND",
+          "label": "(ND) North Dakota",
+          "alternateMatches": ["North Dakota"]
+        },
+        {
+          "value": "OH",
+          "label": "(OH) Ohio",
+          "alternateMatches": ["Ohio"]
+        },
+        {
+          "value": "OK",
+          "label": "(OK) Oklahoma",
+          "alternateMatches": ["Oklahoma"]
+        },
+        {
+          "value": "OR",
+          "label": "(OR) Oregon",
+          "alternateMatches": ["Oregon"]
+        },
+        {
+          "value": "PA",
+          "label": "(PA) Pennsylvania",
+          "alternateMatches": ["Pennsylvania"]
+        },
+        {
+          "value": "RI",
+          "label": "(RI) Rhode Island",
+          "alternateMatches": ["Rhode Island"]
+        },
+        {
+          "value": "SC",
+          "label": "(SC) South Carolina",
+          "alternateMatches": ["South Carolina"]
+        },
+        {
+          "value": "SD",
+          "label": "(SD) South Dakota",
+          "alternateMatches": ["South Dakota"]
+        },
+        {
+          "value": "TN",
+          "label": "(TN) Tennessee",
+          "alternateMatches": ["Tennessee"]
+        },
+        {
+          "value": "TX",
+          "label": "(TX) Texas",
+          "alternateMatches": ["Texas"]
+        },
+        {
+          "value": "UT",
+          "label": "(UT) Utah",
+          "alternateMatches": ["Utah"]
+        },
+        {
+          "value": "VT",
+          "label": "(VT) Vermont",
+          "alternateMatches": ["Vermont"]
+        },
+        {
+          "value": "VA",
+          "label": "(VA) Virginia",
+          "alternateMatches": ["Virginia"]
+        },
+        {
+          "value": "WA",
+          "label": "(WA) Washington",
+          "alternateMatches": ["Washington State", "Washington"]
+        },
+        {
+          "value": "WV",
+          "label": "(WV) West Virginia",
+          "alternateMatches": ["West Virginia"]
+        },
+        {
+          "value": "WI",
+          "label": "(WI) Wisconsin",
+          "alternateMatches": ["Wisconsin"]
+        },
+        {
+          "value": "WY",
+          "label": "(WY) Wyoming",
+          "alternateMatches": ["Wyoming"]
+        },
+        {
+          "value": "AS",
+          "label": "(AS) American Samoa",
+          "alternateMatches": ["American Somoa", "American Samoa"]
+        },
+        {
+          "value": "FM",
+          "label": "(FM) Federated States of Micronesia",
+          "alternateMatches": ["Micronesia", "FSM", "Federated States of Micronesia"]
+        },
+        {
+          "value": "GU",
+          "label": "(GU) Guam",
+          "alternateMatches": ["Guam"]
+        },
+        {
+          "value": "MH",
+          "label": "(MH) Marshall Islands",
+          "alternateMatches": ["RMI", "Marshall Islands"]
+        },
+        {
+          "value": "MP",
+          "label": "(MP) Commonwealth of the Northern Mariana Islands",
+          "alternateMatches": [
+            "CNMI",
+            "Northern Mariana Islands",
+            "Mariana Islands",
+            "Commonwealth of the Northern Mariana Islands"
+          ]
+        },
+        {
+          "value": "PW",
+          "label": "(PW) Palau",
+          "alternateMatches": ["Palau"]
+        },
+        {
+          "value": "PR",
+          "label": "(PR) Puerto Rico",
+          "alternateMatches": ["Puerto Rico"]
+        },
+        {
+          "value": "VI",
+          "label": "(VI) U.S. Virgin Islands",
+          "alternateMatches": ["Virgin Islands", "USVI", "U.S. Virgin Islands"]
+        },
+        {
+          "value": "AA",
+          "label": "(AA) APO/FPO/DPO - Americas",
+          "alternateMatches": ["Armed Forces Americas", "APO/FPO/DPO - Americas"]
+        },
+        {
+          "value": "AE",
+          "label": "(AE) APO/FPO/DPO - Europe/Middle East/Africa",
+          "alternateMatches": [
+            "Armed Forces Europe",
+            "Armed Forces Middle East",
+            "Armed Forces Africa",
+            "APO/FPO/DPO - Europe/Middle East/Africa"
+          ]
+        },
+        {
+          "value": "AP",
+          "label": "(AP) APO/FPO/DPO - Pacific",
+          "alternateMatches": ["Armed Forces Pacific", "APO/FPO/DPO - Pacific"]
+        }
+      ]
+    },
+    "validations": []
+  },
+  {
+    "key": "StateLocalTaxGrps.1.StateTaxGrp.StateIdNum",
+    "label": "State 1 - State/Payer state number",
+    "alternateMatches": ["State 1 - State Number", "State 1 - Payer State Number"],
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,25}$",
+        "errorMessage": "Must be 25 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "StateLocalTaxGrps.1.StateTaxGrp.StateIncomeAmt",
+    "label": "State 1 - State Income",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "StateLocalTaxGrps.1.StateTaxGrp.StateTaxWithheldAmt",
+    "label": "State 1 - State Tax Withheld",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "StateLocalTaxGrps.2.StateAbbreviationCd",
+    "label": "State 2 - State Code",
+    "alternateMatches": ["State 2"],
+    "description": "Must be a valid 2-character US state/territory code (e.g., NY, TX)",
+    "example": "AZ",
+    "fieldType": {
+      "type": "select",
+      "options": [
+        {
+          "value": "AL",
+          "label": "(AL) Alabama",
+          "alternateMatches": ["Alabama"]
+        },
+        {
+          "value": "AK",
+          "label": "(AK) Alaska",
+          "alternateMatches": ["Alaska"]
+        },
+        {
+          "value": "AZ",
+          "label": "(AZ) Arizona",
+          "alternateMatches": ["Arizona"]
+        },
+        {
+          "value": "AR",
+          "label": "(AR) Arkansas",
+          "alternateMatches": ["Arkansas"]
+        },
+        {
+          "value": "CA",
+          "label": "(CA) California",
+          "alternateMatches": ["California"]
+        },
+        {
+          "value": "CO",
+          "label": "(CO) Colorado",
+          "alternateMatches": ["Colorado"]
+        },
+        {
+          "value": "CT",
+          "label": "(CT) Connecticut",
+          "alternateMatches": ["Connecticut"]
+        },
+        {
+          "value": "DE",
+          "label": "(DE) Delaware",
+          "alternateMatches": ["Delaware"]
+        },
+        {
+          "value": "DC",
+          "label": "(DC) District of Columbia",
+          "alternateMatches": ["Washington D.C.", "Washington DC", "Washington, D.C.", "District of Columbia"]
+        },
+        {
+          "value": "FL",
+          "label": "(FL) Florida",
+          "alternateMatches": ["Florida"]
+        },
+        {
+          "value": "GA",
+          "label": "(GA) Georgia",
+          "alternateMatches": ["Georgia"]
+        },
+        {
+          "value": "HI",
+          "label": "(HI) Hawaii",
+          "alternateMatches": ["Hawaii"]
+        },
+        {
+          "value": "ID",
+          "label": "(ID) Idaho",
+          "alternateMatches": ["Idaho"]
+        },
+        {
+          "value": "IL",
+          "label": "(IL) Illinois",
+          "alternateMatches": ["Illinois"]
+        },
+        {
+          "value": "IN",
+          "label": "(IN) Indiana",
+          "alternateMatches": ["Indiana"]
+        },
+        {
+          "value": "IA",
+          "label": "(IA) Iowa",
+          "alternateMatches": ["Iowa"]
+        },
+        {
+          "value": "KS",
+          "label": "(KS) Kansas",
+          "alternateMatches": ["Kansas"]
+        },
+        {
+          "value": "KY",
+          "label": "(KY) Kentucky",
+          "alternateMatches": ["Kentucky"]
+        },
+        {
+          "value": "LA",
+          "label": "(LA) Louisiana",
+          "alternateMatches": ["Louisiana"]
+        },
+        {
+          "value": "ME",
+          "label": "(ME) Maine",
+          "alternateMatches": ["Maine"]
+        },
+        {
+          "value": "MD",
+          "label": "(MD) Maryland",
+          "alternateMatches": ["Maryland"]
+        },
+        {
+          "value": "MA",
+          "label": "(MA) Massachusetts",
+          "alternateMatches": ["Massachusetts"]
+        },
+        {
+          "value": "MI",
+          "label": "(MI) Michigan",
+          "alternateMatches": ["Michigan"]
+        },
+        {
+          "value": "MN",
+          "label": "(MN) Minnesota",
+          "alternateMatches": ["Minnesota"]
+        },
+        {
+          "value": "MS",
+          "label": "(MS) Mississippi",
+          "alternateMatches": ["Mississippi"]
+        },
+        {
+          "value": "MO",
+          "label": "(MO) Missouri",
+          "alternateMatches": ["Missouri"]
+        },
+        {
+          "value": "MT",
+          "label": "(MT) Montana",
+          "alternateMatches": ["Montana"]
+        },
+        {
+          "value": "NE",
+          "label": "(NE) Nebraska",
+          "alternateMatches": ["Nebraska"]
+        },
+        {
+          "value": "NV",
+          "label": "(NV) Nevada",
+          "alternateMatches": ["Nevada"]
+        },
+        {
+          "value": "NH",
+          "label": "(NH) New Hampshire",
+          "alternateMatches": ["New Hampshire"]
+        },
+        {
+          "value": "NJ",
+          "label": "(NJ) New Jersey",
+          "alternateMatches": ["New Jersey"]
+        },
+        {
+          "value": "NM",
+          "label": "(NM) New Mexico",
+          "alternateMatches": ["New Mexico"]
+        },
+        {
+          "value": "NY",
+          "label": "(NY) New York",
+          "alternateMatches": ["New York State", "New York"]
+        },
+        {
+          "value": "NC",
+          "label": "(NC) North Carolina",
+          "alternateMatches": ["North Carolina"]
+        },
+        {
+          "value": "ND",
+          "label": "(ND) North Dakota",
+          "alternateMatches": ["North Dakota"]
+        },
+        {
+          "value": "OH",
+          "label": "(OH) Ohio",
+          "alternateMatches": ["Ohio"]
+        },
+        {
+          "value": "OK",
+          "label": "(OK) Oklahoma",
+          "alternateMatches": ["Oklahoma"]
+        },
+        {
+          "value": "OR",
+          "label": "(OR) Oregon",
+          "alternateMatches": ["Oregon"]
+        },
+        {
+          "value": "PA",
+          "label": "(PA) Pennsylvania",
+          "alternateMatches": ["Pennsylvania"]
+        },
+        {
+          "value": "RI",
+          "label": "(RI) Rhode Island",
+          "alternateMatches": ["Rhode Island"]
+        },
+        {
+          "value": "SC",
+          "label": "(SC) South Carolina",
+          "alternateMatches": ["South Carolina"]
+        },
+        {
+          "value": "SD",
+          "label": "(SD) South Dakota",
+          "alternateMatches": ["South Dakota"]
+        },
+        {
+          "value": "TN",
+          "label": "(TN) Tennessee",
+          "alternateMatches": ["Tennessee"]
+        },
+        {
+          "value": "TX",
+          "label": "(TX) Texas",
+          "alternateMatches": ["Texas"]
+        },
+        {
+          "value": "UT",
+          "label": "(UT) Utah",
+          "alternateMatches": ["Utah"]
+        },
+        {
+          "value": "VT",
+          "label": "(VT) Vermont",
+          "alternateMatches": ["Vermont"]
+        },
+        {
+          "value": "VA",
+          "label": "(VA) Virginia",
+          "alternateMatches": ["Virginia"]
+        },
+        {
+          "value": "WA",
+          "label": "(WA) Washington",
+          "alternateMatches": ["Washington State", "Washington"]
+        },
+        {
+          "value": "WV",
+          "label": "(WV) West Virginia",
+          "alternateMatches": ["West Virginia"]
+        },
+        {
+          "value": "WI",
+          "label": "(WI) Wisconsin",
+          "alternateMatches": ["Wisconsin"]
+        },
+        {
+          "value": "WY",
+          "label": "(WY) Wyoming",
+          "alternateMatches": ["Wyoming"]
+        },
+        {
+          "value": "AS",
+          "label": "(AS) American Samoa",
+          "alternateMatches": ["American Somoa", "American Samoa"]
+        },
+        {
+          "value": "FM",
+          "label": "(FM) Federated States of Micronesia",
+          "alternateMatches": ["Micronesia", "FSM", "Federated States of Micronesia"]
+        },
+        {
+          "value": "GU",
+          "label": "(GU) Guam",
+          "alternateMatches": ["Guam"]
+        },
+        {
+          "value": "MH",
+          "label": "(MH) Marshall Islands",
+          "alternateMatches": ["RMI", "Marshall Islands"]
+        },
+        {
+          "value": "MP",
+          "label": "(MP) Commonwealth of the Northern Mariana Islands",
+          "alternateMatches": [
+            "CNMI",
+            "Northern Mariana Islands",
+            "Mariana Islands",
+            "Commonwealth of the Northern Mariana Islands"
+          ]
+        },
+        {
+          "value": "PW",
+          "label": "(PW) Palau",
+          "alternateMatches": ["Palau"]
+        },
+        {
+          "value": "PR",
+          "label": "(PR) Puerto Rico",
+          "alternateMatches": ["Puerto Rico"]
+        },
+        {
+          "value": "VI",
+          "label": "(VI) U.S. Virgin Islands",
+          "alternateMatches": ["Virgin Islands", "USVI", "U.S. Virgin Islands"]
+        },
+        {
+          "value": "AA",
+          "label": "(AA) APO/FPO/DPO - Americas",
+          "alternateMatches": ["Armed Forces Americas", "APO/FPO/DPO - Americas"]
+        },
+        {
+          "value": "AE",
+          "label": "(AE) APO/FPO/DPO - Europe/Middle East/Africa",
+          "alternateMatches": [
+            "Armed Forces Europe",
+            "Armed Forces Middle East",
+            "Armed Forces Africa",
+            "APO/FPO/DPO - Europe/Middle East/Africa"
+          ]
+        },
+        {
+          "value": "AP",
+          "label": "(AP) APO/FPO/DPO - Pacific",
+          "alternateMatches": ["Armed Forces Pacific", "APO/FPO/DPO - Pacific"]
+        }
+      ]
+    },
+    "validations": []
+  },
+  {
+    "key": "StateLocalTaxGrps.2.StateTaxGrp.StateIdNum",
+    "label": "State 2 - State/Payer state number",
+    "alternateMatches": ["State 2 - State Number", "State 2 - Payer State Number"],
+    "fieldType": {
+      "type": "input"
+    },
+    "validations": [
+      {
+        "rule": "regex",
+        "value": "^.{0,25}$",
+        "errorMessage": "Must be 25 characters or fewer.",
+        "level": "error"
+      }
+    ]
+  },
+  {
+    "key": "StateLocalTaxGrps.2.StateTaxGrp.StateIncomeAmt",
+    "label": "State 2 - State Income",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  },
+  {
+    "key": "StateLocalTaxGrps.2.StateTaxGrp.StateTaxWithheldAmt",
+    "label": "State 2 - State Tax Withheld",
+    "fieldType": {
+      "type": "numeric",
+      "decimalPlaces": 2,
+      "min": 0,
+      "max": 999999999
+    },
+    "columnStyle": {
+      "textAlign": "right",
+      "prefix": "$"
+    }
+  }
+]

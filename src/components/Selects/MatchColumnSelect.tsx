@@ -1,12 +1,14 @@
 import { Select } from "chakra-react-select"
+import type { GroupBase } from "chakra-react-select"
 import type { SelectOption } from "../../types"
 import { customComponents } from "./MenuPortal"
 import { useStyleConfig } from "@chakra-ui/react"
 import type { Styles } from "../../steps/MatchColumnsStep/components/ColumnGrid"
+
 interface Props {
   onChange: (value: SelectOption | null) => void
   value?: SelectOption
-  options: readonly SelectOption[]
+  options: readonly SelectOption[] | readonly GroupBase<SelectOption>[]
   placeholder?: string
   name?: string
 }
@@ -16,8 +18,7 @@ export const MatchColumnSelect = ({ onChange, value, options, placeholder, name 
   return (
     <Select<SelectOption, false>
       value={value || null}
-      colorScheme="gray"
-      useBasicStyles
+      tagColorScheme="gray"
       onChange={onChange}
       placeholder={placeholder}
       options={options}
@@ -25,6 +26,7 @@ export const MatchColumnSelect = ({ onChange, value, options, placeholder, name 
       menuPosition="fixed"
       components={customComponents}
       aria-label={name}
+      isClearable
     />
   )
 }

@@ -3,15 +3,8 @@ import { findMatch } from "./findMatch"
 import type { Field, Fields } from "../../../types"
 import { setColumn } from "./setColumn"
 import type { Column, Columns } from "../MatchColumnsStep"
-import type { MatchColumnsProps } from "../MatchColumnsStep"
 
-export const getMatchedColumns = <T extends string>(
-  columns: Columns<T>,
-  fields: Fields<T>,
-  data: MatchColumnsProps<T>["data"],
-  autoMapDistance: number,
-  autoMapSelectValues?: boolean,
-) =>
+export const getMatchedColumns = <T extends string>(columns: Columns<T>, fields: Fields<T>, autoMapDistance: number) =>
   columns.reduce<Column<T>[]>((arr, column) => {
     const autoMatch = findMatch(column.header, fields, autoMapDistance)
     if (autoMatch) {
@@ -22,7 +15,7 @@ export const getMatchedColumns = <T extends string>(
         return lavenstein(duplicate.value, duplicate.header) < lavenstein(autoMatch, column.header)
           ? [
               ...arr.slice(0, duplicateIndex),
-              setColumn(arr[duplicateIndex], field, data, autoMapSelectValues),
+              setColumn(arr[duplicateIndex], field),
               ...arr.slice(duplicateIndex + 1),
               setColumn(column),
             ]
@@ -30,10 +23,10 @@ export const getMatchedColumns = <T extends string>(
               ...arr.slice(0, duplicateIndex),
               setColumn(arr[duplicateIndex]),
               ...arr.slice(duplicateIndex + 1),
-              setColumn(column, field, data, autoMapSelectValues),
+              setColumn(column, field),
             ]
       } else {
-        return [...arr, setColumn(column, field, data, autoMapSelectValues)]
+        return [...arr, setColumn(column, field)]
       }
     } else {
       return [...arr, column]

@@ -8,6 +8,7 @@ dist
 dist-commonjs
 types
 coverage
-/test-results/
-/playwright-report/
+/e2e/test-results/
+/e2e/playwright-report/
 /playwright/.cache/
+.claude/settings.local.json

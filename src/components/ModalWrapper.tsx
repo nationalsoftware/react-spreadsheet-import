@@ -20,6 +20,7 @@ export const ModalWrapper = ({ children, isOpen, onClose }: Props) => {
       closeOnEsc={false}
       closeOnOverlayClick={false}
       scrollBehavior="inside"
+      motionPreset="slideInBottom"
     >
       <div dir={rtl ? "rtl" : "ltr"}>
         <ModalOverlay />

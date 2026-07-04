@@ -1,16 +1,15 @@
 import { StepType } from "../steps/UploadFlow"
 
-export const steps = ["uploadStep", "selectHeaderStep", "matchColumnsStep", "validationStep"] as const
+export const steps = ["uploadStep", "matchColumnsStep", "validationStep"] as const
 const StepTypeToStepRecord: Record<StepType, (typeof steps)[number]> = {
   [StepType.upload]: "uploadStep",
   [StepType.selectSheet]: "uploadStep",
-  [StepType.selectHeader]: "selectHeaderStep",
+  [StepType.selectHeader]: "uploadStep",
   [StepType.matchColumns]: "matchColumnsStep",
   [StepType.validateData]: "validationStep",
 }
 const StepToStepTypeRecord: Record<(typeof steps)[number], StepType> = {
   uploadStep: StepType.upload,
-  selectHeaderStep: StepType.selectHeader,
   matchColumnsStep: StepType.matchColumns,
   validationStep: StepType.validateData,
 }
