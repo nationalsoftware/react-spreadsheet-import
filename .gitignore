@@ -8,7 +8,14 @@ dist
 dist-commonjs
 types
 coverage
+.claude/settings.local.json
+
+# Playwright (e2e) — per-run artifacts; committed baselines live in apps/*/e2e/*-snapshots/
 /e2e/test-results/
 /e2e/playwright-report/
 /playwright/.cache/
-.claude/settings.local.json
+
+# Agent skills (installed per-machine via `npx skills add`)
+/.agents/
+/.claude/
+/skills-lock.json
