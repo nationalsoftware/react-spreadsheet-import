@@ -1,9 +1,11 @@
 import type React from "react"
 import type { Fields } from "../../../types"
-import { Box, Flex, Heading, ModalBody, Text, useStyleConfig } from "@chakra-ui/react"
+import { Box, Flex, Heading, Text } from "@chakra-ui/react"
 import { CgCheckO, CgInfo } from "react-icons/cg"
 import { ContinueButton } from "../../../components/ContinueButton"
+import { ModalBody } from "../../../components/ModalParts"
 import { useRsi } from "../../../hooks/useRsi"
+import { useRsiStyles } from "../../../hooks/useRsiStyles"
 import type { themeOverrides } from "../../../theme"
 
 type ColumnGridProps<T extends string> = {
@@ -26,13 +28,13 @@ export const ColumnGrid = <T extends string>({
   isLoading,
 }: ColumnGridProps<T>) => {
   const { translations } = useRsi<T>()
-  const styles = useStyleConfig("MatchColumnsStep") as Styles
+  const styles = useRsiStyles("MatchColumnsStep")
 
   return (
     <>
       <ModalBody flexDir="column" p={8} overflow="auto">
-        <Heading sx={styles.heading}>{translations.matchColumnsStep.title}</Heading>
-        <Text sx={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
+        <Heading css={styles.heading}>{translations.matchColumnsStep.title}</Heading>
+        <Text css={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
         {unmatchedRequiredFields.length > 0 ? (
           <Flex gap={2} alignItems="center">
             <Text color="orange.500">
@@ -56,15 +58,15 @@ export const ColumnGrid = <T extends string>({
         )}
         <Flex mt={4} gap={8} alignItems="center" pb={2}>
           <Flex flex={1} alignItems="center" overflow="hidden" gap={1}>
-            <Text sx={styles.title} noOfLines={1}>
+            <Text css={styles.title} lineClamp={1}>
               {translations.matchColumnsStep.templateTitle}
             </Text>
           </Flex>
           <Box flex={1}>
-            <Text sx={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
+            <Text css={styles.title}>{translations.matchColumnsStep.userTableTitle}</Text>
           </Box>
           <Box flex={1}>
-            <Text sx={styles.title}>{translations.matchColumnsStep.userTableSampleTitle}</Text>
+            <Text css={styles.title}>{translations.matchColumnsStep.userTableSampleTitle}</Text>
           </Box>
         </Flex>
         {fields.map((field) => (

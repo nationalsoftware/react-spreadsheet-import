@@ -1,29 +1,18 @@
 import { useCallback, useMemo, useState } from "react"
-import {
-  Box,
-  Button,
-  Badge,
-  Heading,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuList,
-  MenuItem,
-  ModalBody,
-  Text,
-  useStyleConfig,
-  useToast,
-} from "@chakra-ui/react"
+import { Box, Button, Badge, Heading, Menu, Portal, Text } from "@chakra-ui/react"
 import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6"
 import { ContinueButton } from "../../components/ContinueButton"
+import { ModalBody } from "../../components/ModalParts"
+import { rsiRootClassName } from "../../components/Providers"
 import { useRsi } from "../../hooks/useRsi"
+import { useRsiStyles } from "../../hooks/useRsiStyles"
+import { useToaster } from "../../hooks/useToaster"
 import type { Meta } from "./types"
 import { addErrorsAndRunHooks } from "./utils/dataMutations"
 import { generateColumns } from "./components/columns"
 import { Table } from "../../components/Table"
 import { SubmitDataAlert } from "../../components/Alerts/SubmitDataAlert"
 import type { Data } from "../../types"
-import type { themeOverrides } from "../../theme"
 import type { RowsChangeData } from "react-data-grid"
 import { downloadAsCsv, downloadAsXlsx } from "../../utils/downloadSpreadsheet"
 
@@ -38,17 +27,17 @@ type Props<T extends string> = {
   onBack?: () => void
 }
 
+type Filter = "all" | "errors" | "warnings"
+
 export const ValidationStep = <T extends string>({ initialData, file, onBack }: Props<T>) => {
   const { translations, fields, allowDiscard, numberedRows, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
-  const styles = useStyleConfig(
-    "ValidationStep",
-  ) as (typeof themeOverrides)["components"]["ValidationStep"]["baseStyle"]
-  const toast = useToast()
+  const styles = useRsiStyles("ValidationStep")
+  const toaster = useToaster()
 
   const [data, setData] = useState<(Data<T> & Meta)[]>(initialData)
 
   const [selectedRows, setSelectedRows] = useState<ReadonlySet<number | string>>(new Set())
-  const [filter, setFilter] = useState<"all" | "errors" | "warnings">("all")
+  const [filter, setFilter] = useState<Filter>("all")
   const [showSubmitAlert, setShowSubmitAlert] = useState(false)
   const [isSubmitting, setSubmitting] = useState(false)
 
@@ -58,17 +47,15 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
       addErrorsAndRunHooks<T>(rows, fields, rowHook, tableHook, indexes, changedFieldKey)
         .then((data) => setData(data))
         .catch((err: Error) => {
-          toast({
-            status: "error",
-            variant: "left-accent",
-            position: "bottom-left",
+          toaster.create({
+            type: "error",
             title: translations.alerts.toast.error,
             description: err?.message,
-            isClosable: true,
+            closable: true,
           })
         })
     },
-    [rowHook, tableHook, fields, translations, toast],
+    [rowHook, tableHook, fields, translations, toaster],
   )
 
   const deleteSelectedRows = () => {
@@ -150,13 +137,11 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
           onClose()
         })
         .catch((err: Error) => {
-          toast({
-            status: "error",
-            variant: "left-accent",
-            position: "bottom-left",
+          toaster.create({
+            type: "error",
             title: `${translations.alerts.submitError.title}`,
             description: err?.message || `${translations.alerts.submitError.defaultMessage}`,
-            isClosable: true,
+            closable: true,
           })
         })
         .finally(() => {
@@ -175,55 +160,77 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     }
   }
 
+  const filterButtonVariant = (value: Filter) => (filter === value ? "subtle" : "ghost")
+
   return (
     <>
       <SubmitDataAlert isOpen={showSubmitAlert} onClose={() => setShowSubmitAlert(false)} onConfirm={submitData} />
       <ModalBody pb={0}>
-        <Heading sx={styles.heading}>{translations.validationStep.title}</Heading>
-        <Text sx={styles.instructions}>{translations.validationStep.instructions}</Text>
+        <Heading css={styles.heading}>{translations.validationStep.title}</Heading>
+        <Text css={styles.instructions}>{translations.validationStep.instructions}</Text>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb="2rem" flexWrap="wrap" gap="8px">
           <Box display="flex" gap="8px" alignItems="center" flexWrap="wrap">
-            <Button variant="ghost" size="sm" isActive={filter === "all"} onClick={() => setFilter("all")}>
+            <Button variant={filterButtonVariant("all")} size="sm" onClick={() => setFilter("all")}>
               {translations.validationStep.allRowsCountTitle}
-              <Badge ml="3">{data.length}</Badge>
+              {/* explicit gray: a bare v3 Badge inherits the button's rsi colorPalette and vanishes on the subtle (selected) button */}
+              <Badge ml="3" colorPalette="gray">
+                {data.length}
+              </Badge>
             </Button>
-            <Button variant="ghost" size="sm" isActive={filter === "warnings"} onClick={() => setFilter("warnings")}>
+            <Button variant={filterButtonVariant("warnings")} size="sm" onClick={() => setFilter("warnings")}>
               {translations.validationStep.warningRowsCountTitle}
-              <Badge ml="3" colorScheme="orange">
+              <Badge ml="3" colorPalette="orange">
                 {warningCount}
               </Badge>
             </Button>
-            <Button variant="ghost" size="sm" isActive={filter === "errors"} onClick={() => setFilter("errors")}>
+            <Button variant={filterButtonVariant("errors")} size="sm" onClick={() => setFilter("errors")}>
               {translations.validationStep.errorRowsCountTitle}
-              <Badge ml="3" colorScheme="red">
+              <Badge ml="3" colorPalette="red">
                 {errorCount}
               </Badge>
             </Button>
           </Box>
           <Box display="flex" gap="16px" alignItems="center" flexWrap="wrap">
-            <Menu>
-              <MenuButton as={Button} variant="outline" size="sm" rightIcon={<FaChevronDown />}>
-                {translations.validationStep.exportButtonTitle}
-              </MenuButton>
-              <MenuList>
-                <MenuItem icon={<FaFileCsv size="32px" color="#2B73B6" />} onClick={() => downloadAsCsv(data, fields)}>
-                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
-                  <Text sx={styles.exportMenuItemDescription}>
-                    {translations.validationStep.exportCsvButtonDescription}
-                  </Text>
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem
-                  icon={<FaFileExcel size="32px" color="#217346" />}
-                  onClick={() => downloadAsXlsx(data, fields)}
-                >
-                  <Text sx={styles.exportMenuItemTitle}>{translations.validationStep.exportXlsxButtonTitle}</Text>
-                  <Text sx={styles.exportMenuItemDescription}>
-                    {translations.validationStep.exportXlsxButtonDescription}
-                  </Text>
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <Menu.Root
+              onSelect={({ value }) => {
+                if (value === "csv") downloadAsCsv(data, fields)
+                if (value === "xlsx") downloadAsXlsx(data, fields)
+              }}
+            >
+              <Menu.Trigger asChild>
+                <Button variant="outline" size="sm">
+                  {translations.validationStep.exportButtonTitle}
+                  <FaChevronDown />
+                </Button>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner className={rsiRootClassName}>
+                  <Menu.Content>
+                    <Menu.Item value="csv" gap={3}>
+                      <FaFileCsv size="32px" color="#2B73B6" />
+                      <Box>
+                        <Text css={styles.exportMenuItemTitle}>{translations.validationStep.exportCsvButtonTitle}</Text>
+                        <Text css={styles.exportMenuItemDescription}>
+                          {translations.validationStep.exportCsvButtonDescription}
+                        </Text>
+                      </Box>
+                    </Menu.Item>
+                    <Menu.Separator />
+                    <Menu.Item value="xlsx" gap={3}>
+                      <FaFileExcel size="32px" color="#217346" />
+                      <Box>
+                        <Text css={styles.exportMenuItemTitle}>
+                          {translations.validationStep.exportXlsxButtonTitle}
+                        </Text>
+                        <Text css={styles.exportMenuItemDescription}>
+                          {translations.validationStep.exportXlsxButtonDescription}
+                        </Text>
+                      </Box>
+                    </Menu.Item>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
 
             {allowDiscard && (
               <Button variant="outline" size="sm" onClick={deleteSelectedRows}>

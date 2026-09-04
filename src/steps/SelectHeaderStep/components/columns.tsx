@@ -1,25 +1,34 @@
 import { Column, useRowSelection } from "react-data-grid"
-import { Radio } from "@chakra-ui/react"
+import { RadioGroup } from "@chakra-ui/react"
 import type { RawData } from "../../../types"
 
 const SELECT_COLUMN_KEY = "select-row"
+const SELECTED = "selected"
 
 function SelectFormatter({ row }: { row: unknown }) {
   const { isRowSelected, onRowSelectionChange } = useRowSelection()
 
+  // Chakra v3 has no standalone Radio; each row hosts a single-item radio group.
   return (
-    <Radio
-      bg="white"
-      aria-label="Select"
-      isChecked={isRowSelected}
-      onChange={(event) => {
+    <RadioGroup.Root
+      // flex so the inline-flex item inside doesn't sit on the text baseline, leaving descender space below
+      display="flex"
+      alignItems="center"
+      colorPalette="blue"
+      value={isRowSelected ? SELECTED : null}
+      onValueChange={({ value }) => {
         onRowSelectionChange({
           row,
-          checked: Boolean(event.target.checked),
-          isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
+          checked: value === SELECTED,
+          isShiftClick: false,
         })
       }}
-    />
+    >
+      <RadioGroup.Item value={SELECTED}>
+        <RadioGroup.ItemHiddenInput aria-label="Select" />
+        <RadioGroup.ItemIndicator bg="white" />
+      </RadioGroup.Item>
+    </RadioGroup.Root>
   )
 }
 

@@ -1,16 +1,7 @@
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Button,
-  Text,
-  Box,
-} from "@chakra-ui/react"
+import { Box, Button, Text } from "@chakra-ui/react"
 import { useRef } from "react"
 import { useRsi } from "../../hooks/useRsi"
+import { AlertDialog } from "./AlertDialog"
 
 interface Props {
   isOpen: boolean
@@ -24,34 +15,32 @@ export const UnmatchedFieldsAlert = ({ isOpen, onClose, onConfirm, fields }: Pro
   const cancelRef = useRef<HTMLButtonElement | null>(null)
 
   return (
-    <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} isCentered id="rsi">
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {translations.alerts.unmatchedRequiredFields.headerTitle}
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            {translations.alerts.unmatchedRequiredFields.bodyText}
-            <Box pt={3}>
-              <Text display="inline">{translations.alerts.unmatchedRequiredFields.listTitle}</Text>
-              <Text display="inline" fontWeight="bold">
-                {" "}
-                {fields.join(", ")}
-              </Text>
-            </Box>
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose} variant="secondary">
-              {translations.alerts.unmatchedRequiredFields.cancelButtonTitle}
+    <AlertDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      leastDestructiveRef={cancelRef}
+      title={translations.alerts.unmatchedRequiredFields.headerTitle}
+      footer={
+        <>
+          <Button ref={cancelRef} onClick={onClose} variant="ghost">
+            {translations.alerts.unmatchedRequiredFields.cancelButtonTitle}
+          </Button>
+          {allowInvalidSubmit && (
+            <Button onClick={onConfirm} ml={3}>
+              {translations.alerts.unmatchedRequiredFields.continueButtonTitle}
             </Button>
-            {allowInvalidSubmit && (
-              <Button onClick={onConfirm} ml={3}>
-                {translations.alerts.unmatchedRequiredFields.continueButtonTitle}
-              </Button>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
+          )}
+        </>
+      }
+    >
+      {translations.alerts.unmatchedRequiredFields.bodyText}
+      <Box pt={3}>
+        <Text display="inline">{translations.alerts.unmatchedRequiredFields.listTitle}</Text>
+        <Text display="inline" fontWeight="bold">
+          {" "}
+          {fields.join(", ")}
+        </Text>
+      </Box>
     </AlertDialog>
   )
 }

@@ -1,10 +1,11 @@
 import type XLSX from "xlsx-ugnis"
-import { Box, Heading, ModalBody, Text, HStack, useStyleConfig } from "@chakra-ui/react"
+import { Box, Flex, Heading, Text } from "@chakra-ui/react"
 import { DropZone } from "./components/DropZone"
 import { useRsi } from "../../hooks/useRsi"
+import { useRsiStyles } from "../../hooks/useRsiStyles"
 import { ExampleTable } from "./components/ExampleTable"
+import { ModalBody } from "../../components/ModalParts"
 import { useCallback, useState } from "react"
-import type { themeOverrides } from "../../theme"
 
 type UploadProps = {
   onContinue: (data: XLSX.WorkBook, file: File) => Promise<void>
@@ -12,7 +13,7 @@ type UploadProps = {
 
 export const UploadStep = ({ onContinue }: UploadProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const styles = useStyleConfig("UploadStep") as (typeof themeOverrides)["components"]["UploadStep"]["baseStyle"]
+  const styles = useRsiStyles("UploadStep")
   const { translations, fields } = useRsi()
   const handleOnContinue = useCallback(
     async (data: XLSX.WorkBook, file: File) => {
@@ -24,17 +25,18 @@ export const UploadStep = ({ onContinue }: UploadProps) => {
   )
   return (
     <ModalBody>
-      <Heading sx={styles.heading}>{translations.uploadStep.title}</Heading>
-      <Text sx={styles.instructions}>{translations.uploadStep.instructions}</Text>
-      <Text sx={styles.title}>{translations.uploadStep.manifestTitle}</Text>
-      <HStack sx={styles.contentWrapper}>
-        <Box sx={styles.tableWrapper}>
+      <Heading css={styles.heading}>{translations.uploadStep.title}</Heading>
+      <Text css={styles.instructions}>{translations.uploadStep.instructions}</Text>
+      <Text css={styles.title}>{translations.uploadStep.manifestTitle}</Text>
+      {/* Flex rather than HStack: HStack's own alignItems style prop would override the theme's css */}
+      <Flex css={styles.contentWrapper}>
+        <Box css={styles.tableWrapper}>
           <ExampleTable fields={fields} />
         </Box>
-        <Box sx={styles.dropzoneWrapper}>
+        <Box css={styles.dropzoneWrapper}>
           <DropZone onContinue={handleOnContinue} isLoading={isLoading} />
         </Box>
-      </HStack>
+      </Flex>
     </ModalBody>
   )
 }

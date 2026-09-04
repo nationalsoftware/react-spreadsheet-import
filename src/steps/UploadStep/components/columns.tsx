@@ -1,6 +1,7 @@
 import type { Column } from "react-data-grid"
-import { Box, Tooltip } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 import { CgInfo } from "react-icons/cg"
+import { Tooltip } from "../../../components/Tooltip"
 
 export const generateColumns = (): Column<any>[] => [
   {
@@ -19,7 +20,12 @@ export const generateColumns = (): Column<any>[] => [
       <Box display="flex" gap={1} alignItems="center">
         <Box width="16px" height="16px">
           {row.description ? (
-            <Tooltip placement="top-end" hasArrow label={row.description} whiteSpace="pre-line">
+            <Tooltip
+              positioning={{ placement: "top-end" }}
+              showArrow
+              content={row.description}
+              contentProps={{ whiteSpace: "pre-line" }}
+            >
               <Box>
                 <CgInfo size="16px" />
               </Box>

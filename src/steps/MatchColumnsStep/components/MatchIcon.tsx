@@ -1,27 +1,17 @@
-import { chakra, useStyleConfig, Flex } from "@chakra-ui/react"
-import { motion } from "framer-motion"
+import { Box, Flex } from "@chakra-ui/react"
 import { CgCheck } from "react-icons/cg"
+import { useRsiStyles } from "../../../hooks/useRsiStyles"
 
-const MotionFlex = motion(Flex)
-
-const animationConfig = {
-  transition: {
-    duration: 0.1,
-  },
-  exit: { scale: 0.5, opacity: 0 },
-  initial: { scale: 0.5, opacity: 0 },
-  animate: { scale: 1, opacity: 1 },
-}
 type MatchIconProps = {
   isChecked: boolean
 }
 
 export const MatchIcon = (props: MatchIconProps) => {
-  const style = useStyleConfig("MatchIcon", props)
+  const style = useRsiStyles("MatchIcon")
 
   return (
-    <chakra.div
-      __css={style}
+    <Box
+      css={style}
       minW={6}
       minH={6}
       w={6}
@@ -32,10 +22,10 @@ export const MatchIcon = (props: MatchIconProps) => {
       data-testid="column-checkmark"
     >
       {props.isChecked && (
-        <MotionFlex {...animationConfig}>
+        <Flex animationStyle="scale-fade-in" animationDuration="faster">
           <CgCheck size="24px" />
-        </MotionFlex>
+        </Flex>
       )}
-    </chakra.div>
+    </Box>
   )
 }

@@ -57,7 +57,7 @@ export default {
 
 export const Basic = (args: RsiProps<string>) => {
   const [data, setData] = useState<Result<any> | null>(null)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { open: isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
       <Box py={20} display="flex" gap="8px" alignItems="center">
@@ -102,7 +102,7 @@ export const Basic = (args: RsiProps<string>) => {
 
 export const F1099NEC = (args: RsiProps<string>) => {
   const [data, setData] = useState<Result<any> | null>(null)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { open: isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
       <Box py={20} display="flex" gap="8px" alignItems="center">

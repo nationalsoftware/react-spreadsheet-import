@@ -1,30 +1,18 @@
+import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react"
+import type { SystemStyleObject } from "@chakra-ui/react"
 import type { DeepPartial } from "ts-essentials"
 import type { ChakraStylesConfig } from "chakra-react-select"
 import type { SelectOption } from "./types"
 
-const MatchIconTheme: any = {
-  baseStyle: (props: any) => {
-    return {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "50%",
-      borderWidth: "2px",
-      bg: "background",
-      borderColor: "yellow.500",
-      color: "background",
-      transitionDuration: "ultra-fast",
-      _highlighted: {
-        bg: "green.500",
-        borderColor: "green.500",
-      },
-    }
-  },
-  defaultProps: {
-    size: "md",
-    colorScheme: "green",
-  },
-}
+/**
+ * Class applied to every RSI root element (the modal wrapper, alert dialogs, portalled menus,
+ * tooltips and toasts). Chakra's CSS variables, preflight reset and global styles are scoped to
+ * this class so the library never leaks styles into the host application.
+ */
+export const rsiRootClassName = "rsi-root"
+const rsiRootSelector = `.${rsiRootClassName}`
+/** Zero-specificity form used for the reset/global rules so they never out-rank recipe or `css` styles */
+const rsiRootScope = `:where(${rsiRootSelector})`
 
 export const themeOverrides = {
   colors: {
@@ -48,9 +36,6 @@ export const themeOverrides = {
       800: "#1D0EBE",
       900: "#0C008C",
     },
-  },
-  shadows: {
-    outline: 0,
   },
   components: {
     UploadStep: {
@@ -90,7 +75,6 @@ export const themeOverrides = {
           flex: 1,
         },
         dropzoneText: {
-          size: "lg",
           lineHeight: 7,
           fontWeight: "semibold",
           color: "textColor",
@@ -208,6 +192,7 @@ export const themeOverrides = {
             ["&[data-focus-visible]"]: {
               borderColor: "border",
               boxShadow: "none",
+              outline: "none",
             },
           }),
           menu: (provided) => ({
@@ -311,7 +296,23 @@ export const themeOverrides = {
         } as ChakraStylesConfig<SelectOption>,
       },
     },
-    MatchIcon: MatchIconTheme,
+    MatchIcon: {
+      baseStyle: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "50%",
+        borderWidth: "2px",
+        bg: "background",
+        borderColor: "yellow.500",
+        color: "background",
+        transitionDuration: "fastest",
+        _highlighted: {
+          bg: "green.500",
+          borderColor: "green.500",
+        },
+      },
+    },
     Modal: {
       baseStyle: {
         dialog: {
@@ -371,20 +372,21 @@ export const themeOverrides = {
       },
     },
     Button: {
+      baseStyle: {},
       defaultProps: {
-        colorScheme: "rsi",
+        colorPalette: "rsi",
       },
     },
   },
   styles: {
     global: {
       // supporting older browsers but avoiding fill-available CSS as it doesn't work https://github.com/chakra-ui/chakra-ui/blob/073bbcd21a9caa830d71b61d6302f47aaa5c154d/packages/components/css-reset/src/css-reset.tsx#L5
-      ":root": {
+      [rsiRootSelector]: {
         "--chakra-vh": "100vh",
         "--chakra-vw": "100vw",
       },
       "@supports (height: 100dvh) and (width: 100dvw) ": {
-        ":root": {
+        [rsiRootSelector]: {
           "--chakra-vh": "100dvh",
           "--chakra-vw": "100dvw",
         },
@@ -397,20 +399,23 @@ export const themeOverrides = {
         blockSize: "100%",
         flex: "1",
 
-        // we have to use vars here because chakra does not autotransform unknown props
-        "--rdg-color": "var(--chakra-colors-textColor)",
-        "--rdg-background-color": "var(--chakra-colors-background)",
-        "--rdg-header-background-color": "var(--chakra-colors-background)",
-        "--rdg-row-hover-background-color": "var(--chakra-colors-background)",
-        "--rdg-selection-color": "var(--chakra-colors-blue-400)",
-        "--rdg-row-selected-background-color": "var(--chakra-colors-rsi-50)",
-        "--row-selected-hover-background-color": "var(--chakra-colors-rsi-100)",
-        "--rdg-error-cell-background-color": "var(--chakra-colors-red-50)",
-        "--rdg-warning-cell-background-color": "var(--chakra-colors-orange-50)",
-        "--rdg-info-cell-background-color": "var(--chakra-colors-blue-50)",
-        "--rdg-border-color": "var(--chakra-colors-border)",
+        // Chakra v3 resolves bare token paths for custom properties, e.g. "colors.textColor" -> var(--chakra-colors-text-color)
+        "--rdg-color": "colors.textColor",
+        "--rdg-background-color": "colors.background",
+        "--rdg-header-background-color": "colors.background",
+        "--rdg-row-hover-background-color": "colors.background",
+        "--rdg-selection-color": "colors.blue.400",
+        "--rdg-row-selected-background-color": "colors.rsi.50",
+        "--row-selected-hover-background-color": "colors.rsi.100",
+        "--rdg-error-cell-background-color": "colors.red.50",
+        "--rdg-warning-cell-background-color": "colors.orange.50",
+        "--rdg-info-cell-background-color": "colors.blue.50",
+        "--rdg-border-color": "colors.border",
         "--rdg-frozen-cell-box-shadow": "none",
-        "--rdg-font-size": "var(--chakra-fontSizes-sm)",
+        "--rdg-font-size": "fontSizes.sm",
+        // Chakra v3's reset sets `* { font: inherit }`; RSI emits it unlayered, which out-ranks react-data-grid's
+        // own layered `font-size: var(--rdg-font-size)`, so restate it here (otherwise the grid inherits the dialog's lg).
+        fontSize: "var(--rdg-font-size)",
       },
       ".rdg-header-row .rdg-cell": {
         color: "textColor",
@@ -434,18 +439,18 @@ export const themeOverrides = {
       ".rdg-row:last-child .rdg-cell:last-child": {
         borderBottomRightRadius: "lg",
       },
-      ".rdg[dir='rtl']": {
-        ".rdg-row:last-child .rdg-cell:first-of-type": {
-          borderBottomRightRadius: "lg",
-          borderBottomLeftRadius: "none",
-        },
-        ".rdg-row:last-child .rdg-cell:last-child": {
-          borderBottomLeftRadius: "lg",
-          borderBottomRightRadius: "none",
-        },
+      ".rdg[dir='rtl'] .rdg-row:last-child .rdg-cell:first-of-type": {
+        borderBottomRightRadius: "lg",
+        borderBottomLeftRadius: "none",
+      },
+      ".rdg[dir='rtl'] .rdg-row:last-child .rdg-cell:last-child": {
+        borderBottomLeftRadius: "lg",
+        borderBottomRightRadius: "none",
       },
       ".rdg-cell": {
         contain: "size layout style paint",
+        // react-data-grid's own (layered) cell padding is zeroed by the unlayered reset; restate it
+        paddingInline: "8px",
         borderInlineEnd: "1px solid var(--rdg-border-color)",
         borderBottom: "1px solid var(--rdg-border-color)",
         whiteSpace: "nowrap",
@@ -529,4 +534,106 @@ export const rtlThemeSupport = {
   },
 } as const
 
-export type CustomTheme = DeepPartial<typeof themeOverrides>
+export type RsiTheme = typeof themeOverrides
+export type CustomTheme = DeepPartial<RsiTheme>
+
+type TokenValue = { value: string }
+type ColorTokens = Record<string, TokenValue | Record<string, TokenValue>>
+
+const isPalette = (value: unknown): value is Record<string, string> => typeof value === "object" && value !== null
+
+/**
+ * Chakra v3's default global styles target `html` and `*`. Re-key them under the RSI root selector so
+ * they only affect RSI's own UI and never the host page.
+ */
+const scopeDefaultGlobalCss = (): Record<string, SystemStyleObject> => {
+  const scoped: Record<string, SystemStyleObject> = {}
+  for (const [selector, styles] of Object.entries(defaultConfig.globalCss ?? {})) {
+    if (selector === "html") {
+      // `bg` intentionally dropped: the root wrapper must not paint over the host page
+      const { bg: _bg, background: _background, ...rest } = styles as Record<string, unknown>
+      scoped[rsiRootScope] = rest as SystemStyleObject
+    } else if (selector === "*") {
+      scoped[`${rsiRootScope}, ${rsiRootScope} *`] = styles
+    } else {
+      scoped[
+        selector
+          .split(",")
+          .map((part) => `${rsiRootScope} ${part.trim()}`)
+          .join(", ")
+      ] = styles
+    }
+  }
+  return scoped
+}
+
+/**
+ * Chakra v2 exposed numeric line-height tokens (`lineHeight: 6` → 1.5rem); v3 does not, and a bare number
+ * would become a unitless multiplier. Re-register the v2 scale so theme values keep their meaning.
+ */
+const v2LineHeights = Object.fromEntries([3, 4, 5, 6, 7, 8, 9, 10].map((n) => [String(n), { value: `${n * 0.25}rem` }]))
+
+/** `defaultProps.colorPalette`, still accepting the Chakra v2 `colorScheme` key from older `customTheme` objects */
+const buttonColorPalette = (theme: RsiTheme): string => {
+  const defaultProps = theme.components.Button.defaultProps as { colorPalette?: string; colorScheme?: string }
+  return defaultProps.colorPalette ?? defaultProps.colorScheme ?? "rsi"
+}
+
+/**
+ * Builds a Chakra v3 system from an RSI theme object (the default theme deep-merged with `customTheme`).
+ *
+ * - flat `colors` entries become semantic color tokens (e.g. `textColor`, `background`)
+ * - nested `colors` entries become palettes (e.g. `rsi.500`) and get the semantic tokens Chakra v3
+ *   recipes expect (`solid`, `contrast`, `fg`, ...) so `colorPalette="rsi"` works
+ * - `styles.global` becomes `globalCss`
+ * - CSS variables, the preflight reset and global styles are scoped to `.rsi-root`
+ */
+export const createRsiSystem = (theme: RsiTheme) => {
+  const tokens: ColorTokens = {}
+  const semanticTokens: ColorTokens = {}
+
+  for (const [name, value] of Object.entries(theme.colors) as [string, string | Record<string, string>][]) {
+    if (isPalette(value)) {
+      tokens[name] = Object.fromEntries(Object.entries(value).map(([shade, color]) => [shade, { value: color }]))
+      semanticTokens[name] = {
+        contrast: { value: "white" },
+        fg: { value: `{colors.${name}.700}` },
+        subtle: { value: `{colors.${name}.100}` },
+        muted: { value: `{colors.${name}.200}` },
+        emphasized: { value: `{colors.${name}.300}` },
+        solid: { value: `{colors.${name}.500}` },
+        focusRing: { value: `{colors.${name}.500}` },
+        border: { value: `{colors.${name}.500}` },
+      }
+    } else {
+      semanticTokens[name] = { value }
+    }
+  }
+
+  const config = defineConfig({
+    cssVarsRoot: rsiRootSelector,
+    // Layers are disabled so RSI styles behave like ordinary (v2-style) CSS inside arbitrary host apps;
+    // the reset is therefore scoped with :where() so it cannot out-rank recipe classes.
+    preflight: { scope: rsiRootScope },
+    disableLayers: true,
+    globalCss: {
+      ...scopeDefaultGlobalCss(),
+      ...(theme.styles.global as Record<string, SystemStyleObject>),
+    },
+    theme: {
+      tokens: { colors: tokens, lineHeights: v2LineHeights },
+      semanticTokens: { colors: semanticTokens },
+      recipes: {
+        button: {
+          base: {
+            ...(theme.components.Button.baseStyle as SystemStyleObject),
+            colorPalette: buttonColorPalette(theme),
+          },
+        },
+      },
+    },
+  })
+
+  // globalCss is replaced (not merged) with the scoped copy built above
+  return createSystem({ ...defaultConfig, globalCss: {} }, config)
+}

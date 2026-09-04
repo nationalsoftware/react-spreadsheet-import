@@ -13,7 +13,7 @@ Avoid using `any` wherever possible. Prefer specific types, `unknown` with narro
 ## Tech Stack
 
 - **React 18** + **TypeScript 5**
-- **Chakra UI 2** for all UI components and theming
+- **Chakra UI 3** (`@chakra-ui/react` v3, compound components, `createSystem` theming) for all UI components; **chakra-react-select 6** for the select dropdowns
 - **React Data Grid 7** for the validation/editing table
 - **ExcelJS / SheetJS** for file parsing
 - **date-fns 4** for date parsing and formatting (`src/utils/parseDate.ts`)

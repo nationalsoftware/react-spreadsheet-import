@@ -1,4 +1,5 @@
 import merge from "lodash/merge"
+import { useMemo } from "react"
 import "react-data-grid/lib/styles.css"
 
 import { Steps } from "./steps/Steps"
@@ -30,9 +31,14 @@ export const ReactSpreadsheetImport = <T extends string>(propsWithoutDefaults: R
   const props = merge({}, defaultRSIProps, propsWithoutDefaults)
   const mergedTranslations =
     props.translations !== translations ? merge(translations, props.translations) : translations
-  const mergedThemes = props.rtl
-    ? merge(defaultTheme, rtlThemeSupport, props.customTheme)
-    : merge(defaultTheme, props.customTheme)
+  // Memoized: Providers rebuilds the Chakra system whenever the theme object identity changes
+  const mergedThemes = useMemo(
+    () =>
+      props.rtl
+        ? merge({}, defaultTheme, rtlThemeSupport, props.customTheme)
+        : merge({}, defaultTheme, props.customTheme),
+    [props.rtl, props.customTheme],
+  )
 
   return (
     <Providers theme={mergedThemes} rsiValues={{ ...props, translations: mergedTranslations }}>
