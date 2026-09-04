@@ -83,7 +83,7 @@ Storybook is the primary dev environment for visual work. Stories live alongside
 
 ### `npm run test:unit` — Vitest
 
-React Testing Library + jsdom. 96 tests across 6 step test files plus one root-level test.
+React Testing Library + jsdom. 99 tests across 6 step test files plus one root-level test.
 
 ```powershell
 npm run test:unit
@@ -220,7 +220,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 
 **Formatter**: switch on `column.fieldType.type`.
 
-- `"checkbox"` → `<Switch isChecked={...} onChange={...} />`
+- `"checkbox"` → `<Switch.Root checked={...} onCheckedChange={...}>` (Chakra v3 compound Switch)
 - `"select"` → resolves options via `resolveOptions(row)` (same override logic as editor); resolves raw value to `option.label`; multiSelect splits/joins. If resolved options is empty, falls through to plain text display.
 - `"date"` → displays the stored `dateFormat` string as-is
 - `"numeric"` → `num.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits, useGrouping })` using `decimalPlaces` and `thousandsSeparator` (default `true`)

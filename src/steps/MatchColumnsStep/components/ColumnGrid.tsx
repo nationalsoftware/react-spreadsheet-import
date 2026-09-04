@@ -6,7 +6,6 @@ import { ContinueButton } from "../../../components/ContinueButton"
 import { ModalBody } from "../../../components/ModalParts"
 import { useRsi } from "../../../hooks/useRsi"
 import { useRsiStyles } from "../../../hooks/useRsiStyles"
-import type { themeOverrides } from "../../../theme"
 
 type ColumnGridProps<T extends string> = {
   fields: Fields<T>
@@ -16,8 +15,6 @@ type ColumnGridProps<T extends string> = {
   onBack?: () => void
   isLoading: boolean
 }
-
-export type Styles = (typeof themeOverrides)["components"]["MatchColumnsStep"]["baseStyle"]
 
 export const ColumnGrid = <T extends string>({
   fields,
