@@ -2,8 +2,7 @@ import { Select } from "chakra-react-select"
 import type { GroupBase } from "chakra-react-select"
 import type { SelectOption } from "../../types"
 import { customComponents } from "./MenuPortal"
-import { useStyleConfig } from "@chakra-ui/react"
-import type { Styles } from "../../steps/MatchColumnsStep/components/ColumnGrid"
+import { useRsiStyles } from "../../hooks/useRsiStyles"
 
 interface Props {
   onChange: (value: SelectOption | null) => void
@@ -14,11 +13,11 @@ interface Props {
 }
 
 export const MatchColumnSelect = ({ onChange, value, options, placeholder, name }: Props) => {
-  const styles = useStyleConfig("MatchColumnsStep") as Styles
+  const styles = useRsiStyles("MatchColumnsStep")
   return (
     <Select<SelectOption, false>
       value={value || null}
-      tagColorScheme="gray"
+      tagColorPalette="gray"
       onChange={onChange}
       placeholder={placeholder}
       options={options}

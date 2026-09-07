@@ -1,10 +1,10 @@
-import { Box, Flex, Text, useStyleConfig } from "@chakra-ui/react"
+import { Box, Flex, Text } from "@chakra-ui/react"
 import { useRsi } from "../../../hooks/useRsi"
+import { useRsiStyles } from "../../../hooks/useRsiStyles"
 import type { Column, Columns } from "../MatchColumnsStep"
 import { ColumnType } from "../MatchColumnsStep"
 import { MatchIcon } from "./MatchIcon"
 import { MatchColumnSelect } from "../../../components/Selects/MatchColumnSelect"
-import type { Styles } from "./ColumnGrid"
 import type { Fields, RawData } from "../../../types"
 
 type FieldRowProps<T extends string> = {
@@ -17,7 +17,7 @@ type FieldRowProps<T extends string> = {
 
 export const FieldRow = <T extends string>({ field, columns, headerValues, firstDataRow, onMap }: FieldRowProps<T>) => {
   const { translations } = useRsi<T>()
-  const styles = useStyleConfig("MatchColumnsStep") as Styles
+  const styles = useRsiStyles("MatchColumnsStep")
 
   const matchedColumn = columns.find(
     (c): c is Extract<Column<T>, { value: T }> => "value" in c && c.value === field.key,
@@ -59,7 +59,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
     <Flex minH={14} w="100%" alignItems="center" gap={8}>
       <Flex flex={1} alignItems="center" overflow="hidden" gap={1}>
         <MatchIcon isChecked={isMatched} />
-        <Text sx={styles.userTable.header} noOfLines={1} flex={1}>
+        <Text css={styles.userTable.header} lineClamp={1} flex={1}>
           {field.label}
           {isRequired && (
             <Text as="span" color="orange.500">
@@ -79,7 +79,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
       </Box>
       <Box flex={1}>
         {sampleValue !== undefined && (
-          <Text sx={styles.userTable.cell} noOfLines={1}>
+          <Text css={styles.userTable.cell} lineClamp={1}>
             {sampleValue}
           </Text>
         )}

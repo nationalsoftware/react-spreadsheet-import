@@ -1,14 +1,7 @@
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Button,
-} from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import { useRef } from "react"
 import { useRsi } from "../../hooks/useRsi"
+import { AlertDialog } from "./AlertDialog"
 
 interface Props {
   isOpen: boolean
@@ -21,29 +14,27 @@ export const SubmitDataAlert = ({ isOpen, onClose, onConfirm }: Props) => {
   const cancelRef = useRef<HTMLButtonElement | null>(null)
 
   return (
-    <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} isCentered id="rsi">
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {translations.alerts.submitIncomplete.headerTitle}
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            {allowInvalidSubmit
-              ? translations.alerts.submitIncomplete.bodyText
-              : translations.alerts.submitIncomplete.bodyTextSubmitForbidden}
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose} variant="secondary">
-              {translations.alerts.submitIncomplete.cancelButtonTitle}
+    <AlertDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      leastDestructiveRef={cancelRef}
+      title={translations.alerts.submitIncomplete.headerTitle}
+      footer={
+        <>
+          <Button ref={cancelRef} onClick={onClose} variant="ghost">
+            {translations.alerts.submitIncomplete.cancelButtonTitle}
+          </Button>
+          {allowInvalidSubmit && (
+            <Button onClick={onConfirm} ml={3}>
+              {translations.alerts.submitIncomplete.finishButtonTitle}
             </Button>
-            {allowInvalidSubmit && (
-              <Button onClick={onConfirm} ml={3}>
-                {translations.alerts.submitIncomplete.finishButtonTitle}
-              </Button>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
+          )}
+        </>
+      }
+    >
+      {allowInvalidSubmit
+        ? translations.alerts.submitIncomplete.bodyText
+        : translations.alerts.submitIncomplete.bodyTextSubmitForbidden}
     </AlertDialog>
   )
 }

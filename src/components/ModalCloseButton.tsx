@@ -1,8 +1,8 @@
-import { IconButton, useStyleConfig } from "@chakra-ui/react"
+import { IconButton } from "@chakra-ui/react"
 import { CgClose } from "react-icons/cg"
 import { ConfirmCloseAlert } from "./Alerts/ConfirmCloseAlert"
 import { useState } from "react"
-import { themeOverrides } from "../theme"
+import { useModalStyles } from "../hooks/useRsiStyles"
 
 type ModalCloseButtonProps = {
   onClose: () => void
@@ -10,7 +10,7 @@ type ModalCloseButtonProps = {
 
 export const ModalCloseButton = ({ onClose }: ModalCloseButtonProps) => {
   const [showModal, setShowModal] = useState(false)
-  const styles = useStyleConfig("Modal") as (typeof themeOverrides)["components"]["Modal"]["baseStyle"]
+  const styles = useModalStyles()
   return (
     <>
       <ConfirmCloseAlert
@@ -22,19 +22,27 @@ export const ModalCloseButton = ({ onClose }: ModalCloseButtonProps) => {
         }}
       />
       <IconButton
+        unstyled
+        display="inline-flex"
+        alignItems="center"
+        justifyContent="center"
+        cursor="pointer"
+        fontSize="md"
         right="14px"
         top="20px"
-        variant="unstyled"
-        sx={styles.closeModalButton}
+        css={styles.closeModalButton}
         aria-label="Close modal"
-        icon={<CgClose />}
         color="white"
         position="fixed"
+        // the modal layer sets pointer-events: none on <body>; this button lives outside Dialog.Content
+        pointerEvents="auto"
         transform="translate(50%, -50%)"
         onClick={() => setShowModal(true)}
         zIndex="toast"
         dir="ltr"
-      />
+      >
+        <CgClose />
+      </IconButton>
     </>
   )
 }

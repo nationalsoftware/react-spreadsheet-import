@@ -1,8 +1,7 @@
 import { rootId } from "../Providers"
 import { Select } from "chakra-react-select"
 import type { SelectOption } from "../../types"
-import { useStyleConfig } from "@chakra-ui/react"
-import type { themeOverrides } from "../../theme"
+import { useRsiStyles } from "../../hooks/useRsiStyles"
 
 interface Props {
   onChange: (value: readonly SelectOption[]) => void
@@ -11,9 +10,7 @@ interface Props {
 }
 
 export const TableMultiSelect = ({ onChange, value, options }: Props) => {
-  const styles = useStyleConfig(
-    "ValidationStep",
-  ) as (typeof themeOverrides)["components"]["ValidationStep"]["baseStyle"]
+  const styles = useRsiStyles("ValidationStep")
   return (
     <Select<SelectOption, true>
       isMulti

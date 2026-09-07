@@ -1,5 +1,5 @@
 import { StepState, StepType, UploadFlow } from "./UploadFlow"
-import { ModalHeader } from "@chakra-ui/react"
+import { ModalHeader } from "../components/ModalParts"
 import { Stepper } from "../components/Stepper"
 
 import { useRsi } from "../hooks/useRsi"

@@ -1,20 +1,13 @@
 import { Column, useRowSelection } from "react-data-grid"
-import {
-  Box,
-  Checkbox,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Switch,
-  Tooltip,
-} from "@chakra-ui/react"
+import { Box, Checkbox, Input, InputGroup, Switch } from "@chakra-ui/react"
 import type { Data, Fields, SelectOption } from "../../../types"
+import { useRef } from "react"
 import type { ChangeEvent } from "react"
 import type { Meta } from "../types"
 import { CgInfo } from "react-icons/cg"
 import { TableSelect } from "../../../components/Selects/TableSelect"
 import { TableMultiSelect } from "../../../components/Selects/TableMultiSelect"
+import { Tooltip } from "../../../components/Tooltip"
 
 const SELECT_COLUMN_KEY = "select-row"
 
@@ -25,21 +18,39 @@ function autoFocusAndSelect(input: HTMLInputElement | null) {
 
 function DiscardRowCheckbox({ row }: { row: unknown }) {
   const { isRowSelected, onRowSelectionChange } = useRowSelection()
+  // onCheckedChange has no event; capture shift from the click that precedes it
+  const shiftClickRef = useRef(false)
   return (
-    <Checkbox
-      bg="white"
-      aria-label="Select"
-      isChecked={isRowSelected}
-      onChange={(event) => {
+    <Checkbox.Root
+      colorPalette="blue"
+      checked={isRowSelected}
+      onClick={(event) => {
+        shiftClickRef.current = event.shiftKey
+      }}
+      onCheckedChange={({ checked }) => {
         onRowSelectionChange({
           row,
-          checked: Boolean(event.target.checked),
-          isShiftClick: (event.nativeEvent as MouseEvent).shiftKey,
+          checked: checked === true,
+          isShiftClick: shiftClickRef.current,
         })
       }}
-    />
+    >
+      <Checkbox.HiddenInput aria-label="Select" />
+      <Checkbox.Control bg="white" />
+    </Checkbox.Root>
   )
 }
+
+/** Borderless text input that fills the grid cell (replaces Chakra v2's `variant="unstyled"`). */
+const cellInputProps = {
+  unstyled: true,
+  autoFocus: true,
+  height: "100%",
+  width: "100%",
+  bg: "transparent",
+  border: "none",
+  outline: "none",
+} as const
 
 export const generateColumns = <T extends string>(
   fields: Fields<T>,
@@ -97,23 +108,30 @@ export const generateColumns = <T extends string>(
         renderHeaderCell: () => (
           <Box display="flex" gap={1} alignItems="center" position="relative">
             <Tooltip
-              placement="top"
-              label={column.label}
-              bg="gray.100"
-              color="gray.700"
-              fontSize="xs"
-              fontWeight="medium"
-              px={2}
-              py={1}
-              borderRadius="md"
+              positioning={{ placement: "top" }}
+              content={column.label}
+              contentProps={{
+                bg: "gray.100",
+                color: "gray.700",
+                fontSize: "xs",
+                fontWeight: "medium",
+                px: 2,
+                py: 1,
+                borderRadius: "md",
+              }}
             >
-              <Box /* flex={1} */ overflow="hidden" textOverflow="ellipsis">
+              <Box overflow="hidden" textOverflow="ellipsis">
                 {column.label}
               </Box>
             </Tooltip>
             {column.description && (
-              <Tooltip placement="top" hasArrow label={column.description} whiteSpace="pre-line">
-                <Box /* flex={"0 0 auto"} */>
+              <Tooltip
+                positioning={{ placement: "top" }}
+                showArrow
+                content={column.description}
+                contentProps={{ whiteSpace: "pre-line" }}
+              >
+                <Box>
                   <CgInfo size="16px" />
                 </Box>
               </Tooltip>
@@ -130,11 +148,7 @@ export const generateColumns = <T extends string>(
               component = (
                 <Input
                   ref={autoFocusAndSelect}
-                  variant="unstyled"
-                  autoFocus
-                  size="sm"
-                  height="100%"
-                  width="100%"
+                  {...cellInputProps}
                   placeholder={dateFormat.toUpperCase()}
                   value={(row[column.key as T] as string) ?? ""}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => {
@@ -185,16 +199,16 @@ export const generateColumns = <T extends string>(
             // falls through
             default:
               component = (
-                <InputGroup size="sm" height="100%">
-                  {column.columnStyle?.prefix && (
-                    <InputLeftElement pointerEvents="none" color="gray.500" height="100%">
-                      {column.columnStyle.prefix}
-                    </InputLeftElement>
-                  )}
+                <InputGroup
+                  height="100%"
+                  startElement={column.columnStyle?.prefix}
+                  startElementProps={{ pointerEvents: "none", color: "gray.500", height: "100%" }}
+                  endElement={column.columnStyle?.suffix}
+                  endElementProps={{ pointerEvents: "none", color: "gray.500", height: "100%" }}
+                >
                   <Input
                     ref={autoFocusAndSelect}
-                    variant="unstyled"
-                    autoFocus
+                    {...cellInputProps}
                     value={(row[column.key as T] as string) ?? ""}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       onRowChange({ ...row, [column.key]: event.target.value })
@@ -204,11 +218,6 @@ export const generateColumns = <T extends string>(
                     paddingLeft={column.columnStyle?.prefix ? "2rem" : "0.5rem"}
                     paddingRight={column.columnStyle?.suffix ? "2rem" : "0.5rem"}
                   />
-                  {column.columnStyle?.suffix && (
-                    <InputRightElement pointerEvents="none" color="gray.500" height="100%">
-                      {column.columnStyle.suffix}
-                    </InputRightElement>
-                  )}
                 </InputGroup>
               )
           }
@@ -241,12 +250,18 @@ export const generateColumns = <T extends string>(
                     event.stopPropagation()
                   }}
                 >
-                  <Switch
-                    isChecked={row[column.key as T] as boolean}
-                    onChange={() => {
+                  <Switch.Root
+                    colorPalette="blue"
+                    checked={Boolean(row[column.key as T])}
+                    onCheckedChange={() => {
                       onRowChange({ ...row, [column.key]: !row[column.key as T] })
                     }}
-                  />
+                  >
+                    <Switch.HiddenInput />
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </Switch.Root>
                 </Box>
               )
               break
@@ -314,11 +329,11 @@ export const generateColumns = <T extends string>(
           if (row.__errors?.[column.key]) {
             return (
               <Tooltip
-                placement="top"
-                hasArrow
-                label={row.__errors?.[column.key]?.message}
+                positioning={{ placement: "top" }}
+                showArrow
+                content={row.__errors?.[column.key]?.message}
                 closeDelay={20}
-                whiteSpace="pre-line"
+                contentProps={{ whiteSpace: "pre-line" }}
               >
                 {component}
               </Tooltip>

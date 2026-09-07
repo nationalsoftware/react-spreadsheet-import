@@ -337,7 +337,7 @@ Common date-time formats can be viewed [here](https://docs.sheetjs.com/docs/csf/
 
 ### Customising styles (colors, fonts)
 
-You can see default theme we use [here](https://github.com/UgnisSoftware/react-spreadsheet-import/blob/master/src/theme.ts). Your override should match this object's structure.
+You can see default theme we use [here](./src/theme.ts). Your override should match this object's structure.
 
 There are 3 ways you can style the component:
 
@@ -383,7 +383,7 @@ There are 3 ways you can style the component:
           borderRadius: "none",
         },
         defaultProps: {
-          colorScheme: "yellow",
+          colorPalette: "yellow", // Chakra v3 name; the v2 `colorScheme` key is still accepted
         },
       },
     },
@@ -415,7 +415,7 @@ There are 3 ways you can style the component:
 ```
 <img width="1182" alt="Screenshot 2022-04-13 at 10 21 58" src="https://user-images.githubusercontent.com/5903616/163123694-5b79179e-037e-4f9d-b1a9-6078f758bb7e.png">
 
-Underneath we use Chakra-UI, you can send in a custom theme for us to apply. Read more about themes [here](https://chakra-ui.com/docs/styled-system/theming/theme)
+Underneath we use [Chakra UI v3](https://chakra-ui.com). The `customTheme` object is deep-merged with the default theme above and converted into a Chakra v3 system: flat `colors` entries become color tokens, nested palettes (e.g. `rsi`) become `colorPalette`-compatible palettes, `components.<Step>.baseStyle` blocks are applied as `css` to the matching elements, and `styles.global` becomes global CSS. Chakra's CSS variables, reset and global styles are scoped to RSI's own elements (`.rsi-root`), so nothing leaks into your application. Read more about Chakra v3 theming [here](https://chakra-ui.com/docs/theming/overview).
 
 ### Changing text (translations)
 

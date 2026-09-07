@@ -13,7 +13,7 @@ Avoid using `any` wherever possible. Prefer specific types, `unknown` with narro
 ## Tech Stack
 
 - **React 18** + **TypeScript 5**
-- **Chakra UI 2** for all UI components and theming
+- **Chakra UI 3** (`@chakra-ui/react` v3, compound components, `createSystem` theming) for all UI components; **chakra-react-select 6** for the select dropdowns
 - **React Data Grid 7** for the validation/editing table
 - **ExcelJS / SheetJS** for file parsing
 - **date-fns 4** for date parsing and formatting (`src/utils/parseDate.ts`)
@@ -83,7 +83,7 @@ Storybook is the primary dev environment for visual work. Stories live alongside
 
 ### `npm run test:unit` — Vitest
 
-React Testing Library + jsdom. 96 tests across 6 step test files plus one root-level test.
+React Testing Library + jsdom. 99 tests across 6 step test files plus one root-level test.
 
 ```powershell
 npm run test:unit
@@ -220,7 +220,7 @@ These are React Data Grid column definitions. Each field type can supply its own
 
 **Formatter**: switch on `column.fieldType.type`.
 
-- `"checkbox"` → `<Switch isChecked={...} onChange={...} />`
+- `"checkbox"` → `<Switch.Root checked={...} onCheckedChange={...}>` (Chakra v3 compound Switch)
 - `"select"` → resolves options via `resolveOptions(row)` (same override logic as editor); resolves raw value to `option.label`; multiSelect splits/joins. If resolved options is empty, falls through to plain text display.
 - `"date"` → displays the stored `dateFormat` string as-is
 - `"numeric"` → `num.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits, useGrouping })` using `decimalPlaces` and `thousandsSeparator` (default `true`)

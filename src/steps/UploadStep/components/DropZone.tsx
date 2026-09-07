@@ -1,11 +1,12 @@
-import { Box, Button, Spinner, Text, useStyleConfig, useToast } from "@chakra-ui/react"
+import { Box, Button, Spinner, Text } from "@chakra-ui/react"
 import { useDropzone } from "react-dropzone"
 import * as XLSX from "xlsx-ugnis"
 import { useState } from "react"
 import { getDropZoneBorder } from "../utils/getDropZoneBorder"
 import { useRsi } from "../../../hooks/useRsi"
+import { useRsiStyles } from "../../../hooks/useRsiStyles"
+import { useToaster } from "../../../hooks/useToaster"
 import { readFileAsync } from "../utils/readFilesAsync"
-import type { themeOverrides } from "../../../theme"
 
 type DropZoneProps = {
   onContinue: (data: XLSX.WorkBook, file: File) => void
@@ -14,8 +15,8 @@ type DropZoneProps = {
 
 export const DropZone = ({ onContinue, isLoading }: DropZoneProps) => {
   const { translations, maxFileSize, dateFormat, parseRaw } = useRsi()
-  const styles = useStyleConfig("UploadStep") as (typeof themeOverrides)["components"]["UploadStep"]["baseStyle"]
-  const toast = useToast()
+  const styles = useRsiStyles("UploadStep")
+  const toaster = useToaster()
   const [loading, setLoading] = useState(false)
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     noClick: true,
@@ -30,13 +31,11 @@ export const DropZone = ({ onContinue, isLoading }: DropZoneProps) => {
     onDropRejected: (fileRejections) => {
       setLoading(false)
       fileRejections.forEach((fileRejection) => {
-        toast({
-          status: "error",
-          variant: "left-accent",
-          position: "bottom-left",
+        toaster.create({
+          type: "error",
           title: `${fileRejection.file.name} ${translations.uploadStep.dropzone.errorToastDescription}`,
           description: fileRejection.errors[0].message,
-          isClosable: true,
+          closable: true,
         })
       })
     },
@@ -58,7 +57,7 @@ export const DropZone = ({ onContinue, isLoading }: DropZoneProps) => {
   return (
     <Box
       {...getRootProps()}
-      {...getDropZoneBorder(styles.dropZoneBorder)}
+      css={getDropZoneBorder(styles.dropZoneBorder)}
       width="100%"
       display="flex"
       justifyContent="center"
@@ -68,16 +67,16 @@ export const DropZone = ({ onContinue, isLoading }: DropZoneProps) => {
     >
       <input {...getInputProps()} data-testid="rsi-dropzone" />
       {isDragActive ? (
-        <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.activeDropzoneTitle}</Text>
+        <Text css={styles.dropzoneText}>{translations.uploadStep.dropzone.activeDropzoneTitle}</Text>
       ) : loading || isLoading ? (
         <>
           <Spinner />
-          <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.loadingTitle}</Text>
+          <Text css={styles.dropzoneText}>{translations.uploadStep.dropzone.loadingTitle}</Text>
         </>
       ) : (
         <>
-          <Text sx={styles.dropzoneText}>{translations.uploadStep.dropzone.title}</Text>
-          <Button sx={styles.dropzoneButton} onClick={open}>
+          <Text css={styles.dropzoneText}>{translations.uploadStep.dropzone.title}</Text>
+          <Button css={styles.dropzoneButton} onClick={open}>
             {translations.uploadStep.dropzone.buttonTitle}
           </Button>
         </>

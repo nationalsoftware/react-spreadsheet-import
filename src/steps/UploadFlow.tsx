@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { Progress, useToast } from "@chakra-ui/react"
+import { Progress } from "@chakra-ui/react"
 import type XLSX from "xlsx-ugnis"
 import { UploadStep } from "./UploadStep/UploadStep"
 import { SelectHeaderStep } from "./SelectHeaderStep/SelectHeaderStep"
@@ -11,6 +11,7 @@ import { addErrorsAndRunHooks } from "./ValidationStep/utils/dataMutations"
 import { MatchColumnsStep } from "./MatchColumnsStep/MatchColumnsStep"
 import type { Columns } from "./MatchColumnsStep/MatchColumnsStep"
 import { useRsi } from "../hooks/useRsi"
+import { useToaster } from "../hooks/useToaster"
 import type { RawData } from "../types"
 import { shouldAutoSelectHeader } from "./SelectHeaderStep/utils/autoSelectHeader"
 
@@ -71,19 +72,17 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
       }
     | undefined
   >(undefined)
-  const toast = useToast()
+  const toaster = useToaster()
   const errorToast = useCallback(
     (description: string) => {
-      toast({
-        status: "error",
-        variant: "left-accent",
-        position: "bottom-left",
+      toaster.create({
+        type: "error",
         title: `${translations.alerts.toast.error}`,
         description,
-        isClosable: true,
+        closable: true,
       })
     },
-    [toast, translations],
+    [toaster, translations],
   )
 
   const handleSelectHeader = useCallback(
@@ -208,6 +207,12 @@ export const UploadFlow = ({ state, onNext, onBack }: Props) => {
     case StepType.validateData:
       return <ValidationStep initialData={state.data} file={uploadedFile!} onBack={onBack} />
     default:
-      return <Progress isIndeterminate />
+      return (
+        <Progress.Root value={null}>
+          <Progress.Track>
+            <Progress.Range />
+          </Progress.Track>
+        </Progress.Root>
+      )
   }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
-import { useToast } from "@chakra-ui/react"
 import { useRsi } from "../../hooks/useRsi"
+import { useToaster } from "../../hooks/useToaster"
 import { FieldRow } from "./components/FieldRow"
 import { ColumnGrid } from "./components/ColumnGrid"
 import { setColumn } from "./utils/setColumn"
@@ -39,7 +39,7 @@ export const MatchColumnsStep = <T extends string>({
   onContinue,
   onBack,
 }: MatchColumnsProps<T>) => {
-  const toast = useToast()
+  const toaster = useToaster()
   const { fields, autoMapHeaders, autoMapDistance, translations } = useRsi<T>()
   const [isLoading, setIsLoading] = useState(false)
   const [columns, setColumns] = useState<Columns<T>>(() => {
@@ -67,13 +67,11 @@ export const MatchColumnsStep = <T extends string>({
         targetColumn !== null && "value" in targetColumn && targetColumn.value !== fieldKey
 
       if (isDisplacingAnotherField) {
-        toast({
-          status: "warning",
-          variant: "left-accent",
-          position: "bottom-left",
+        toaster.create({
+          type: "warning",
           title: translations.matchColumnsStep.duplicateColumnWarningTitle,
           description: translations.matchColumnsStep.duplicateColumnWarningDescription,
-          isClosable: true,
+          closable: true,
         })
       }
 
@@ -92,7 +90,7 @@ export const MatchColumnsStep = <T extends string>({
     [
       columns,
       fields,
-      toast,
+      toaster,
       translations.matchColumnsStep.duplicateColumnWarningDescription,
       translations.matchColumnsStep.duplicateColumnWarningTitle,
     ],
