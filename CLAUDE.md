@@ -280,7 +280,8 @@ Suppose you are adding `"rating"` as a new field type:
 
 ## Customisation Entry Points
 
-- **Styles**: extend `src/theme.ts` or pass `customTheme` prop
+- **Styles**: extend `src/theme.ts` or pass `customTheme` prop. Default colors are Chakra v3 semantic tokens (`fg`, `bg.muted`, ...) so they adapt to color mode; `customTheme` colors accept a plain color, a token reference (`"{colors.teal.subtle}"`), or a per-mode pair (`{ _light, _dark }`), and component style blocks accept nested `_dark` overrides
+- **Dark mode**: `colorMode` prop (`"light" | "dark"`, default light). Stamps the mode class on every `.rsi-root` wrapper; the system's `dark`/`light` conditions are scoped to that class so the host page's own `.dark` never affects RSI
 - **Strings**: extend `src/translationsRSIProps.ts` or pass `translations` prop
 - **New field types or validations**: edit `src/types.ts` first, then wire up in `MatchColumnsStep` and `ValidationStep`
 - **Data transforms**: `rowHook` (per-row, fast) or `tableHook` (all rows, expensive)

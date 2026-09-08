@@ -15,15 +15,26 @@ const rsiRootSelector = `.${rsiRootClassName}`
 const rsiRootScope = `:where(${rsiRootSelector})`
 
 export const themeOverrides = {
+  // Colors are Chakra v3 semantic-token references by default, so every value adapts to the active
+  // color mode automatically. customTheme may replace any of them with a plain CSS color (fixed in
+  // both modes), another token reference, or a per-mode pair: { _light: "...", _dark: "..." }.
   colors: {
-    textColor: "#2D3748",
-    subtitleColor: "#525C6C",
-    inactiveColor: "#A0AEC0",
-    border: "#E2E8F0",
-    background: "white",
-    backgroundAlpha: "rgba(255,255,255,0)",
-    secondaryBackground: "#EDF2F7",
-    highlight: "#E2E8F0",
+    textColor: "{colors.fg}",
+    subtitleColor: "{colors.fg.muted}",
+    inactiveColor: "{colors.fg.subtle}",
+    // Dark surfaces sit one step up Chakra's gray ladder (gray.900/800/700) instead of the
+    // near-black bg/bg.muted defaults - still stock palette tokens, just a softer dark mode.
+    // Borders step lighter in dark for the same reason: Chakra's gray.800 vanishes on gray.900.
+    background: { _light: "{colors.bg}", _dark: "{colors.gray.900}" },
+    secondaryBackground: { _light: "{colors.bg.muted}", _dark: "{colors.gray.800}" },
+    highlight: { _light: "{colors.bg.emphasized}", _dark: "{colors.gray.700}" },
+    border: { _light: "{colors.gray.200}", _dark: "{colors.gray.700}" },
+    // Validation tints, shared by the grid cells and the filter badges. One shade lighter than
+    // Chakra's subtle/muted pairs in both modes (pastel in light, brighter in dark) - and in dark,
+    // orange must sit at 700/800 to read as orange at all (900 collapses into red).
+    errorBackground: { _light: "{colors.red.50}", _dark: "{colors.red.800}" },
+    warningBackground: { _light: "{colors.orange.100}", _dark: "{colors.orange.700}" },
+    infoBackground: { _light: "{colors.blue.50}", _dark: "{colors.blue.800}" },
     rsi: {
       50: "#E6E6FF",
       100: "#C4C6FF",
@@ -79,7 +90,7 @@ export const themeOverrides = {
           fontWeight: "semibold",
           color: "textColor",
         },
-        dropZoneBorder: "rsi.500",
+        dropZoneBorder: "rsi.solid",
         dropzoneButton: {
           mt: "1rem",
         },
@@ -208,13 +219,13 @@ export const themeOverrides = {
           option: (provided, state) => ({
             ...provided,
             color: "textColor",
-            bg: state.isSelected ? "green.100" : state.isFocused ? "green.50" : "background",
+            bg: state.isSelected ? "green.muted" : state.isFocused ? "green.subtle" : "background",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "block",
             whiteSpace: "nowrap",
             _hover: {
-              bg: "green.50",
+              bg: "green.subtle",
             },
           }),
           groupHeading: (provided) => ({
@@ -304,12 +315,13 @@ export const themeOverrides = {
         borderRadius: "50%",
         borderWidth: "2px",
         bg: "background",
-        borderColor: "yellow.500",
+        borderColor: "yellow.solid",
         color: "background",
         transitionDuration: "fastest",
         _highlighted: {
-          bg: "green.500",
-          borderColor: "green.500",
+          bg: "green.solid",
+          borderColor: "green.solid",
+          color: "green.contrast",
         },
       },
     },
@@ -404,12 +416,13 @@ export const themeOverrides = {
         "--rdg-background-color": "colors.background",
         "--rdg-header-background-color": "colors.background",
         "--rdg-row-hover-background-color": "colors.background",
-        "--rdg-selection-color": "colors.blue.400",
-        "--rdg-row-selected-background-color": "colors.rsi.50",
-        "--row-selected-hover-background-color": "colors.rsi.100",
-        "--rdg-error-cell-background-color": "colors.red.50",
-        "--rdg-warning-cell-background-color": "colors.orange.50",
-        "--rdg-info-cell-background-color": "colors.blue.50",
+        "--rdg-selection-color": "colors.blue.focusRing",
+        // dark steps one shade lighter than the palette's subtle/muted: rsi.900 reads too heavy as a row fill
+        "--rdg-row-selected-background-color": { base: "colors.rsi.subtle", _dark: "colors.rsi.muted" },
+        "--rdg-row-selected-hover-background-color": { base: "colors.rsi.muted", _dark: "colors.rsi.emphasized" },
+        "--rdg-error-cell-background-color": "colors.errorBackground",
+        "--rdg-warning-cell-background-color": "colors.warningBackground",
+        "--rdg-info-cell-background-color": "colors.infoBackground",
         "--rdg-border-color": "colors.border",
         "--rdg-frozen-cell-box-shadow": "none",
         "--rdg-font-size": "fontSizes.sm",
@@ -484,6 +497,8 @@ export const themeOverrides = {
       },
       ".rdg-static": {
         cursor: "pointer",
+        // clickable rows (header selection) get hover feedback; other grids keep it disabled
+        "--rdg-row-hover-background-color": "colors.secondaryBackground",
       },
       ".rdg-static .rdg-header-row": {
         display: "none",
@@ -537,10 +552,19 @@ export const rtlThemeSupport = {
 export type RsiTheme = typeof themeOverrides
 export type CustomTheme = DeepPartial<RsiTheme>
 
-type TokenValue = { value: string }
-type ColorTokens = Record<string, TokenValue | Record<string, TokenValue>>
+/** A color value in `customTheme`: a CSS color, a token reference, or a per-mode pair */
+export type RsiColorValue = string | { _light: string; _dark: string }
 
-const isPalette = (value: unknown): value is Record<string, string> => typeof value === "object" && value !== null
+type TokenValue = { value: string | Record<string, string> }
+type ColorTokens = Record<string, TokenValue | Record<string, TokenValue>>
+type BaseColorTokens = Record<string, Record<string, { value: string }>>
+
+/** Per-mode conditional value, e.g. { _light: "#fff", _dark: "#111" } */
+const isConditionalValue = (value: unknown): value is Record<string, string> =>
+  typeof value === "object" && value !== null && Object.keys(value).every((k) => k.startsWith("_"))
+
+const isPalette = (value: unknown): value is Record<string, RsiColorValue> =>
+  typeof value === "object" && value !== null && !isConditionalValue(value)
 
 /**
  * Chakra v3's default global styles target `html` and `*`. Re-key them under the RSI root selector so
@@ -589,22 +613,34 @@ const buttonColorPalette = (theme: RsiTheme): string => {
  * - CSS variables, the preflight reset and global styles are scoped to `.rsi-root`
  */
 export const createRsiSystem = (theme: RsiTheme) => {
-  const tokens: ColorTokens = {}
+  const tokens: BaseColorTokens = {}
   const semanticTokens: ColorTokens = {}
 
-  for (const [name, value] of Object.entries(theme.colors) as [string, string | Record<string, string>][]) {
+  for (const [name, value] of Object.entries(theme.colors) as [
+    string,
+    RsiColorValue | Record<string, RsiColorValue>,
+  ][]) {
     if (isPalette(value)) {
-      tokens[name] = Object.fromEntries(Object.entries(value).map(([shade, color]) => [shade, { value: color }]))
-      semanticTokens[name] = {
+      // Palette semantic tokens follow Chakra's own light/dark shade pattern so `colorPalette` works in
+      // both modes. Non-numeric palette keys in customTheme (solid, subtle, fg, ...) override these.
+      const generated: Record<string, TokenValue> = {
         contrast: { value: "white" },
-        fg: { value: `{colors.${name}.700}` },
-        subtle: { value: `{colors.${name}.100}` },
-        muted: { value: `{colors.${name}.200}` },
-        emphasized: { value: `{colors.${name}.300}` },
+        fg: { value: { _light: `{colors.${name}.700}`, _dark: `{colors.${name}.300}` } },
+        subtle: { value: { _light: `{colors.${name}.100}`, _dark: `{colors.${name}.900}` } },
+        muted: { value: { _light: `{colors.${name}.200}`, _dark: `{colors.${name}.800}` } },
+        emphasized: { value: { _light: `{colors.${name}.300}`, _dark: `{colors.${name}.700}` } },
         solid: { value: `{colors.${name}.500}` },
         focusRing: { value: `{colors.${name}.500}` },
-        border: { value: `{colors.${name}.500}` },
+        border: { value: { _light: `{colors.${name}.500}`, _dark: `{colors.${name}.400}` } },
       }
+      const shades: Record<string, { value: string }> = {}
+      for (const [key, shadeValue] of Object.entries(value)) {
+        // numeric keys are base-token shades (plain colors only); named keys override the semantic set
+        if (/^\d+$/.test(key)) shades[key] = { value: String(shadeValue) }
+        else generated[key] = { value: shadeValue }
+      }
+      tokens[name] = shades
+      semanticTokens[name] = generated
     } else {
       semanticTokens[name] = { value }
     }
@@ -612,6 +648,13 @@ export const createRsiSystem = (theme: RsiTheme) => {
 
   const config = defineConfig({
     cssVarsRoot: rsiRootSelector,
+    // Color mode is controlled by the `colorMode` prop, which stamps `light`/`dark` on every RSI root
+    // wrapper. The conditions are scoped to that class so a host page's own `.dark` never flips RSI
+    // (and RSI's dark tokens never leak onto host elements).
+    conditions: {
+      dark: `&${rsiRootSelector}.dark, ${rsiRootSelector}.dark &`,
+      light: `:root &, &${rsiRootSelector}.light, ${rsiRootSelector}.light &`,
+    },
     // Layers are disabled so RSI styles behave like ordinary (v2-style) CSS inside arbitrary host apps;
     // the reset is therefore scoped with :where() so it cannot out-rank recipe classes.
     preflight: { scope: rsiRootScope },

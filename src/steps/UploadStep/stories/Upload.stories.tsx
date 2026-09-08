@@ -1,3 +1,4 @@
+import type { StoryContext } from "@storybook/react"
 import { UploadStep } from "../UploadStep"
 import { defaultTheme } from "../../../ReactSpreadsheetImport"
 import { mockRsiValues } from "../../../stories/mockRsiValues"
@@ -11,9 +12,9 @@ export default {
   },
 }
 
-export const Basic = () => {
+export const Basic = (_args: unknown, { globals }: StoryContext) => {
   return (
-    <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
+    <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, colorMode: globals.colorMode }}>
       <ModalWrapper isOpen={true} onClose={() => {}}>
         <UploadStep onContinue={async () => {}} />
       </ModalWrapper>

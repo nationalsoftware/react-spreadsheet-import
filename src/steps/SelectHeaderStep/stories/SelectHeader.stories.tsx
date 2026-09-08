@@ -1,3 +1,4 @@
+import type { StoryContext } from "@storybook/react"
 import { headerSelectionTableFields, mockRsiValues } from "../../../stories/mockRsiValues"
 import { SelectHeaderStep } from "../SelectHeaderStep"
 import { Providers } from "../../../components/Providers"
@@ -10,8 +11,8 @@ export default {
   },
 }
 
-export const Basic = () => (
-  <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
+export const Basic = (_args: unknown, { globals }: StoryContext) => (
+  <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, colorMode: globals.colorMode }}>
     <ModalWrapper isOpen={true} onClose={() => {}}>
       <SelectHeaderStep data={headerSelectionTableFields} onContinue={async () => {}} />
     </ModalWrapper>

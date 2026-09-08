@@ -36,7 +36,7 @@ function DiscardRowCheckbox({ row }: { row: unknown }) {
       }}
     >
       <Checkbox.HiddenInput aria-label="Select" />
-      <Checkbox.Control bg="white" />
+      <Checkbox.Control bg="background" />
     </Checkbox.Root>
   )
 }
@@ -111,8 +111,8 @@ export const generateColumns = <T extends string>(
               positioning={{ placement: "top" }}
               content={column.label}
               contentProps={{
-                bg: "gray.100",
-                color: "gray.700",
+                bg: "bg.muted",
+                color: "fg",
                 fontSize: "xs",
                 fontWeight: "medium",
                 px: 2,
@@ -202,9 +202,9 @@ export const generateColumns = <T extends string>(
                 <InputGroup
                   height="100%"
                   startElement={column.columnStyle?.prefix}
-                  startElementProps={{ pointerEvents: "none", color: "gray.500", height: "100%" }}
+                  startElementProps={{ pointerEvents: "none", color: "fg.muted", height: "100%" }}
                   endElement={column.columnStyle?.suffix}
-                  endElementProps={{ pointerEvents: "none", color: "gray.500", height: "100%" }}
+                  endElementProps={{ pointerEvents: "none", color: "fg.muted", height: "100%" }}
                 >
                   <Input
                     ref={autoFocusAndSelect}
@@ -309,7 +309,7 @@ export const generateColumns = <T extends string>(
               component = (
                 <Box minWidth="100%" minHeight="100%" overflow="hidden" display="flex" alignItems="center">
                   {column.columnStyle?.prefix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} mr={1}>
+                    <Box as="span" color="fg.muted" flexShrink={0} mr={1}>
                       {column.columnStyle.prefix}
                     </Box>
                   )}
@@ -317,7 +317,7 @@ export const generateColumns = <T extends string>(
                     {getDisplayValue(cellValue)}
                   </Box>
                   {column.columnStyle?.suffix && cellValue && (
-                    <Box as="span" color="gray.500" flexShrink={0} ml={1}>
+                    <Box as="span" color="fg.muted" flexShrink={0} ml={1}>
                       {column.columnStyle.suffix}
                     </Box>
                   )}

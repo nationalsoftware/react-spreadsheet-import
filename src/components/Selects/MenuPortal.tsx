@@ -3,8 +3,7 @@ import type { ReactNode } from "react"
 import ReactDOM from "react-dom"
 import { Box } from "@chakra-ui/react"
 import { autoUpdate, computePosition, flip, hide, size } from "@floating-ui/dom"
-import { rsiRootClassName } from "../Providers"
-import { useRsi } from "../../hooks/useRsi"
+import { useRsi, useRsiRootClass } from "../../hooks/useRsi"
 
 function createWrapperAndAppendToBody(wrapperId: string) {
   const wrapperElement = document.createElement("div")
@@ -28,6 +27,7 @@ interface PortalProps {
  */
 const MenuPortal = (props: PortalProps) => {
   const { rtl } = useRsi()
+  const rootClass = useRsiRootClass()
   const [wrapperElement, setWrapperElement] = useState<HTMLElement | null>(null)
   const [floatingElement, setFloatingElement] = useState<HTMLDivElement | null>(null)
 
@@ -84,13 +84,7 @@ const MenuPortal = (props: PortalProps) => {
 
   return ReactDOM.createPortal(
     // pointerEvents: the modal layer sets pointer-events: none on <body>; the wrapper lives outside Dialog.Content
-    <Box
-      dir={rtl ? "rtl" : "ltr"}
-      ref={setFloatingElement}
-      zIndex="tooltip"
-      pointerEvents="auto"
-      className={rsiRootClassName}
-    >
+    <Box dir={rtl ? "rtl" : "ltr"} ref={setFloatingElement} zIndex="tooltip" pointerEvents="auto" className={rootClass}>
       {props.children}
     </Box>,
     wrapperElement,

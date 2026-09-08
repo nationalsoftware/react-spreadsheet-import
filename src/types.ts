@@ -51,6 +51,9 @@ export type RsiProps<T extends string> = {
   parseRaw?: boolean
   // Use for right-to-left (RTL) support
   rtl?: boolean
+  // Color mode for the import UI. RSI renders in portals, so it cannot inherit the host app's mode;
+  // pass the app's current mode here. Default: "light"
+  colorMode?: "light" | "dark"
   // Optional parameter to skip certain sheets in the SelectSheet step
   ignoredSheetNames?: string[]
   // Fraction (0–1) of schema fields that must fuzzy-match row 0 to auto-skip the SelectHeader step.

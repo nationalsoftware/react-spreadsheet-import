@@ -3,7 +3,7 @@ import type { CreateToasterReturn } from "@chakra-ui/react"
 import merge from "lodash/merge"
 import { createContext, useMemo } from "react"
 import type { RsiProps } from "../types"
-import { createRsiSystem, rsiRootClassName, themeOverrides } from "../theme"
+import { createRsiSystem, themeOverrides } from "../theme"
 import type { CustomTheme, RsiTheme } from "../theme"
 import { RsiThemeContext } from "../hooks/useRsiStyles"
 import { Toaster } from "./Toaster"
@@ -19,7 +19,6 @@ type ProvidersProps<T extends string> = {
 
 /** id of the main dialog's content element; select menus are portalled into it */
 export const rootId = "chakra-modal-rsi"
-export { rsiRootClassName }
 
 export const Providers = <T extends string>({ children, theme, rsiValues }: ProvidersProps<T>) => {
   const mergedTheme = useMemo(() => merge({}, themeOverrides, theme) as RsiTheme, [theme])

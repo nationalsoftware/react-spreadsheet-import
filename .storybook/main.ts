@@ -6,6 +6,10 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  // @chakra-ui/react advertises its hosted Storybook; without this it gets auto-composed into our sidebar
+  refs: {
+    "@chakra-ui/react": { disable: true },
+  },
   staticDirs: ["../src/stories/static"],
 }
 export default config

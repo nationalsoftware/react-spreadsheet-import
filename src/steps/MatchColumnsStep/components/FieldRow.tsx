@@ -62,7 +62,7 @@ export const FieldRow = <T extends string>({ field, columns, headerValues, first
         <Text css={styles.userTable.header} lineClamp={1} flex={1}>
           {field.label}
           {isRequired && (
-            <Text as="span" color="orange.500">
+            <Text as="span" color="orange.fg">
               *
             </Text>
           )}

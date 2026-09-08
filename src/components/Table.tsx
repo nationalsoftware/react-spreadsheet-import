@@ -6,6 +6,13 @@ interface Props<Data> extends DataGridProps<Data> {
 }
 
 export const Table = <Data,>({ className, ...props }: Props<Data>) => {
-  const { rtl } = useRsi()
-  return <DataGrid className={`rdg-light ${className ?? ""}`} direction={rtl ? "rtl" : "ltr"} {...props} />
+  const { rtl, colorMode } = useRsi()
+  // rdg-light/rdg-dark set react-data-grid's color-scheme (scrollbars, selection accents)
+  return (
+    <DataGrid
+      className={`${colorMode === "dark" ? "rdg-dark" : "rdg-light"} ${className ?? ""}`}
+      direction={rtl ? "rtl" : "ltr"}
+      {...props}
+    />
+  )
 }

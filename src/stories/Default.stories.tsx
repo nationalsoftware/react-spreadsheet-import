@@ -4,6 +4,7 @@ import { mockRsiValues, mock1099NECValues } from "./mockRsiValues"
 import { useState } from "react"
 import type { Result } from "../types"
 import { RsiProps } from "../types"
+import type { StoryContext } from "@storybook/react"
 
 export default {
   title: "React spreadsheet import",
@@ -55,12 +56,12 @@ export default {
   },
 }
 
-export const Basic = (args: RsiProps<string>) => {
+export const Basic = (args: RsiProps<string>, { globals }: StoryContext) => {
   const [data, setData] = useState<Result<any> | null>(null)
   const { open: isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
-      <Box py={20} display="flex" gap="8px" alignItems="center">
+      <Box py={4} display="flex" gap="8px" alignItems="center">
         <Button onClick={onOpen} border="2px solid #7069FA" p="8px" borderRadius="8px">
           Open Flow
         </Button>
@@ -69,7 +70,14 @@ export const Basic = (args: RsiProps<string>) => {
       <Link href="./exampleFile.csv" border="2px solid #718096" p="8px" borderRadius="8px" download="exampleCSV">
         Download example file
       </Link>
-      <ReactSpreadsheetImport {...mockRsiValues} {...args} isOpen={isOpen} onClose={onClose} onSubmit={setData} />
+      <ReactSpreadsheetImport
+        {...mockRsiValues}
+        colorMode={globals.colorMode as "light" | "dark"}
+        {...args}
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={setData}
+      />
       {!!data && (
         <Box pt={64} display="flex" gap="8px" flexDirection="column">
           <b>Returned data (showing first 100 rows):</b>
@@ -100,18 +108,25 @@ export const Basic = (args: RsiProps<string>) => {
   )
 }
 
-export const F1099NEC = (args: RsiProps<string>) => {
+export const F1099NEC = (args: RsiProps<string>, { globals }: StoryContext) => {
   const [data, setData] = useState<Result<any> | null>(null)
   const { open: isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
-      <Box py={20} display="flex" gap="8px" alignItems="center">
+      <Box py={4} display="flex" gap="8px" alignItems="center">
         <Button onClick={onOpen} border="2px solid #7069FA" p="8px" borderRadius="8px">
           Open Flow
         </Button>
         (make sure you have a file to upload)
       </Box>
-      <ReactSpreadsheetImport {...mock1099NECValues} {...args} isOpen={isOpen} onClose={onClose} onSubmit={setData} />
+      <ReactSpreadsheetImport
+        {...mock1099NECValues}
+        colorMode={globals.colorMode as "light" | "dark"}
+        {...args}
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={setData}
+      />
       {!!data && (
         <Box pt={64} display="flex" gap="8px" flexDirection="column">
           <b>Returned data (showing first 100 rows):</b>
