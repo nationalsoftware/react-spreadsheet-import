@@ -4,6 +4,7 @@ import { Providers } from "../../../components/Providers"
 import { defaultTheme } from "../../../ReactSpreadsheetImport"
 import { ModalWrapper } from "../../../components/ModalWrapper"
 import { addErrorsAndRunHooks } from "../utils/dataMutations"
+import type { StoryContext } from "@storybook/react"
 import { RsiProps } from "../../../types"
 
 export default {
@@ -31,9 +32,9 @@ const data = await addErrorsAndRunHooks(
   mockRsiValues.fields,
 )
 
-export const Basic = (args: RsiProps<string>) => {
+export const Basic = (args: RsiProps<string>, { globals }: StoryContext) => {
   return (
-    <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, ...args }}>
+    <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, colorMode: globals.colorMode, ...args }}>
       <ModalWrapper isOpen={true} onClose={() => {}}>
         <ValidationStep initialData={data} file={file} />
       </ModalWrapper>

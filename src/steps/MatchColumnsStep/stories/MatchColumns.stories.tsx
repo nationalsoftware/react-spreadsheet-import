@@ -1,3 +1,4 @@
+import type { StoryContext } from "@storybook/react"
 import { defaultTheme } from "../../../ReactSpreadsheetImport"
 import { MatchColumnsStep } from "../MatchColumnsStep"
 import { Providers } from "../../../components/Providers"
@@ -24,8 +25,8 @@ const mockData = [
   ["10", "Jere", "Shier", "jshier8@comcast.net", "Agender", "10.143.62.161"],
 ]
 
-export const Basic = () => (
-  <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
+export const Basic = (_args: unknown, { globals }: StoryContext) => (
+  <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, colorMode: globals.colorMode }}>
     <ModalWrapper isOpen={true} onClose={() => {}}>
       <MatchColumnsStep headerValues={mockData[0] as string[]} data={mockData.slice(1)} onContinue={() => {}} />
     </ModalWrapper>

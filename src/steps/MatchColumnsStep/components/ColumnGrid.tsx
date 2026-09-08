@@ -34,7 +34,7 @@ export const ColumnGrid = <T extends string>({
         <Text css={styles.instructions}>{translations.matchColumnsStep.instructions}</Text>
         {unmatchedRequiredFields.length > 0 ? (
           <Flex gap={2} alignItems="center">
-            <Text color="orange.500">
+            <Text color="orange.fg">
               <CgInfo size="24px" />
             </Text>
             <Box>
@@ -47,7 +47,7 @@ export const ColumnGrid = <T extends string>({
           </Flex>
         ) : (
           <Flex gap={2} alignItems="center">
-            <Text color="green.500">
+            <Text color="green.fg">
               <CgCheckO size="24px" />
             </Text>
             <Text display="inline">All required fields are matched</Text>

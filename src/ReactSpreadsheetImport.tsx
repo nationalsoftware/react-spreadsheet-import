@@ -25,6 +25,7 @@ export const defaultRSIProps: Partial<RsiProps<any>> = {
   dateFormat: "yyyy-MM-dd",
   parseRaw: true,
   ignoredSheetNames: [] as string[],
+  colorMode: "light",
 } as const
 
 export const ReactSpreadsheetImport = <T extends string>(propsWithoutDefaults: RsiProps<T>) => {

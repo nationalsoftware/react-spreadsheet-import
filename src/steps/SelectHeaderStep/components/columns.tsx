@@ -26,7 +26,7 @@ function SelectFormatter({ row }: { row: unknown }) {
     >
       <RadioGroup.Item value={SELECTED}>
         <RadioGroup.ItemHiddenInput aria-label="Select" />
-        <RadioGroup.ItemIndicator bg="white" />
+        <RadioGroup.ItemIndicator bg="background" />
       </RadioGroup.Item>
     </RadioGroup.Root>
   )

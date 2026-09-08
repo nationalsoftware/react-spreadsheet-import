@@ -1,8 +1,8 @@
 import { Box, Dialog, Portal } from "@chakra-ui/react"
 import { useLayoutEffect, useState } from "react"
 import type { ReactNode, RefObject } from "react"
-import { useRsi } from "../../hooks/useRsi"
-import { rootId, rsiRootClassName } from "../Providers"
+import { useRsi, useRsiRootClass } from "../../hooks/useRsi"
+import { rootId } from "../Providers"
 
 interface Props {
   isOpen: boolean
@@ -25,6 +25,7 @@ interface Props {
  */
 export const AlertDialog = ({ isOpen, onClose, title, children, footer, leastDestructiveRef }: Props) => {
   const { rtl } = useRsi()
+  const rootClass = useRsiRootClass()
   const [container, setContainer] = useState<RefObject<HTMLElement> | undefined>(undefined)
 
   useLayoutEffect(() => {
@@ -45,7 +46,7 @@ export const AlertDialog = ({ isOpen, onClose, title, children, footer, leastDes
       unmountOnExit
     >
       <Portal container={container}>
-        <Box className={rsiRootClassName} dir={rtl ? "rtl" : "ltr"}>
+        <Box className={rootClass} dir={rtl ? "rtl" : "ltr"}>
           <Dialog.Backdrop />
           <Dialog.Positioner>
             <Dialog.Content>

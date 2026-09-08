@@ -2,9 +2,9 @@ import type React from "react"
 import { useRef } from "react"
 import { Box, Dialog, Portal } from "@chakra-ui/react"
 import { ModalCloseButton } from "./ModalCloseButton"
-import { useRsi } from "../hooks/useRsi"
+import { useRsi, useRsiRootClass } from "../hooks/useRsi"
 import { useModalStyles } from "../hooks/useRsiStyles"
-import { rootId, rsiRootClassName } from "./Providers"
+import { rootId } from "./Providers"
 
 type Props = {
   children: React.ReactNode
@@ -14,6 +14,7 @@ type Props = {
 
 export const ModalWrapper = ({ children, isOpen, onClose }: Props) => {
   const { rtl } = useRsi()
+  const rootClass = useRsiRootClass()
   const styles = useModalStyles()
   const contentRef = useRef<HTMLDivElement>(null)
   return (
@@ -33,7 +34,7 @@ export const ModalWrapper = ({ children, isOpen, onClose }: Props) => {
       unmountOnExit
     >
       <Portal>
-        <Box className={rsiRootClassName} dir={rtl ? "rtl" : "ltr"}>
+        <Box className={rootClass} dir={rtl ? "rtl" : "ltr"}>
           <Dialog.Backdrop />
           <ModalCloseButton onClose={onClose} />
           <Dialog.Positioner>

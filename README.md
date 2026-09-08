@@ -329,6 +329,8 @@ Common date-time formats can be viewed [here](https://docs.sheetjs.com/docs/csf/
   autoSelectHeaderThreshold?: number
   // Enable navigation in stepper component and show back button. Default: false
   isNavigationEnabled?: boolean
+  // Color mode for the import UI ("light" | "dark"). Default: "light". See Dark mode below
+  colorMode?: "light" | "dark"
   // Hide sheets with given name(s) in the SelectSheet step
   ignoredSheetNames?: string[]
 ```
@@ -416,6 +418,42 @@ There are 3 ways you can style the component:
 <img width="1182" alt="Screenshot 2022-04-13 at 10 21 58" src="https://user-images.githubusercontent.com/5903616/163123694-5b79179e-037e-4f9d-b1a9-6078f758bb7e.png">
 
 Underneath we use [Chakra UI v3](https://chakra-ui.com). The `customTheme` object is deep-merged with the default theme above and converted into a Chakra v3 system: flat `colors` entries become color tokens, nested palettes (e.g. `rsi`) become `colorPalette`-compatible palettes, `components.<Step>.baseStyle` blocks are applied as `css` to the matching elements, and `styles.global` becomes global CSS. Chakra's CSS variables, reset and global styles are scoped to RSI's own elements (`.rsi-root`), so nothing leaks into your application. Read more about Chakra v3 theming [here](https://chakra-ui.com/docs/theming/overview).
+
+### Dark mode
+
+The import UI has a built-in dark mode. RSI renders in portals, so it cannot inherit your app's color
+mode automatically - pass your app's current mode via the `colorMode` prop:
+
+```tsx
+<ReactSpreadsheetImport {...props} colorMode={isDark ? "dark" : "light"} /> // default: "light"
+```
+
+The default theme is built from Chakra v3 semantic tokens (`fg`, `bg`, `border`, `red.subtle`, ...), so
+every color adapts to the active mode automatically. Dark surfaces sit one step up Chakra's gray ladder
+(`gray.900` panels, `gray.800` bands, `gray.700` borders) rather than the near-black `bg` default - still
+stock palette tokens, just a softer dark mode. When customising via `customTheme`, prefer those
+same semantic tokens and your overrides stay mode-aware for free:
+
+```tsx
+customTheme={{
+  colors: {
+    highlight: "{colors.teal.subtle}",                    // token reference - flips automatically (preferred)
+    textColor: { _light: "#2D3748", _dark: "#E2E8F0" },   // explicit per-mode pair
+    background: "white",                                  // plain color - fixed in both modes
+  },
+}}
+```
+
+Component style blocks also accept nested `_dark` overrides:
+
+```tsx
+customTheme={{
+  components: { UploadStep: { baseStyle: { heading: { color: "teal.600", _dark: { color: "teal.300" } } } } },
+}}
+```
+
+Custom palettes (e.g. `colors.rsi`) are mode-independent shade ramps; to adjust how a palette renders per
+mode, override its generated semantic keys instead: `colors: { rsi: { solid: { _light: "...", _dark: "..." } } }`.
 
 ### Changing text (translations)
 

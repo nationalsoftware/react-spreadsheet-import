@@ -3,8 +3,7 @@ import { Box, Button, Badge, Heading, Menu, Portal, Text } from "@chakra-ui/reac
 import { FaChevronDown, FaFileCsv, FaFileExcel } from "react-icons/fa6"
 import { ContinueButton } from "../../components/ContinueButton"
 import { ModalBody } from "../../components/ModalParts"
-import { rsiRootClassName } from "../../components/Providers"
-import { useRsi } from "../../hooks/useRsi"
+import { useRsi, useRsiRootClass } from "../../hooks/useRsi"
 import { useRsiStyles } from "../../hooks/useRsiStyles"
 import { useToaster } from "../../hooks/useToaster"
 import type { Meta } from "./types"
@@ -31,6 +30,7 @@ type Filter = "all" | "errors" | "warnings"
 
 export const ValidationStep = <T extends string>({ initialData, file, onBack }: Props<T>) => {
   const { translations, fields, allowDiscard, numberedRows, onClose, onSubmit, rowHook, tableHook } = useRsi<T>()
+  const rootClass = useRsiRootClass()
   const styles = useRsiStyles("ValidationStep")
   const toaster = useToaster()
 
@@ -160,7 +160,14 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
     }
   }
 
-  const filterButtonVariant = (value: Filter) => (filter === value ? "subtle" : "ghost")
+  // grey hover/active on the surface ladder; the rsi palette only colors the label
+  const filterButtonProps = (value: Filter) =>
+    ({
+      variant: "ghost",
+      size: "sm",
+      bg: filter === value ? "highlight" : undefined,
+      _hover: { bg: filter === value ? "highlight" : "secondaryBackground" },
+    }) as const
 
   return (
     <>
@@ -170,22 +177,23 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
         <Text css={styles.instructions}>{translations.validationStep.instructions}</Text>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb="2rem" flexWrap="wrap" gap="8px">
           <Box display="flex" gap="8px" alignItems="center" flexWrap="wrap">
-            <Button variant={filterButtonVariant("all")} size="sm" onClick={() => setFilter("all")}>
+            <Button {...filterButtonProps("all")} onClick={() => setFilter("all")}>
               {translations.validationStep.allRowsCountTitle}
               {/* explicit gray: a bare v3 Badge inherits the button's rsi colorPalette and vanishes on the subtle (selected) button */}
               <Badge ml="3" colorPalette="gray">
                 {data.length}
               </Badge>
             </Button>
-            <Button variant={filterButtonVariant("warnings")} size="sm" onClick={() => setFilter("warnings")}>
+            <Button {...filterButtonProps("warnings")} onClick={() => setFilter("warnings")}>
               {translations.validationStep.warningRowsCountTitle}
-              <Badge ml="3" colorPalette="orange">
+              {/* explicit bg: matches the warning cell tint (see warningBackground in theme.ts) */}
+              <Badge ml="3" colorPalette="orange" bg="warningBackground">
                 {warningCount}
               </Badge>
             </Button>
-            <Button variant={filterButtonVariant("errors")} size="sm" onClick={() => setFilter("errors")}>
+            <Button {...filterButtonProps("errors")} onClick={() => setFilter("errors")}>
               {translations.validationStep.errorRowsCountTitle}
-              <Badge ml="3" colorPalette="red">
+              <Badge ml="3" colorPalette="red" bg="errorBackground">
                 {errorCount}
               </Badge>
             </Button>
@@ -204,7 +212,7 @@ export const ValidationStep = <T extends string>({ initialData, file, onBack }: 
                 </Button>
               </Menu.Trigger>
               <Portal>
-                <Menu.Positioner className={rsiRootClassName}>
+                <Menu.Positioner className={rootClass}>
                   <Menu.Content>
                     <Menu.Item value="csv" gap={3}>
                       <FaFileCsv size="32px" color="#2B73B6" />

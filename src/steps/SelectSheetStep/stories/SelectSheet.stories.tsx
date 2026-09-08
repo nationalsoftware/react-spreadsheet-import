@@ -1,3 +1,4 @@
+import type { StoryContext } from "@storybook/react"
 import { defaultTheme } from "../../../ReactSpreadsheetImport"
 import { SelectSheetStep } from "../SelectSheetStep"
 import { mockRsiValues } from "../../../stories/mockRsiValues"
@@ -13,8 +14,8 @@ export default {
 
 const sheetNames = ["Sheet1", "Sheet2", "Sheet3"]
 
-export const Basic = () => (
-  <Providers theme={defaultTheme} rsiValues={mockRsiValues}>
+export const Basic = (_args: unknown, { globals }: StoryContext) => (
+  <Providers theme={defaultTheme} rsiValues={{ ...mockRsiValues, colorMode: globals.colorMode }}>
     <ModalWrapper isOpen={true} onClose={() => {}}>
       <SelectSheetStep sheetNames={sheetNames} onContinue={async () => {}} />
     </ModalWrapper>
