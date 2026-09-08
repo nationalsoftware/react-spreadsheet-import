@@ -652,8 +652,14 @@ export const createRsiSystem = (theme: RsiTheme) => {
     // wrapper. The conditions are scoped to that class so a host page's own `.dark` never flips RSI
     // (and RSI's dark tokens never leak onto host elements).
     conditions: {
+      // Both conditions are scoped to the stamped mode class and NOTHING broader. In particular the
+      // light condition must not contain Chakra's default `:root &` term: at the token-emission level
+      // it degenerates to a bare `:root` rule that defines every light `--chakra-colors-*` variable
+      // globally, clobbering a Chakra host app's own (identically named) tokens — which silently pins
+      // the host page to light mode whenever RSI is mounted. The root wrapper always carries `light`
+      // or `dark` (useRsiRootClass), so no `:root` fallback is needed.
       dark: `&${rsiRootSelector}.dark, ${rsiRootSelector}.dark &`,
-      light: `:root &, &${rsiRootSelector}.light, ${rsiRootSelector}.light &`,
+      light: `&${rsiRootSelector}.light, ${rsiRootSelector}.light &`,
     },
     // Layers are disabled so RSI styles behave like ordinary (v2-style) CSS inside arbitrary host apps;
     // the reset is therefore scoped with :where() so it cannot out-rank recipe classes.
